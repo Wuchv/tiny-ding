@@ -1,20 +1,16 @@
-const os = require('os');
 const path = require('path');
+const Webpack = require('webpack');
 const HappyPack = require('happypack'); //开启多进程Loader转换
 const HtmlWebpackPlugin = require('html-webpack-plugin'); //html自动引入js
 const { CleanWebpackPlugin } = require('clean-webpack-plugin'); //打包前清除输出文件夹
 const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // 在打包后的html中拆分css以外链的形式引入
 
-const isDev = process.env.NODE_ENV == 'development';
-const happyThreadTool = HappyPack.ThreadPool({ size: os.cpus().length });
 const entryBundleDir = path.join(__dirname, '../src/index.tsx');
-const entryMainDir = path.join(__dirname, '../main.tsx');
 const outDir = path.join(__dirname, '../dist');
 
 const baseConfig = {
   entry: {
     bundle: ['@babel/polyfill', entryBundleDir],
-    // main: ['@babel/polyfill', entryMainDir],
   },
   output: {
     path: outDir,
@@ -40,7 +36,7 @@ const baseConfig = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env'],
+            presets: ['@babel/preset-env', { modules: false }],
           },
         },
         exclude: /node_modules/,
@@ -53,7 +49,7 @@ const baseConfig = {
       {
         test: /\.css$/,
         use: [
-          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+          MiniCssExtractPlugin.loader,
           'css-loader',
           {
             loader: 'postcss-loader',
@@ -63,12 +59,24 @@ const baseConfig = {
       {
         test: /\.less$/,
         use: [
-          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+          MiniCssExtractPlugin.loader,
           'css-loader',
           {
             loader: 'postcss-loader',
           },
-          'less-loader',
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                modifyVars: {
+                  'primary-color': '#806d9e',
+                  'link-color': '#806d9e',
+                  'border-radius-base': '2px',
+                },
+                javascriptEnabled: true,
+              },
+            },
+          },
         ],
       },
       {
@@ -121,14 +129,27 @@ const baseConfig = {
         },
       ],
     }),
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: [
+        //自定义要删除的文件
+        'css/*',
+        'js/*',
+        'index.html',
+        '!static/*',
+        '!main',
+      ],
+    }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, '../public/index.html'),
       filename: 'index.html',
     }),
     new MiniCssExtractPlugin({
-      filename: isDev ? 'css/[name].css' : 'css/[name].[hash].css',
-      chunkFilename: isDev ? 'css/[id].css' : 'css/[id].[hash].css',
+      filename: 'css/[name].[hash:8].css',
+      chunkFilename: 'css/[id].[hash:8].css',
+    }),
+    new Webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: require('../dist/static/vendor-manifest.json'),
     }),
   ],
 };

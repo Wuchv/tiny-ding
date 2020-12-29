@@ -3,11 +3,11 @@ const baseConfig = require('./webpack.config.base');
 const WebpackMerge = require('webpack-merge');
 const CopyWebpackPlugin = require('copy-webpack-plugin'); //拷贝静态资源
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin'); //压缩css
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin'); //压缩js
+const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin'); //压缩js
+// const WebpackBundleAnalyze = require('webpack-bundle-analyzer'); // 打包文件分析
 
 module.exports = WebpackMerge.merge(baseConfig, {
   mode: 'production',
-  // devtool: 'cheap-module-eval-source-map',
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
@@ -17,14 +17,27 @@ module.exports = WebpackMerge.merge(baseConfig, {
         },
       ],
     }),
+    // new WebpackBundleAnalyze.BundleAnalyzerPlugin({
+    //   analyzerHost: '127.0.0.1',
+    //   analyzerPort: 8889,
+    // }),
   ],
   optimization: {
     minimizer: [
-      // new UglifyJsPlugin({
-      //   cache: true,
-      //   parallel: true,
-      //   sourceMap: true,
-      // }),
+      new ParallelUglifyPlugin({
+        cacheDir: '.cache/',
+        uglifyJs: {
+          options: {
+            comments: false,
+            beautify: false,
+          },
+          compress: {
+            drop_console: true,
+            collapse_vars: true,
+            reduce_wars: true,
+          },
+        },
+      }),
       new OptimizeCssAssetsWebpackPlugin({}),
     ],
     splitChunks: {

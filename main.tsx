@@ -15,7 +15,7 @@ let createWindow = () => {
   if (isDev) {
     mainWindow.loadURL(`http://localhost:3000`);
   } else {
-    mainWindow.loadFile('./dist/index.html');
+    mainWindow.loadFile('../index.html');
   }
   mainWindow.on('close', () => {
     mainWindow = null;

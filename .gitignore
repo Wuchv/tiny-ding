@@ -1,4 +1,5 @@
 node_modules
 dist
+.cache
 .vscode
 .DS_Store
