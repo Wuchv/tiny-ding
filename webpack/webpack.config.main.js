@@ -2,7 +2,7 @@ const path = require('path');
 const Webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin'); //打包前清除输出文件夹
 
-const entryMainDir = path.join(__dirname, '../main.tsx');
+const entryMainDir = path.join(__dirname, '../app/main.tsx');
 
 const config = {
   mode: 'development',
@@ -22,7 +22,7 @@ const config = {
     rules: [
       {
         test: /\.(ts|tsx)?$/,
-        loader: 'ts-loader',
+        loader: 'babel-loader',
         exclude: /node_modules/,
       },
     ],

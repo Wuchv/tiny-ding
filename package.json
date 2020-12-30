@@ -9,9 +9,9 @@
     "start": "npm run build && cross-env NODE_ENV=production electron .",
     "dev:main": "cross-env NODE_ENV=development electron .",
     "dev:render": "cross-env NODE_ENV=development webpack serve --config ./webpack/webpack.config.dev.js",
+    "dev:server": "npm run build:main && concurrently \"npm run dev:render\" \"npm run dev:main\"",
     "build:main": "webpack --config ./webpack/webpack.config.main.js",
     "build:render": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.config.prod.js",
-    "dev:server": "npm run build:main && concurrently \"npm run dev:render\" \"npm run dev:main\"",
     "dll": "webpack --config ./webpack/webpack.config.dll.js",
     "analyze": "cross-env NODE_ENV=production npm_config_report=true npm run build:render"
   },
@@ -33,6 +33,7 @@
     "babel-loader": "^8.2.2",
     "babel-plugin-import": "^1.13.3",
     "clean-webpack-plugin": "^3.0.0",
+    "concurrently": "^5.3.0",
     "copy-webpack-plugin": "^7.0.0",
     "cross-env": "^7.0.3",
     "css-loader": "^5.0.1",
@@ -62,6 +63,7 @@
     "antd": "^4.9.4",
     "lodash": "^4.17.20",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "url": "^0.11.0"
   }
 }

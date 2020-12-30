@@ -3,13 +3,14 @@
         "outDir": "./dist/",
         "sourceMap": true,
         "noImplicitAny": true,
+        "esModuleInterop": true,
         "module": "commonJS",
         "target": "ES2015",
         "jsx": "react"
     },
     "include": [
         "./src/**/*",
-        "./main.tsx"
+        "./app/**/*"
     ],
     "exclude": [
         "node_modules",
