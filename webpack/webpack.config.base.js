@@ -31,19 +31,13 @@ const baseConfig = {
   module: {
     rules: [
       {
-        // enforce: 'pre',
         test: /\.js$/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env', { modules: false }],
-          },
-        },
+        loader: 'babel-loader',
         exclude: /node_modules/,
       },
       {
         test: /\.(ts|tsx)?$/,
-        loader: 'ts-loader',
+        loader: 'babel-loader',
         exclude: /node_modules/,
       },
       {
@@ -122,9 +116,6 @@ const baseConfig = {
       loaders: [
         {
           loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env'],
-          },
           cacheDirectory: true,
         },
       ],
