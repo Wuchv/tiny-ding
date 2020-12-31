@@ -1,8 +1,16 @@
 import * as React from 'react';
 import { render } from 'react-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
 
-import { Hello } from './components/Hello/Hello';
+import { Login } from './components/Login';
 
 const $root: HTMLElement = document.getElementById('root') || null;
 
-render(<Hello />, $root);
+render(
+  <HashRouter>
+    <Switch>
+      <Route path="/login" component={Login}></Route>
+    </Switch>
+  </HashRouter>,
+  $root
+);

@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'path'; //如果想import引入需在tsconfig中配置esModuleInterop:true
 import { format as urlFormat } from 'url';
 
 export const RENDER_FILE_URL: string = urlFormat({

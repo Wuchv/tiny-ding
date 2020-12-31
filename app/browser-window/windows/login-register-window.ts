@@ -15,7 +15,7 @@ const options: BrowserWindowConstructorOptions = {
   },
 };
 
-const URL = isDev ? `${RENDER_SERVER_URL}` : `${RENDER_FILE_URL}#login`;
+const URL = isDev ? `${RENDER_SERVER_URL}/#/login` : `${RENDER_FILE_URL}#login`;
 
 console.log(isDev, URL);
 
