@@ -6,7 +6,15 @@
         "esModuleInterop": true,
         "module": "commonJS",
         "target": "ES2015",
-        "jsx": "react"
+        "jsx": "react",
+        "paths": {
+            "@src/*": [
+                "./src/*"
+            ],
+            "@app/*": [
+                "./app/*"
+            ],
+        }
     },
     "include": [
         "./src/**/*",

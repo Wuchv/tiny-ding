@@ -2,8 +2,8 @@ import { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
 import { isDev, RENDER_SERVER_URL, RENDER_FILE_URL } from '../../constants';
 
 const options: BrowserWindowConstructorOptions = {
-  width: 500,
-  height: 500,
+  width: 300,
+  height: 400,
   resizable: false,
   titleBarStyle: 'hidden',
   autoHideMenuBar: true,

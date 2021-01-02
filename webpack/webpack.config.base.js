@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin'); //html自动引入js
 const { CleanWebpackPlugin } = require('clean-webpack-plugin'); //打包前清除输出文件夹
 const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // 在打包后的html中拆分css以外链的形式引入
 
+const isDev = process.env.NODE_ENV == 'development';
 const entryBundleDir = path.join(__dirname, '../src/index.tsx');
 const outDir = path.join(__dirname, '../dist');
 
@@ -23,7 +24,8 @@ const baseConfig = {
 
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, '../src'),
+      '@src': path.resolve(__dirname, '../src'),
+      '@app': path.resolve(__dirname, '../app'),
     },
     extensions: ['.ts', '.tsx', '.js', '.json'],
   },
@@ -43,7 +45,7 @@ const baseConfig = {
       {
         test: /\.css$/,
         use: [
-          MiniCssExtractPlugin.loader,
+          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           'css-loader',
           {
             loader: 'postcss-loader',
@@ -53,7 +55,7 @@ const baseConfig = {
       {
         test: /\.less$/,
         use: [
-          MiniCssExtractPlugin.loader,
+          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           'css-loader',
           {
             loader: 'postcss-loader',
@@ -135,8 +137,8 @@ const baseConfig = {
       filename: 'index.html',
     }),
     new MiniCssExtractPlugin({
-      filename: 'css/[name].[hash:8].css',
-      chunkFilename: 'css/[id].[hash:8].css',
+      filename: isDev ? 'css/[name].css' : 'css/[name].[hash:8].css',
+      chunkFilename: isDev ? 'css/[id].css' : 'css/[id].[hash:8].css',
     }),
     new Webpack.DllReferencePlugin({
       context: __dirname,

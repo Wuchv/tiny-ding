@@ -4,7 +4,7 @@ const Webpack = require('webpack');
 
 module.exports = {
   entry: {
-    vendor: ['react', 'react-dom', 'antd', 'lodash'],
+    vendor: ['react', 'react-dom', 'antd', '@ant-design/icons', 'lodash'],
   },
   output: {
     path: path.resolve(__dirname, '../dist/static/js'),

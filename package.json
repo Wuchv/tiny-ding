@@ -59,6 +59,7 @@
     "webpack-parallel-uglify-plugin": "^2.0.0"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.3.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-router-dom": "^5.1.7",
