@@ -7,6 +7,8 @@ export const RENDER_FILE_URL: string = urlFormat({
   slashes: true,
 });
 
+export const PRELOAD_FILE = path.resolve(__dirname, 'preload.js');
+
 export const RENDER_SERVER_URL: string = 'http://localhost:3000';
 
 export const isDev: boolean = process.env.NODE_ENV === 'development';

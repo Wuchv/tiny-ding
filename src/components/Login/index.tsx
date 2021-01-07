@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { closeWindow, WindowName } from '@src/utils';
-
 import { Input, Divider, Checkbox, Typography } from 'antd';
 import { LoginOutlined, CloseOutlined } from '@ant-design/icons';
+import { closeWindow, WindowName } from '@src/utils';
+import { login } from '@src/services/login';
 
 import './index.less';
 
@@ -23,7 +23,8 @@ export const Login: React.FunctionComponent<unknown> = React.memo(() => {
     console.log(`autoLogin checked = ${e.target.checked}`);
   }, []);
 
-  const login = React.useCallback(() => {
+  const submit = React.useCallback(() => {
+    login().then(console.log);
     console.log(`account:${account};password:${password}`);
   }, [account, password]);
 
@@ -50,7 +51,7 @@ export const Login: React.FunctionComponent<unknown> = React.memo(() => {
           onChange={(e) => inputChange(e, 'password')}
           addonAfter={
             <LoginOutlined
-              onClick={login}
+              onClick={submit}
               style={{ visibility: !!password ? 'visible' : 'hidden' }}
             />
           }

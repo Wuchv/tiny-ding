@@ -1,3 +1,6 @@
+# tiny-ding
+迷你钉钉，基于 electron + react + typescript + antd 的即时通讯软件
+
 # 命令
 ```bash
 npm run dev:server	//开发环境下运行应用，渲染进程支持热更新

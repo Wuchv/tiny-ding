@@ -6,8 +6,8 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin'); //打包前清�
 const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // 在打包后的html中拆分css以外链的形式引入
 
 const isDev = process.env.NODE_ENV == 'development';
-const entryBundleDir = path.join(__dirname, '../src/index.tsx');
-const outDir = path.join(__dirname, '../dist');
+const entryBundleDir = path.join(__dirname, '../index.tsx');
+const outDir = path.join(__dirname, '../../dist');
 
 const baseConfig = {
   entry: {
@@ -24,8 +24,7 @@ const baseConfig = {
 
   resolve: {
     alias: {
-      '@src': path.resolve(__dirname, '../src'),
-      '@app': path.resolve(__dirname, '../app'),
+      '@src': path.resolve(__dirname, '../../src'),
     },
     extensions: ['.ts', '.tsx', '.js', '.json'],
   },
@@ -142,7 +141,7 @@ const baseConfig = {
     }),
     new Webpack.DllReferencePlugin({
       context: __dirname,
-      manifest: require('../dist/static/vendor-manifest.json'),
+      manifest: require('../../dist/static/vendor-manifest.json'),
     }),
   ],
 };

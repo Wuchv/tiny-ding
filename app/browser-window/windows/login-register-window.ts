@@ -1,5 +1,10 @@
 import { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
-import { isDev, RENDER_SERVER_URL, RENDER_FILE_URL } from '../../constants';
+import {
+  isDev,
+  RENDER_SERVER_URL,
+  RENDER_FILE_URL,
+  PRELOAD_FILE,
+} from '../../constants';
 
 const options: BrowserWindowConstructorOptions = {
   width: 300,
@@ -10,14 +15,13 @@ const options: BrowserWindowConstructorOptions = {
   frame: false,
   webPreferences: {
     nodeIntegration: true,
-    // webSecurity: false,
-    // enableRemoteModule: true,
+    webSecurity: false,
+    preload: PRELOAD_FILE,
+    enableRemoteModule: true,
   },
 };
 
 const URL = isDev ? `${RENDER_SERVER_URL}/#/login` : `${RENDER_FILE_URL}#login`;
-
-console.log(isDev, URL);
 
 export const createLoginAndRegisterWindow = () => {
   const win = new BrowserWindow(options);

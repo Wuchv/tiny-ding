@@ -11,6 +11,7 @@ import { createLoginAndRegisterWindow } from './windows/login-register-window';
 
 export enum WindowName {
   login_register = 'login_register',
+  main = 'main',
 }
 
 export type CreateWindowHandler = (
@@ -19,6 +20,7 @@ export type CreateWindowHandler = (
 
 const HandlersMap: Record<WindowName, CreateWindowHandler> = {
   [WindowName.login_register]: createLoginAndRegisterWindow,
+  [WindowName.main]: createLoginAndRegisterWindow,
 };
 
 Object.freeze(HandlersMap); //冻结map，防止修改
@@ -44,6 +46,8 @@ export const createWindow = (
   options?: BrowserWindowConstructorOptions
 ): BrowserWindow => {
   const handler = HandlersMap[name];
+
+  console.warn(name);
 
   const win = handler(options);
   WindowMap.set(name, win);
