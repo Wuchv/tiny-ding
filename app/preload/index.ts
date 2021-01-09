@@ -28,7 +28,7 @@ function minimizeWindow(name?: WindowName) {
   return result;
 }
 
-window.$EB = {
+window.$client = {
   ipcRenderer,
   actionCode,
   openWindow,

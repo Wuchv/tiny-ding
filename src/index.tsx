@@ -5,7 +5,8 @@ import { HashRouter, Route, Switch } from 'react-router-dom';
 import { mockApi } from './mock';
 import { isDev } from './constants';
 
-import { Login } from './components/Login';
+import { Login } from './pages/Login';
+import { Main } from './pages/Main';
 
 if (isDev) {
   mockApi();
@@ -17,6 +18,7 @@ render(
   <HashRouter>
     <Switch>
       <Route path="/login" component={Login}></Route>
+      <Route path="/main" component={Main}></Route>
     </Switch>
   </HashRouter>,
   $root

@@ -8,6 +8,9 @@ import {
 import { messageBox } from '../dialog';
 
 import { createLoginAndRegisterWindow } from './windows/login-register-window';
+import { createMainWindow } from './windows/main-window';
+
+const client = require('electron-connect').client;
 
 export enum WindowName {
   login_register = 'login_register',
@@ -20,7 +23,7 @@ export type CreateWindowHandler = (
 
 const HandlersMap: Record<WindowName, CreateWindowHandler> = {
   [WindowName.login_register]: createLoginAndRegisterWindow,
-  [WindowName.main]: createLoginAndRegisterWindow,
+  [WindowName.main]: createMainWindow,
 };
 
 Object.freeze(HandlersMap); //冻结map，防止修改
@@ -47,9 +50,9 @@ export const createWindow = (
 ): BrowserWindow => {
   const handler = HandlersMap[name];
 
-  console.warn(name);
-
   const win = handler(options);
+  client.create(win);
+
   WindowMap.set(name, win);
 
   win.on('closed', () => WindowMap.delete(name));

@@ -3,6 +3,12 @@ export enum WindowName {
   main = 'main',
 }
 
-export const closeWindow = (name: WindowName) => window.$client.closeWindow(name);
+export const openLoginWindow = () => {
+  window.$client.openWindow(WindowName.login_register);
+  window.$client.closeWindow();
+};
 
-export const openWindow = (name: WindowName) => window.$client.closeWindow(name);
+export const openMainWindow = () => {
+  window.$client.openWindow(WindowName.main);
+  window.$client.closeWindow();
+};

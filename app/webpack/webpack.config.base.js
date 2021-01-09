@@ -1,6 +1,4 @@
 const path = require('path');
-const Webpack = require('webpack');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin'); //打包前清除输出文件夹
 
 const config = {
   devtool: 'source-map',
@@ -9,7 +7,7 @@ const config = {
     filename: '[name].js',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    extensions: ['.ts', '.js', '.jsx'],
   },
   module: {
     rules: [
