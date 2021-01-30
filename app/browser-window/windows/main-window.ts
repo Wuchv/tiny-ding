@@ -9,10 +9,10 @@ import {
 const options: BrowserWindowConstructorOptions = {
   width: 900,
   height: 650,
-  resizable: false,
-  titleBarStyle: 'hidden',
-  autoHideMenuBar: true,
-  frame: false,
+  // resizable: false,
+  // titleBarStyle: 'hidden',
+  // autoHideMenuBar: true,
+  // frame: false,
   webPreferences: {
     nodeIntegration: true,
     webSecurity: false,

@@ -9,7 +9,7 @@ const baseAxiosConfig: AxiosRequestConfig = {
   timeout: 1000 * 10,
   // 可携带cookies
   withCredentials: true,
-  baseURL: '',
+  baseURL: 'http://127.0.0.1:7002',
 };
 
 export default class Http {
@@ -48,7 +48,7 @@ export default class Http {
   private setResponseInterceptor() {
     this.axiosInstance.interceptors.response.use(
       (response: AxiosResponse<any>) =>
-        response.data.code === 200
+        response.status === 200
           ? Promise.resolve(response.data)
           : Promise.reject(response.data),
       (error) => {
@@ -66,5 +66,56 @@ export default class Http {
         return Promise.reject(error);
       }
     );
+  }
+
+  /**
+   * 发送get请求
+   * @param url
+   * @param data
+   * @param fn
+   */
+  public get(url: string, data: object, fn: Function): Promise<any> {
+    return this.axiosInstance.get(url, { params: data }).then(
+      (response) => {
+        return fn(response);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
+
+  /**
+   * 发送post请求
+   * @param url
+   * @param data
+   * @param fn
+   */
+  public post(url: string, data: object, fn: Function): Promise<any> {
+    return this.axiosInstance
+      .post(url, data, {
+        transformRequest: [
+          (data) => {
+            let ret = '';
+            for (let it in data) {
+              ret +=
+                encodeURIComponent(it) +
+                '=' +
+                encodeURIComponent(data[it]) +
+                '&';
+            }
+            return ret;
+          },
+        ],
+        withCredentials: true,
+      })
+      .then(
+        (response) => {
+          return fn(response);
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
   }
 }

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Input, Divider, Checkbox, Typography } from 'antd';
 import { LoginOutlined, CloseOutlined } from '@ant-design/icons';
 import { openMainWindow } from '@src/utils';
-import { login } from '@src/services/login';
+import { login, ILoginResponse } from '@src/services/login';
 
 import './Login.less';
 
@@ -24,9 +24,11 @@ export const Login: React.FunctionComponent<unknown> = React.memo(() => {
   }, []);
 
   const submit = React.useCallback(() => {
-    login().then(console.log);
-    openMainWindow();
-    console.log(`account:${account};password:${password}`);
+    login({ account, password }, (res: ILoginResponse) => {
+      if (res.token) {
+        openMainWindow();
+      }
+    });
   }, [account, password]);
 
   return (
@@ -50,7 +52,9 @@ export const Login: React.FunctionComponent<unknown> = React.memo(() => {
           addonAfter={
             <LoginOutlined
               onClick={submit}
-              style={{ visibility: !!password ? 'visible' : 'hidden' }}
+              style={{
+                visibility: !!account && !!password ? 'visible' : 'hidden',
+              }}
             />
           }
         />
