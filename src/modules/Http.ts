@@ -9,7 +9,7 @@ const baseAxiosConfig: AxiosRequestConfig = {
   timeout: 1000 * 10,
   // 可携带cookies
   withCredentials: true,
-  baseURL: 'http://127.0.0.1:7002',
+  baseURL: 'http://127.0.0.1:7001',
 };
 
 export default class Http {
@@ -74,10 +74,14 @@ export default class Http {
    * @param data
    * @param fn
    */
-  public get(url: string, data: object, fn: Function): Promise<any> {
+  public get(url: string, data: object, fn?: Function): Promise<any> {
     return this.axiosInstance.get(url, { params: data }).then(
       (response) => {
-        return fn(response);
+        if (fn) {
+          return fn(response);
+        } else {
+          return response;
+        }
       },
       (error) => {
         console.error(error);
@@ -91,7 +95,7 @@ export default class Http {
    * @param data
    * @param fn
    */
-  public post(url: string, data: object, fn: Function): Promise<any> {
+  public post(url: string, data: object, fn?: Function): Promise<any> {
     return this.axiosInstance
       .post(url, data, {
         transformRequest: [
@@ -111,7 +115,11 @@ export default class Http {
       })
       .then(
         (response) => {
-          return fn(response);
+          if (fn) {
+            return fn(response);
+          } else {
+            return response;
+          }
         },
         (error) => {
           console.error(error);

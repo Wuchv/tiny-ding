@@ -20,7 +20,7 @@ const start = () => {
   });
 
   app.on('ready', () => {
-    createWindow(WindowName.main);
+    createWindow(WindowName.login_register);
   });
 
   app.on('window-all-closed', () => {

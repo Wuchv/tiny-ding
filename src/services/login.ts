@@ -3,15 +3,15 @@ import Http from '../modules/Http';
 const fetch = new Http();
 
 export interface ILoginRequest {
-  account: string;
+  phone_number: string;
   password: string;
 }
 
 export interface ILoginResponse {
-  token: string;
+  uid: string;
 }
 
 export const login = (
   data: ILoginRequest,
-  fn: Function
+  fn?: Function
 ): Promise<ILoginResponse> => fetch.get('/api/login', data, fn);

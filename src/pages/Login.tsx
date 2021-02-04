@@ -1,14 +1,17 @@
 import * as React from 'react';
 import { Input, Divider, Checkbox, Typography } from 'antd';
 import { LoginOutlined, CloseOutlined } from '@ant-design/icons';
+import { useSelector, useDispatch } from 'react-redux';
 import { openMainWindow } from '@src/utils';
-import { login, ILoginResponse } from '@src/services/login';
+import { loginAction, selectUid } from '../redux/reducers/loginReducer';
 
 import './Login.less';
 
 export const Login: React.FunctionComponent<unknown> = React.memo(() => {
+  const dispatch = useDispatch();
   const [account, setAccount] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
+  // const uid = useSelector(selectUid);
 
   const inputChange = React.useCallback((e, name: string): void => {
     const value = e.target.value;
@@ -24,11 +27,8 @@ export const Login: React.FunctionComponent<unknown> = React.memo(() => {
   }, []);
 
   const submit = React.useCallback(() => {
-    login({ account, password }, (res: ILoginResponse) => {
-      if (res.token) {
-        openMainWindow();
-      }
-    });
+    dispatch(loginAction({ phone_number: account, password }));
+    //   openMainWindow();
   }, [account, password]);
 
   return (

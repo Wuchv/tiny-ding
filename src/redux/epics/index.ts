@@ -2,16 +2,19 @@ import {
   combineEpics,
   ActionsObservable,
   StateObservable,
+  Epic,
 } from 'redux-observable';
 import { catchError } from 'rxjs/operators';
+import { PayloadAction } from '@reduxjs/toolkit';
 import API from '../../services';
-import { addEpic } from './counterEpic';
+import { IRootState } from '../reducers';
+import { loginEpic } from './loginEpic';
 
-const epics = [addEpic];
+const epics = [loginEpic];
 
-const rootEpic = (
-  action$: ActionsObservable<any>,
-  store$: StateObservable<void>,
+const rootEpic: IEpic = (
+  action$: ActionsObservable<PayloadAction<any>>,
+  store$: StateObservable<IRootState>,
   dependencies: typeof API
 ) =>
   combineEpics(...epics)(action$, store$, dependencies).pipe(
@@ -20,5 +23,16 @@ const rootEpic = (
       return source;
     })
   );
+
+export type IEpic = Epic<
+  PayloadAction<any>,
+  PayloadAction<any>,
+  IRootState,
+  typeof API
+>;
+
+export type PromiseReturnType<
+  T extends (...arg: any[]) => any
+> = ReturnType<T> extends Promise<infer R> ? R : ReturnType<T>;
 
 export default rootEpic;

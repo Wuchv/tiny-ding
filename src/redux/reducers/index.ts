@@ -1,12 +1,20 @@
 import { combineReducers } from 'redux';
-import countReducer, { ICounterState } from './counterReducer';
+import loginReducer, {
+  ILoginState,
+  loginAction,
+  setUidAction,
+} from './loginReducer';
 
+export const actions = {
+  beforeLogin: loginAction(),
+  afterLogin: setUidAction(),
+};
 export interface IRootState {
-  counter: ICounterState;
+  loginState: ILoginState;
 }
 
 const rootReducer = combineReducers({
-  counter: countReducer,
+  loginState: loginReducer,
 });
 
 export default rootReducer;
