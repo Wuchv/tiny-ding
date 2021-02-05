@@ -1,20 +1,12 @@
 import { combineReducers } from 'redux';
-import loginReducer, {
-  ILoginState,
-  loginAction,
-  setUidAction,
-} from './loginReducer';
+import userReducer, { IUser } from './userReducer';
 
-export const actions = {
-  beforeLogin: loginAction(),
-  afterLogin: setUidAction(),
-};
 export interface IRootState {
-  loginState: ILoginState;
+  user: IUser;
 }
 
 const rootReducer = combineReducers({
-  loginState: loginReducer,
+  user: userReducer,
 });
 
 export default rootReducer;

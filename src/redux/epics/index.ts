@@ -8,7 +8,7 @@ import { catchError } from 'rxjs/operators';
 import { PayloadAction } from '@reduxjs/toolkit';
 import API from '../../services';
 import { IRootState } from '../reducers';
-import { loginEpic } from './loginEpic';
+import { loginEpic } from './userEpic';
 
 const epics = [loginEpic];
 

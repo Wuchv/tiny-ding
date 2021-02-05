@@ -1,7 +1,11 @@
 import { exhaustMap, map } from 'rxjs/operators';
 import { from } from 'rxjs';
 import { ofType } from 'redux-observable';
-import { loginAction, setUidAction } from '../reducers/loginReducer';
+import {
+  loginAction,
+  loginSuccessAction,
+  loginFailedAction,
+} from '../reducers/userReducer';
 import { IEpic, PromiseReturnType } from '.';
 
 export const loginEpic: IEpic = (action$, store$, { login }) =>
@@ -9,7 +13,13 @@ export const loginEpic: IEpic = (action$, store$, { login }) =>
     ofType(loginAction().type),
     exhaustMap((action) =>
       from(login(action.payload)).pipe(
-        map((res: PromiseReturnType<typeof login>) => setUidAction(res.uid))
+        map((res: PromiseReturnType<typeof login>) => {
+          if (res.uid) {
+            return loginSuccessAction(res.uid);
+          } else if (res.err) {
+            return loginFailedAction(res.err);
+          }
+        })
       )
     )
   );
