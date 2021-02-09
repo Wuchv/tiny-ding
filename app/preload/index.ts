@@ -1,11 +1,6 @@
 import { WindowName } from '../browser-window';
 import { ipcRenderer } from 'electron';
-
-// 执行electron代码
-function actionCode(fnStr: string) {
-  const result = ipcRenderer.sendSync('ACTION_CODE', fnStr);
-  return result;
-}
+import { createLocalDB } from '../db';
 
 // 打开新的窗口
 function openWindow(name: WindowName) {
@@ -28,11 +23,14 @@ function minimizeWindow(name?: WindowName) {
   return result;
 }
 
-window.$client = {
-  ipcRenderer,
-  actionCode,
-  openWindow,
-  closeWindow,
-  maximizeWindow,
-  minimizeWindow,
-};
+(async () => {
+  const localDatabase = await createLocalDB();
+  window.$client = {
+    ipcRenderer,
+    openWindow,
+    closeWindow,
+    maximizeWindow,
+    minimizeWindow,
+    localDatabase,
+  };
+})();

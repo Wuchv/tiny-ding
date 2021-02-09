@@ -1,12 +1,12 @@
 import { IpcRenderer } from 'electron';
-
+import { LocalDatabaseType } from './db';
 interface client {
   ipcRenderer: IpcRenderer;
-  actionCode: Function;
   openWindow: Function;
   closeWindow: Function;
   maximizeWindow: Function;
   minimizeWindow: Function;
+  localDatabase: LocalDatabaseType;
 }
 
 declare global {

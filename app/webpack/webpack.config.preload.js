@@ -24,6 +24,7 @@ const preloadConfig = WebpackMerge.merge(baseConfig, {
     new Webpack.EnvironmentPlugin({
       NODE_ENV: env,
     }),
+    new Webpack.ExternalsPlugin('commonjs', ['leveldown']),
   ],
 });
 
