@@ -41,9 +41,15 @@ tiny-ding
 ├─ postcss.config.js
 ├─ src  // electron渲染进程文件，react前端页面
 │  ├─ components
-│  │  └─ main
-│  │     ├─ ChatList.less
-│  │     └─ ChatList.tsx
+│  │  ├─ Avatar
+│  │  │  ├─ index.tsx
+│  │  │  └─ style.less
+│  │  ├─ ChatList
+│  │  │  ├─ index.tsx
+│  │  │  └─ style.less
+│  │  └─ Header
+│  │     ├─ index.tsx
+│  │     └─ style.less
 │  ├─ constants
 │  │  └─ index.ts
 │  ├─ index.tsx

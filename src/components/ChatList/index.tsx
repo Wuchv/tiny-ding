@@ -2,7 +2,7 @@ import * as React from 'react';
 import { List, Avatar } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 
-import './ChatList.less';
+import './style.less';
 
 interface IChatList {}
 
