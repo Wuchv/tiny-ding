@@ -15,7 +15,7 @@ export const loginEpic: IEpic = (action$, store$, { login }) =>
       from(login(action.payload)).pipe(
         map((res: PromiseReturnType<typeof login>) => {
           if (res.uid) {
-            return loginSuccessAction(res.uid);
+            return loginSuccessAction(res);
           } else if (res.err) {
             return loginFailedAction(res.err);
           }

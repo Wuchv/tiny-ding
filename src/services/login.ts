@@ -8,8 +8,10 @@ export interface ILoginRequest {
 }
 
 export interface ILoginResponse {
-  uid?: string;
-  err?: string;
+  err: string;
+  uid: string;
+  nickname?: string;
+  avatarUrl?: string;
 }
 
 export const login = (

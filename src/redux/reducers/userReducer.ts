@@ -3,13 +3,17 @@ import { IRootState } from './index';
 import { ILoginRequest } from '../../services/login';
 
 export interface IUser {
-  uid: string;
   err: string;
+  uid: string;
+  nickname?: string;
+  avatarUrl?: string;
 }
 
 const initialState: IUser = {
   uid: '',
   err: '',
+  nickname: '',
+  avatarUrl: '',
 };
 
 const userSlice = createSlice({
@@ -23,8 +27,8 @@ const userSlice = createSlice({
     loginFailedAction: (state, action: PayloadAction<string>) => {
       state.err = action.payload;
     },
-    loginSuccessAction: (state, action: PayloadAction<string>) => {
-      state.uid = action.payload;
+    loginSuccessAction: (state, action: PayloadAction<IUser>) => {
+      state = { ...state, ...action.payload };
     },
   },
 });
@@ -36,8 +40,10 @@ export const {
 } = userSlice.actions;
 
 export const selectUser = (state: IRootState) => ({
-  uid: state.user.uid,
   err: state.user.err,
+  uid: state.user.uid,
+  avatarUrl: state.user.avatarUrl,
+  nickname: state.user.nickname,
 });
 
 export default userSlice.reducer;

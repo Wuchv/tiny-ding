@@ -3,7 +3,7 @@ import { Input, Divider, Checkbox, Typography, message } from 'antd';
 import { LoginOutlined, CloseOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { openMainWindow } from '@src/utils';
-import { loginAction, selectUser } from '../redux/reducers/userReducer';
+import { loginAction, selectUser } from '@src/redux/reducers/userReducer';
 
 import './Login.less';
 
