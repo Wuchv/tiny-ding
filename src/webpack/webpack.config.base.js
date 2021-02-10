@@ -72,6 +72,12 @@ const baseConfig = {
               },
             },
           },
+          {
+            loader: 'style-resources-loader',
+            options: {
+              patterns: path.resolve(__dirname, '../public/common.less'),
+            },
+          },
         ],
       },
       {

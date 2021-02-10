@@ -17,7 +17,7 @@ export const Avatar: React.FunctionComponent<IAvatar> = React.memo(
         text = nickname.slice(nickname.length - 2, nickname.length);
       }
       let result = (
-        <AntdAvatar shape="square" className={`${size}`}>
+        <AntdAvatar shape="square" className={`avatar ${size}`}>
           {!!text ? text : 'Ding'}
         </AntdAvatar>
       );
@@ -25,7 +25,7 @@ export const Avatar: React.FunctionComponent<IAvatar> = React.memo(
         result = (
           <AntdAvatar
             shape="square"
-            className={`${size}`}
+            className={`avatar ${size}`}
             src={<Image src={src} />}
           />
         );
