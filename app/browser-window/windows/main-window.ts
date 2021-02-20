@@ -9,6 +9,8 @@ import {
 const options: BrowserWindowConstructorOptions = {
   width: 800,
   height: 650,
+  minWidth: 800,
+  minHeight: 650,
   // resizable: false,
   // titleBarStyle: 'hidden',
   // autoHideMenuBar: true,
