@@ -1,12 +1,18 @@
 import * as React from 'react';
-import { List, Avatar } from 'antd';
+import { List } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
+import { useDispatch } from 'react-redux';
+import { chooseChatPartnerAction } from '@src/redux/reducers/chatReducer';
+
+import { Avatar } from '@src/components/Avatar';
 
 import './style.less';
 
 interface IChatList {}
 
 export const ChatList: React.FunctionComponent<IChatList> = React.memo(() => {
+  const dispatch = useDispatch();
+
   const data = [
     {
       title: 'Ant Design Title 1',
@@ -20,20 +26,40 @@ export const ChatList: React.FunctionComponent<IChatList> = React.memo(() => {
     {
       title: 'Ant Design Title 4',
     },
+    {
+      title: 'Ant Design Title 3',
+    },
+    {
+      title: 'Ant Design Title 4',
+    },
   ];
+  const handleChooseChatPartner = React.useCallback(() => {
+    console.log('aa')
+    dispatch(
+      chooseChatPartnerAction({
+        currentConversationTitle: 'aaa',
+        currentConversationAvatar: '',
+      })
+    );
+  }, [data]);
+
   return (
     <List
+      className="list"
       itemLayout="horizontal"
       dataSource={data}
       renderItem={(item) => (
-        <List.Item>
+        <List.Item onClick={handleChooseChatPartner}>
           <CloseOutlined />
           <List.Item.Meta
             avatar={
-              <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+              <Avatar
+                text={item.title}
+                src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+              />
             }
-            title={<a href="https://ant.design">{item.title}</a>}
-            description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+            title={item.title}
+            description="Ant Design"
           />
         </List.Item>
       )}

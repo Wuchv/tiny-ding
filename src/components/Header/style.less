@@ -1,26 +1,40 @@
 .header-container {
-    background: none;
+    display: flex;
+    background: white;
     height: 50px;
     line-height: 50px;
     user-select: none;
     padding: 0;
 
-    .header-lt {
+    .flex {
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: space-between;
+    }
+
+    .header-lt {
         height: 50px;
-        flex: 0 0 250px;
-        max-width: 250px;
-        min-width: 250px;
-        padding: 0 18px;
+        flex: 0 0 260px;
+        max-width: 260px;
+        min-width: 260px;
+        padding: 0 23px;
         font-size: 24px;
-        border-right: 1px solid rgba(0, 0, 0, 0.06);
         color: @gray-common-level2;
+        justify-content: space-between;
+        border-right: 1px solid @common-divider-color;
 
         .icon-active {
             color: @primary-color;
+        }
+    }
+
+    .header-rt {
+        height: 50px;
+        padding: 18px;
+
+        .ant-typography {
+            margin: 0 9px;
+            font-size: 18px;
         }
     }
 }

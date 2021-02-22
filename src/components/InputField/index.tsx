@@ -40,10 +40,11 @@ export const InputField: React.FunctionComponent<IInputField> = React.memo(
           e.preventDefault();
           e.stopPropagation();
         }
-        MessageCenter.sendMsg({
+        const msg = MessageCenter.msgWrap({
           msgType: EMsgType.TEXT,
           content: textAreaContent,
         });
+        MessageCenter.sendMsg(msg);
         setTextAreaContent('');
       },
       [textAreaContent]

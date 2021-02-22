@@ -13,7 +13,7 @@ export const Main: React.FunctionComponent<unknown> = React.memo(() => {
     <Layout style={{ minHeight: '100vh' }}>
       <Header />
       <Layout>
-        <Layout.Sider theme="light" width="250" className="main-sider">
+        <Layout.Sider theme="light" width="260" className="main-sider">
           <ChatList />
         </Layout.Sider>
         <Layout.Content className='main-content'>

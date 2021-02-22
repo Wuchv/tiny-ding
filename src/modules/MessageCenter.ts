@@ -1,3 +1,7 @@
+import { useSelector } from 'react-redux';
+import { selectUser } from '@src/redux/reducers/userReducer';
+import { selectChat } from '@src/redux/reducers/chatReducer';
+
 export enum EMsgType {
   TEXT = 'text',
   IMAGE = 'image',
@@ -16,21 +20,8 @@ export interface IMessage {
 const localMessages = window.$client.localDatabase.messages;
 
 class MessageCenter {
-  public sendMsg(msg: Partial<IMessage>) {
-    localMessages.insert(this.msgWrap(msg));
-  }
-
-  private msgWrap(msg: Partial<IMessage>): IMessage {
-    const timestamp = Date.now();
-    const from = '0';
-    const to = '0';
-    return {
-      ...msg,
-      msgId: `${msg.from}:${msg.to}:${timestamp}`,
-      from,
-      to,
-      timestamp,
-    } as IMessage;
+  public sendMsg(msg: IMessage) {
+    localMessages.insert(msg);
   }
 
   public async filterMsg(
@@ -43,6 +34,19 @@ class MessageCenter {
 
   public msgChange$() {
     return localMessages.$;
+  }
+
+  public msgWrap(msg: Partial<IMessage>): IMessage {
+    const timestamp = Date.now();
+    const { uid } = useSelector(selectUser);
+    const { currentTo } = useSelector(selectChat);
+    return {
+      ...msg,
+      msgId: `${uid}:${currentTo}:${timestamp}`,
+      from: uid,
+      to: currentTo,
+      timestamp,
+    } as IMessage;
   }
 }
 

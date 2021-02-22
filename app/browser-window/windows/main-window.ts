@@ -7,9 +7,9 @@ import {
 } from '../../constants';
 
 const options: BrowserWindowConstructorOptions = {
-  width: 800,
+  width: 820,
   height: 650,
-  minWidth: 800,
+  minWidth: 820,
   minHeight: 650,
   // resizable: false,
   // titleBarStyle: 'hidden',

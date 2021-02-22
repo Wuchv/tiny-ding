@@ -1,19 +1,23 @@
-.ant-list-item {
-    padding: 12px 6px;
-    cursor: pointer;
-    user-select: none;
+.list {
+    border-top: 1px solid @common-divider-color;
 
-    .anticon-close {
-        visibility: hidden;
-        font-size: 12px;
-        color: @gray-common-level3;
-    }
-
-    &:hover {
-        background: rgba(0, 0, 0, .03);
+    .ant-list-item {
+        padding: 12px 6px;
+        cursor: pointer;
+        user-select: none;
 
         .anticon-close {
-            visibility: visible;
+            visibility: hidden;
+            font-size: 12px;
+            color: @gray-common-level3;
+        }
+
+        &:hover {
+            background: rgba(0, 0, 0, .03);
+
+            .anticon-close {
+                visibility: visible;
+            }
         }
     }
 }

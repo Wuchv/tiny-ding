@@ -6,19 +6,19 @@ import './style.less';
 interface IAvatar {
   size?: 'small' | 'middle' | 'large';
   src?: string;
-  nickname?: string;
+  text?: string;
 }
 
 export const Avatar: React.FunctionComponent<IAvatar> = React.memo(
-  ({ size = 'middle', src, nickname }) => {
+  ({ size = 'middle', src, text }) => {
     const avatarComponent = React.useMemo(() => {
-      let text = nickname;
-      if (nickname && nickname.length > 2) {
-        text = nickname.slice(nickname.length - 2, nickname.length);
+      let textInterception = text;
+      if (text && text.length > 2) {
+        textInterception = text.slice(text.length - 2, text.length);
       }
       let result = (
         <AntdAvatar shape="square" className={`avatar ${size}`}>
-          {!!text ? text : 'Ding'}
+          {!!textInterception ? textInterception : 'Ding'}
         </AntdAvatar>
       );
       if (src) {
@@ -31,7 +31,7 @@ export const Avatar: React.FunctionComponent<IAvatar> = React.memo(
         );
       }
       return result;
-    }, [size, src, nickname]);
+    }, [size, src, text]);
 
     return avatarComponent;
   }
