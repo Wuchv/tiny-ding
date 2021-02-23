@@ -27,9 +27,10 @@ const userSlice = createSlice({
     loginFailedAction: (state, action: PayloadAction<string>) => {
       state.err = action.payload;
     },
-    loginSuccessAction: (state, action: PayloadAction<IUser>) => {
-      state = { ...state, ...action.payload };
-    },
+    loginSuccessAction: (state, action: PayloadAction<IUser>) => ({
+      ...state,
+      ...action.payload,
+    }),
   },
 });
 

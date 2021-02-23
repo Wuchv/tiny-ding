@@ -16,32 +16,31 @@ export const ChatList: React.FunctionComponent<IChatList> = React.memo(() => {
   const data = [
     {
       title: 'Ant Design Title 1',
+      subtitle: 'subtitle',
+      avatarUrl: '',
     },
     {
       title: 'Ant Design Title 2',
+      subtitle: 'subtitle',
+      avatarUrl: '',
     },
     {
       title: 'Ant Design Title 3',
-    },
-    {
-      title: 'Ant Design Title 4',
-    },
-    {
-      title: 'Ant Design Title 3',
-    },
-    {
-      title: 'Ant Design Title 4',
+      subtitle: 'subtitle',
+      avatarUrl: '',
     },
   ];
-  const handleChooseChatPartner = React.useCallback(() => {
-    console.log('aa')
-    dispatch(
-      chooseChatPartnerAction({
-        currentConversationTitle: 'aaa',
-        currentConversationAvatar: '',
-      })
-    );
-  }, [data]);
+
+  const handleChooseChatPartner = React.useCallback(
+    (chatPartner) =>
+      dispatch(
+        chooseChatPartnerAction({
+          currentConversationTitle: chatPartner.title,
+          currentConversationAvatar: chatPartner.avatarUrl,
+        })
+      ),
+    []
+  );
 
   return (
     <List
@@ -49,17 +48,14 @@ export const ChatList: React.FunctionComponent<IChatList> = React.memo(() => {
       itemLayout="horizontal"
       dataSource={data}
       renderItem={(item) => (
-        <List.Item onClick={handleChooseChatPartner}>
+        <List.Item onClick={() => handleChooseChatPartner(item)}>
           <CloseOutlined />
           <List.Item.Meta
             avatar={
-              <Avatar
-                text={item.title}
-                src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-              />
+              <Avatar text={item.title} src={item.avatarUrl} size="large" />
             }
             title={item.title}
-            description="Ant Design"
+            description={item.subtitle}
           />
         </List.Item>
       )}

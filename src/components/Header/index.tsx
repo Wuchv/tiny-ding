@@ -1,10 +1,8 @@
 import * as React from 'react';
-import { useSelector } from 'react-redux';
 import { Layout, Typography } from 'antd';
 import { MessageOutlined, TeamOutlined } from '@ant-design/icons';
 
-import { selectUser } from '@src/redux/reducers/userReducer';
-import { selectChat } from '@src/redux/reducers/chatReducer';
+import { useReduxData } from '@src/hooks/useRedux';
 
 import { Avatar } from '@src/components/Avatar';
 
@@ -13,11 +11,12 @@ import './style.less';
 interface IHeader {}
 
 export const Header: React.FunctionComponent<IHeader> = React.memo(() => {
-  const { nickname, avatarUrl } = useSelector(selectUser);
-  const { currentConversationTitle, currentConversationAvatar } = useSelector(
-    selectChat
-  );
-
+  const {
+    nickname,
+    avatarUrl,
+    currentConversationTitle,
+    currentConversationAvatar,
+  } = useReduxData()[1];
   const [
     isMessageIconClicked,
     setIsMessageIconClicked,

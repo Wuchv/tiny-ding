@@ -1,15 +1,14 @@
 import * as React from 'react';
 import { Input, Divider, Checkbox, Typography, message } from 'antd';
 import { LoginOutlined, CloseOutlined } from '@ant-design/icons';
-import { useSelector, useDispatch } from 'react-redux';
 import { openMainWindow } from '@src/utils';
-import { loginAction, selectUser } from '@src/redux/reducers/userReducer';
+import { loginAction } from '@src/redux/reducers/userReducer';
+import { useReduxData } from '@src/hooks/useRedux';
 
 import './Login.less';
 
 export const Login: React.FunctionComponent<unknown> = React.memo(() => {
-  const dispatch = useDispatch();
-  const { uid, err } = useSelector(selectUser);
+  const [dispatch, { uid, err }] = useReduxData();
   const [account, setAccount] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
 

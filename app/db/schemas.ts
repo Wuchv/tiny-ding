@@ -27,6 +27,7 @@ enum EMsgType {
 
 interface IMessage {
   msgId: string;
+  cid: string;
   from: string;
   to: string;
   msgType: EMsgType;
@@ -45,6 +46,9 @@ export const messageSchema: RxJsonSchema<IMessage> = {
       type: 'string',
       primary: true,
     },
+    cid: {
+      type: 'string',
+    },
     from: {
       type: 'string',
     },
@@ -61,10 +65,42 @@ export const messageSchema: RxJsonSchema<IMessage> = {
       type: 'number',
     },
   },
-  required: ['msgId', 'from', 'to', 'msgType', 'content'],
+  required: ['msgId', 'cid', 'from', 'to', 'msgType', 'content', 'timestamp'],
+};
+
+interface IConversation {
+  cid: string;
+  title: string;
+  subtitle?: string;
+  avatarUrl?: string;
+}
+
+export const conversationSchema: RxJsonSchema<IConversation> = {
+  title: 'local conversation schema',
+  description: '本地会话列表',
+  version: 0,
+  keyCompression: true,
+  type: 'object',
+  properties: {
+    cid: {
+      type: 'string',
+      primary: true,
+    },
+    title: {
+      type: 'string',
+    },
+    subtitle: {
+      type: 'string',
+    },
+    avatarUrl: {
+      type: 'string',
+    },
+  },
+  required: ['cid', 'title'],
 };
 
 export interface ICollection {
   friends: RxCollection<IFriend>;
   messages: RxCollection<IMessage>;
+  conversations: RxCollection<IConversation>;
 }

@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Input, Button } from 'antd';
 import MessageCenter, { EMsgType } from '@src/modules/MessageCenter';
 
+import { useReduxData } from '@src/hooks/useRedux';
+
 import './style.less';
 
 // const fs = require('fs');
@@ -10,6 +12,7 @@ interface IInputField {}
 
 export const InputField: React.FunctionComponent<IInputField> = React.memo(
   () => {
+    const { uid, currentTo } = useReduxData()[1];
     const InputFieldRef: React.RefObject<HTMLDivElement> = React.useRef(null);
     const [textAreaContent, setTextAreaContent] = React.useState<string>('');
 
@@ -40,11 +43,12 @@ export const InputField: React.FunctionComponent<IInputField> = React.memo(
           e.preventDefault();
           e.stopPropagation();
         }
-        const msg = MessageCenter.msgWrap({
+        MessageCenter.sendMsg({
+          from: uid,
+          to: currentTo,
           msgType: EMsgType.TEXT,
           content: textAreaContent,
         });
-        MessageCenter.sendMsg(msg);
         setTextAreaContent('');
       },
       [textAreaContent]

@@ -19,9 +19,10 @@ const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    chooseChatPartnerAction: (state, action: PayloadAction<Partial<IChat>>) => {
-      state = { ...state, ...action.payload };
-    },
+    chooseChatPartnerAction: (
+      state,
+      action: PayloadAction<Partial<IChat>>
+    ) => ({ ...state, ...action.payload }),
   },
 });
 
