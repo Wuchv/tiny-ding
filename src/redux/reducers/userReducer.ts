@@ -10,9 +10,9 @@ export interface IUser {
 }
 
 const initialState: IUser = {
-  uid: '',
+  uid: 'defaultUid',
   err: '',
-  nickname: '',
+  nickname: 'defaultNick',
   avatarUrl: '',
 };
 

@@ -1,5 +1,7 @@
 import * as React from 'react';
-import MessageCenter from '@src/modules/MessageCenter';
+import MessageCenter, { IMessage } from '@src/modules/MessageCenter';
+
+import { Message } from '@src/components/Message';
 
 import './style.less';
 
@@ -12,10 +14,21 @@ export const ChatBox: React.FunctionComponent<IChatBox> = React.memo(() => {
     const { msgChange$, filterMsg } = MessageCenter;
     msgChange$().subscribe(() => {
       filterMsg().then((docs) => {
-        const msgList = docs.map((doc) => doc.get('content'));
+        const msgList = docs.map((doc) => doc.toJSON());
         setMsgList(msgList);
       });
     });
+    filterMsg().then((docs) => {
+      const msgList = docs.map((doc) => doc.toJSON());
+      setMsgList(msgList);
+    });
   }, []);
-  return <div className="chat-box">{msgList.join('.')}</div>;
+
+  return (
+    <div className="chat-box">
+      {msgList.map((msg: IMessage) => (
+        <Message key={msg.msgId} {...msg} />
+      ))}
+    </div>
+  );
 });

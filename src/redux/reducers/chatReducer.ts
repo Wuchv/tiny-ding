@@ -9,8 +9,8 @@ export interface IChat {
 }
 
 const initialState: IChat = {
-  currentTo: '',
-  currentCid: '',
+  currentTo: 'defaultTo',
+  currentCid: 'defaultCid',
   currentConversationTitle: 'defaultCurrentConversationTitle',
   currentConversationAvatar: '',
 };

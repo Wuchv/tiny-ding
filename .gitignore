@@ -6,3 +6,4 @@ dist
 local_database-rxdb-0-_rxdb_internal
 local_database-rxdb-0-friends
 local_database-rxdb-0-messages
+local_database-rxdb-0-conversations

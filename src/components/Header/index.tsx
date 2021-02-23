@@ -51,7 +51,6 @@ export const Header: React.FunctionComponent<IHeader> = React.memo(() => {
         <Avatar
           text={currentConversationTitle}
           src={currentConversationAvatar}
-          size="middle"
         />
         <Typography.Title level={5}>
           {currentConversationTitle}

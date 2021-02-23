@@ -12,7 +12,7 @@ interface IInputField {}
 
 export const InputField: React.FunctionComponent<IInputField> = React.memo(
   () => {
-    const { uid, currentTo } = useReduxData()[1];
+    const { uid, currentTo, nickname, avatarUrl } = useReduxData()[1];
     const InputFieldRef: React.RefObject<HTMLDivElement> = React.useRef(null);
     const [textAreaContent, setTextAreaContent] = React.useState<string>('');
 
@@ -37,22 +37,17 @@ export const InputField: React.FunctionComponent<IInputField> = React.memo(
       }
     }, [InputFieldRef.current]);
 
-    const sendMessage = React.useCallback(
-      (e?: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-        MessageCenter.sendMsg({
-          from: uid,
-          to: currentTo,
-          msgType: EMsgType.TEXT,
-          content: textAreaContent,
-        });
-        setTextAreaContent('');
-      },
-      [textAreaContent]
-    );
+    const sendMessage = React.useCallback(() => {
+      MessageCenter.sendMsg({
+        from: uid,
+        to: currentTo,
+        sender: nickname,
+        avatarUrl,
+        msgType: EMsgType.TEXT,
+        content: textAreaContent,
+      });
+      setTextAreaContent('');
+    }, [textAreaContent]);
 
     return (
       <div ref={InputFieldRef} className="input-field-container">
@@ -63,7 +58,6 @@ export const InputField: React.FunctionComponent<IInputField> = React.memo(
           autoSize={{ minRows: 3, maxRows: 3 }}
           value={textAreaContent}
           onChange={(e) => setTextAreaContent(e.currentTarget.value)}
-          // onPressEnter={(e) => sendMessage(e)}
         />
         <div className="submit-container">
           <Button

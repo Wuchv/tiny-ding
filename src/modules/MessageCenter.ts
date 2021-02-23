@@ -9,6 +9,8 @@ export interface IMessage {
   cid: string;
   from: string;
   to: string;
+  sender: string;
+  avatarUrl: string;
   msgType: EMsgType;
   content: string;
   timestamp: number;
@@ -39,6 +41,7 @@ class MessageCenter {
     const { from, to } = msg;
     return {
       ...msg,
+      cid: `${from}:${to}`,
       msgId: `${from}:${to}:${timestamp}`,
       timestamp,
     } as IMessage;

@@ -30,6 +30,8 @@ interface IMessage {
   cid: string;
   from: string;
   to: string;
+  sender: string;
+  avatarUrl: string;
   msgType: EMsgType;
   content: string;
   timestamp: number;
@@ -55,6 +57,12 @@ export const messageSchema: RxJsonSchema<IMessage> = {
     to: {
       type: 'string',
     },
+    sender: {
+      type: 'string',
+    },
+    avatarUrl: {
+      type: 'string',
+    },
     msgType: {
       type: 'string',
     },
@@ -65,7 +73,16 @@ export const messageSchema: RxJsonSchema<IMessage> = {
       type: 'number',
     },
   },
-  required: ['msgId', 'cid', 'from', 'to', 'msgType', 'content', 'timestamp'],
+  required: [
+    'msgId',
+    'cid',
+    'from',
+    'to',
+    'msgType',
+    'sender',
+    'content',
+    'timestamp',
+  ],
 };
 
 interface IConversation {
