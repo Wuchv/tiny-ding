@@ -4,16 +4,45 @@
 
     &.rt {
         flex-direction: row-reverse;
+
+        .message-meta {
+            display: flex;
+            flex-direction: row-reverse;
+        }
+
+        .text-massage {
+            float: right;
+        }
     }
 
     .message-body {
+        padding: 0 10px;
+        max-width: 70%;
 
         .message-meta {
             font-size: 12px;
 
-            .ant-typography-secondary {
+            .message-timestamp {
                 margin: 0 5px;
+                opacity: 0;
             }
         }
+    }
+
+    &:hover {
+        .message-body .message-meta .message-timestamp {
+            opacity: 1;
+        }
+    }
+}
+
+.text-massage {
+    display: inline-flex;
+    padding: 4px 8px;
+    border-radius: 5px;
+    background-color: @gray-common-level4;
+
+    .ant-card-body {
+        padding: 0;
     }
 }
