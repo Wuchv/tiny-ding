@@ -1,5 +1,4 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { message } from 'antd';
 
 const DEFAULT_HEADER = 'application/x-www-form-urlencoded';
 const FILE_HEADER = 'multipart/form-data';
@@ -9,7 +8,7 @@ const baseAxiosConfig: AxiosRequestConfig = {
   timeout: 1000 * 10,
   // 可携带cookies
   withCredentials: true,
-  baseURL: 'http://127.0.0.1:7001',
+  baseURL: 'http://127.0.0.1:7000',
 };
 
 export default class Http {
@@ -47,7 +46,7 @@ export default class Http {
   //响应拦截器
   private setResponseInterceptor() {
     this.axiosInstance.interceptors.response.use(
-      (response: AxiosResponse<any>) =>
+      (response: AxiosResponse<IResponse<any>>): any =>
         response.status === 200
           ? Promise.resolve(response.data)
           : Promise.reject(response.data),
@@ -61,9 +60,10 @@ export default class Http {
           return Promise.reject(error.response);
         }
         if (!window.navigator.onLine) {
+          return Promise.reject({ statusCode: 400, message: '网络出现波动' });
           //断网处理
         }
-        return Promise.reject(error);
+        return Promise.reject({ statusCode: 500, message: String(error) });
       }
     );
   }
@@ -85,6 +85,7 @@ export default class Http {
       },
       (error) => {
         console.error(error);
+        return error;
       }
     );
   }
@@ -123,6 +124,7 @@ export default class Http {
         },
         (error) => {
           console.error(error);
+          return error;
         }
       );
   }

@@ -4,7 +4,7 @@ import { useReduxData } from '@src/hooks/useRedux';
 import { resolveTimestamp } from '@src/utils';
 import { Avatar } from '@src/components/Avatar';
 
-import { Typography, Card } from 'antd';
+import { Typography } from 'antd';
 
 import './style.less';
 

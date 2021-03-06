@@ -8,7 +8,6 @@ export interface ILoginRequest {
 }
 
 export interface ILoginResponse {
-  err: string;
   uid: string;
   nickname?: string;
   avatarUrl?: string;
@@ -17,4 +16,4 @@ export interface ILoginResponse {
 export const login = (
   data: ILoginRequest,
   fn?: Function
-): Promise<ILoginResponse> => fetch.get('/api/login', data, fn);
+): Promise<IResponse<ILoginResponse>> => fetch.get('/api/user/login', data, fn);

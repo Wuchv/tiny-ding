@@ -14,10 +14,10 @@ export const loginEpic: IEpic = (action$, store$, { login }) =>
     exhaustMap((action) =>
       from(login(action.payload)).pipe(
         map((res: PromiseReturnType<typeof login>) => {
-          if (res.uid) {
-            return loginSuccessAction(res);
-          } else if (res.err) {
-            return loginFailedAction(res.err);
+          if (res.statusCode === 200) {
+            return loginSuccessAction(res.payload);
+          } else {
+            return loginFailedAction(res.message);
           }
         })
       )
