@@ -29,6 +29,10 @@ const baseConfig = {
     extensions: ['.ts', '.tsx', '.js', '.json'],
   },
 
+  experiments: {
+    topLevelAwait: true,
+  },
+
   module: {
     rules: [
       {

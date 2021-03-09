@@ -26,6 +26,7 @@
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.12.10",
+    "@babel/plugin-syntax-top-level-await": "^7.12.13",
     "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
@@ -86,6 +87,7 @@
     "redux-observable": "^1.2.0",
     "rxdb": "^9.12.1",
     "rxjs": "^6.6.3",
+    "socket.io-client": "^3.1.2",
     "url": "^0.11.0"
   }
 }
