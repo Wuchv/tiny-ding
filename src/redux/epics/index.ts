@@ -32,8 +32,4 @@ export type IEpic = Epic<
   typeof API
 >;
 
-export type PromiseReturnType<
-  T extends (...arg: any[]) => any
-> = ReturnType<T> extends Promise<infer R> ? R : ReturnType<T>;
-
 export default rootEpic;

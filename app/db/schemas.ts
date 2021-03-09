@@ -1,12 +1,8 @@
-import { RxCollection, RxJsonSchema } from 'rxdb';
+import { RxJsonSchema } from 'rxdb';
 
-interface IFriend {
-  uid: string;
-}
-
-export const friendSchema: RxJsonSchema<IFriend> = {
-  title: 'local friend schema',
-  description: '好友列表本地存储',
+export const userSchema: RxJsonSchema<IUser> = {
+  title: 'local user schema',
+  description: '本地用户信息存储',
   version: 0,
   keyCompression: true,
   type: 'object',
@@ -15,27 +11,21 @@ export const friendSchema: RxJsonSchema<IFriend> = {
       type: 'string',
       primary: true,
     },
+    access_token: {
+      type: 'string',
+    },
+    account: {
+      type: 'string',
+    },
+    avatarUrl: {
+      type: ['string', 'null'],
+    },
+    nickname: {
+      type: ['string', 'null'],
+    },
   },
   required: ['uid'],
 };
-
-enum EMsgType {
-  TEXT = 'text',
-  IMAGE = 'image',
-  FILE = 'file',
-}
-
-interface IMessage {
-  msgId: string;
-  cid: string;
-  from: string;
-  to: string;
-  sender: string;
-  avatarUrl: string;
-  msgType: EMsgType;
-  content: string;
-  timestamp: number;
-}
 
 export const messageSchema: RxJsonSchema<IMessage> = {
   title: 'local message schema',
@@ -85,13 +75,6 @@ export const messageSchema: RxJsonSchema<IMessage> = {
   ],
 };
 
-interface IConversation {
-  cid: string;
-  title: string;
-  subtitle?: string;
-  avatarUrl?: string;
-}
-
 export const conversationSchema: RxJsonSchema<IConversation> = {
   title: 'local conversation schema',
   description: '本地会话列表',
@@ -115,9 +98,3 @@ export const conversationSchema: RxJsonSchema<IConversation> = {
   },
   required: ['cid', 'title'],
 };
-
-export interface ICollection {
-  friends: RxCollection<IFriend>;
-  messages: RxCollection<IMessage>;
-  conversations: RxCollection<IConversation>;
-}

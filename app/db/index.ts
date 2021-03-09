@@ -1,18 +1,11 @@
-import { createRxDatabase, addRxPlugin, RxDatabase } from 'rxdb';
-import {
-  friendSchema,
-  messageSchema,
-  conversationSchema,
-  ICollection,
-} from './schemas';
+import { createRxDatabase, addRxPlugin } from 'rxdb';
+import { userSchema, messageSchema, conversationSchema } from './schemas';
 
 addRxPlugin(require('pouchdb-adapter-leveldb'));
 const leveldown = require('leveldown');
 
-export type LocalDatabaseType = RxDatabase<ICollection>;
-
-export const createLocalDB = async (): Promise<LocalDatabaseType> => {
-  const database = await createRxDatabase<ICollection>({
+export const createLocalDB = async (): Promise<RxDB.LocalDatabaseType> => {
+  const database = await createRxDatabase<RxDB.ICollection>({
     name: 'local_database',
     adapter: leveldown,
     password: 'tiny-ding-wuchvi',
@@ -20,8 +13,8 @@ export const createLocalDB = async (): Promise<LocalDatabaseType> => {
   });
 
   await database.addCollections({
-    friends: {
-      schema: friendSchema,
+    users: {
+      schema: userSchema,
     },
     messages: {
       schema: messageSchema,
