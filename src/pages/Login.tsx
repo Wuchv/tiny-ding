@@ -8,7 +8,7 @@ import { useReduxData } from '@src/hooks/useRedux';
 import './Login.less';
 
 export const Login: React.FunctionComponent<unknown> = React.memo(() => {
-  const [dispatch, { uid, err }] = useReduxData();
+  const [dispatch, { uid, access_token }] = useReduxData();
   const [account, setAccount] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
 
@@ -26,16 +26,14 @@ export const Login: React.FunctionComponent<unknown> = React.memo(() => {
   }, []);
 
   const submit = React.useCallback(() => {
-    dispatch(loginAction({ phone_number: account, password }));
+    dispatch(loginAction({ account, password, username: account }));
   }, [account, password]);
 
   React.useEffect(() => {
-    if (err) {
-      message.error(err);
-    } else if (uid) {
+    if (uid && access_token) {
       openMainWindow();
     }
-  }, [uid, err]);
+  }, [uid, access_token]);
 
   return (
     <div className="login-container">

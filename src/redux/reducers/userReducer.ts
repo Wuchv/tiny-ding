@@ -1,20 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IRootState } from './index';
 import { ILoginRequest } from '../../services/login';
+import UserManager from '@src/modules/dbManager/UserManager';
 
-export interface IUser {
-  err: string;
-  uid: string;
-  nickname?: string;
-  avatarUrl?: string;
-}
-
-const initialState: IUser = {
-  uid: 'defaultUid',
-  err: '',
-  nickname: 'defaultNick',
-  avatarUrl: '',
-};
+// @ts-ignore:Top-level 'await' expressions are only allowed when the 'module' option is set to 'esnext' or 'system', and the 'target' option is set to 'es2017' or higher.
+const initialState: Partial<IUser> = await UserManager.getOwnInfo();
 
 const userSlice = createSlice({
   name: 'user',
@@ -22,12 +12,11 @@ const userSlice = createSlice({
   reducers: {
     loginAction: (state, action: PayloadAction<ILoginRequest>) => {
       state.uid = '';
-      state.err = '';
     },
-    loginFailedAction: (state, action: PayloadAction<string>) => {
-      state.err = action.payload;
+    loginFailedAction: (state) => {
+      state.uid = '';
     },
-    loginSuccessAction: (state, action: PayloadAction<IUser>) => ({
+    loginSuccessAction: (state, action: PayloadAction<Partial<IUser>>) => ({
       ...state,
       ...action.payload,
     }),
@@ -41,7 +30,6 @@ export const {
 } = userSlice.actions;
 
 export const selectUser = (state: IRootState) => ({
-  err: state.user.err,
   uid: state.user.uid,
   avatarUrl: state.user.avatarUrl,
   nickname: state.user.nickname,

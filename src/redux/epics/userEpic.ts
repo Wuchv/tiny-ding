@@ -6,7 +6,8 @@ import {
   loginSuccessAction,
   loginFailedAction,
 } from '../reducers/userReducer';
-import { IEpic, PromiseReturnType } from '.';
+import { IEpic } from '.';
+import UserManage from '@src/modules/dbManager/UserManager';
 
 export const loginEpic: IEpic = (action$, store$, { login }) =>
   action$.pipe(
@@ -14,10 +15,12 @@ export const loginEpic: IEpic = (action$, store$, { login }) =>
     exhaustMap((action) =>
       from(login(action.payload)).pipe(
         map((res: PromiseReturnType<typeof login>) => {
-          if (res.statusCode === 200) {
-            return loginSuccessAction(res.payload);
+          if (res.uid) {
+            // 将个人信息存入RxDB
+            UserManage.upsert(res);
+            return loginSuccessAction(res);
           } else {
-            return loginFailedAction(res.message);
+            return loginFailedAction();
           }
         })
       )

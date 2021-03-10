@@ -1,4 +1,8 @@
+import { openLoginWindow } from '@src/utils';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { message } from 'antd';
+import { delay } from 'lodash';
+import UserManager from './dbManager/UserManager';
 
 const DEFAULT_HEADER = 'application/x-www-form-urlencoded';
 const FILE_HEADER = 'multipart/form-data';
@@ -37,8 +41,11 @@ export default class Http {
 
   //请求拦截器
   private setRequestInterceptor() {
-    this.axiosInstance.interceptors.request.use((config) => {
-      console.log('loading');
+    this.axiosInstance.interceptors.request.use(async (config) => {
+      const self: IUser = await UserManager.getOwnInfo();
+      if (self) {
+        config.headers['Authorization'] = `Bearer ${self.access_token}`;
+      }
       return config;
     });
   }
@@ -46,18 +53,27 @@ export default class Http {
   //响应拦截器
   private setResponseInterceptor() {
     this.axiosInstance.interceptors.response.use(
-      (response: AxiosResponse<IResponse<any>>): any =>
-        response.status === 200
+      (response: AxiosResponse<any>): any => {
+        console.log(response);
+        return response.status === 200
           ? Promise.resolve(response.data)
-          : Promise.reject(response.data),
+          : Promise.reject(response.data);
+      },
       (error) => {
+        console.log(error.response.data);
         if (error.response) {
           switch (error.response.status) {
+            case 401: //Unauthorized
+              message.error(error.response.data.message);
+              if (!location.hash.includes('login')) {
+                delay(openLoginWindow, 2000);
+              }
+              break;
             //处理返回码
             default:
               break;
           }
-          return Promise.reject(error.response);
+          return Promise.reject(error.response.data);
         }
         if (!window.navigator.onLine) {
           return Promise.reject({ statusCode: 400, message: '网络出现波动' });
