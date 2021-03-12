@@ -1,3 +1,5 @@
+import * as io from 'socket.io-client';
+
 export enum EMsgType {
   TEXT = 'text',
   IMAGE = 'image',
@@ -19,8 +21,59 @@ export interface IMessage {
 const localMessages = window.$client.localDatabase.messages;
 
 class MessageCenter {
+  public socket: SocketIOClient.Socket;
+
+  constructor() {
+    this.initSocket();
+  }
+
+  private msgWrap(msg: Partial<IMessage>): IMessage {
+    const timestamp = Date.now();
+    const { from, to } = msg;
+    return {
+      ...msg,
+      cid: `${from}:${to}`,
+      msgId: `${from}:${to}:${timestamp}`,
+      timestamp,
+    } as IMessage;
+  }
+
+  private initSocket() {
+    this.socket = io.connect('http://127.0.0.1:7000/im', {
+      transports: ['websocket'],
+      query: {
+        uid: 'uid',
+      },
+    });
+
+    this.socket.on('connect', () => {
+      console.error(`socket connected ${this.socket.id}`);
+    });
+
+    this.socket.on('disconnect', () => {
+      console.log(`socket disconnected ${this.socket.id}`);
+    });
+
+    this.socket.on('message', (data: any) => {
+      console.log('message---', data);
+    });
+  }
+
+  private sendMsgBySocket(msg: IMessage) {
+    this.socket.emit('sendMessageToServer', msg, (data: any) => {
+      console.log(data);
+    });
+  }
+
+  public getMsgBySocket() {
+    this.socket.on('getSocket', (msg: IMessage) => {
+      console.log(msg);
+    });
+  }
+
   public sendMsg(msg: Partial<IMessage>) {
     const _msg = this.msgWrap(msg);
+    this.sendMsgBySocket(_msg);
     localMessages.insert(_msg);
   }
 
@@ -34,17 +87,6 @@ class MessageCenter {
 
   public msgChange$() {
     return localMessages.$;
-  }
-
-  private msgWrap(msg: Partial<IMessage>): IMessage {
-    const timestamp = Date.now();
-    const { from, to } = msg;
-    return {
-      ...msg,
-      cid: `${from}:${to}`,
-      msgId: `${from}:${to}:${timestamp}`,
-      timestamp,
-    } as IMessage;
   }
 }
 

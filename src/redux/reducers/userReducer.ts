@@ -31,6 +31,7 @@ export const {
 
 export const selectUser = (state: IRootState) => ({
   uid: state.user.uid,
+  access_token: state.user.access_token,
   avatarUrl: state.user.avatarUrl,
   nickname: state.user.nickname,
 });

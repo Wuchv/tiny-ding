@@ -51,7 +51,7 @@ export const messageSchema: RxJsonSchema<IMessage> = {
       type: 'string',
     },
     avatarUrl: {
-      type: 'string',
+      type: ['string', 'null'],
     },
     msgType: {
       type: 'string',

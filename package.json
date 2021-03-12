@@ -39,6 +39,7 @@
     "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.7",
     "@types/rx": "^4.1.2",
+    "@types/socket.io-client": "^1.4.35",
     "autoprefixer": "^10.1.0",
     "babel-loader": "^8.2.2",
     "babel-plugin-import": "^1.13.3",
@@ -77,6 +78,7 @@
     "@reduxjs/toolkit": "^1.5.0",
     "antd": "^4.9.4",
     "axios": "^0.21.1",
+    "bufferutil": "^4.0.3",
     "leveldown": "^5.6.0",
     "lodash": "^4.17.21",
     "pouchdb-adapter-leveldb": "^7.2.2",
@@ -88,7 +90,9 @@
     "redux-observable": "^1.2.0",
     "rxdb": "^9.12.1",
     "rxjs": "^6.6.3",
-    "socket.io-client": "^3.1.2",
-    "url": "^0.11.0"
+    "socket.io-client": "^2.4.0",
+    "spawn-sync": "^2.0.0",
+    "url": "^0.11.0",
+    "utf-8-validate": "^5.0.4"
   }
 }

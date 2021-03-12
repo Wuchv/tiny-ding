@@ -15,7 +15,7 @@ const epics = [loginEpic];
 
 const rootEpic: IEpic = (
   action$: ActionsObservable<PayloadAction<any>>,
-  store$: StateObservable<IRootState>,
+  store$: StateObservable<void>,
   dependencies: typeof API
 ) =>
   combineEpics(...epics)(action$, store$, dependencies).pipe(
@@ -28,7 +28,7 @@ const rootEpic: IEpic = (
 export type IEpic = Epic<
   PayloadAction<any>,
   PayloadAction<any>,
-  IRootState,
+  void,
   typeof API
 >;
 

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import store from './redux';
+import store from '@src/redux';
 
 // import { mockApi } from './mock';
 // import { isDev } from './constants';

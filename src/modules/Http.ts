@@ -60,11 +60,10 @@ export default class Http {
           : Promise.reject(response.data);
       },
       (error) => {
-        console.log(error.response.data);
+        let e = error.response.data.message;
         if (error.response) {
           switch (error.response.status) {
             case 401: //Unauthorized
-              message.error(error.response.data.message);
               if (!location.hash.includes('login')) {
                 delay(openLoginWindow, 2000);
               }
@@ -73,13 +72,13 @@ export default class Http {
             default:
               break;
           }
-          return Promise.reject(error.response.data);
         }
+        //断网处理
         if (!window.navigator.onLine) {
-          return Promise.reject({ statusCode: 400, message: '网络出现波动' });
-          //断网处理
+          e = '网络出现波动';
         }
-        return Promise.reject({ statusCode: 500, message: String(error) });
+        message.error(e);
+        return Promise.reject(error.response.data);
       }
     );
   }
