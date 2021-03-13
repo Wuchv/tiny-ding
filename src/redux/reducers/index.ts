@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import userReducer, { IUser } from './userReducer';
+import userReducer from './userReducer';
 import chatReducer, { IChat } from './chatReducer';
 
 export interface IRootState {

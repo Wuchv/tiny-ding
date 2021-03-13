@@ -79,6 +79,7 @@
     "antd": "^4.9.4",
     "axios": "^0.21.1",
     "bufferutil": "^4.0.3",
+    "core-js": "^3.9.1",
     "leveldown": "^5.6.0",
     "lodash": "^4.17.21",
     "pouchdb-adapter-leveldb": "^7.2.2",

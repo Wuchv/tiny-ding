@@ -4,7 +4,7 @@ import { ILoginRequest } from '../../services/login';
 import UserManager from '@src/modules/dbManager/UserManager';
 
 // @ts-ignore:Top-level 'await' expressions are only allowed when the 'module' option is set to 'esnext' or 'system', and the 'target' option is set to 'es2017' or higher.
-const initialState: Partial<IUser> = await UserManager.getOwnInfo();
+const initialState: Partial<IUser> = (await UserManager.getOwnInfo()) || {};
 
 const userSlice = createSlice({
   name: 'user',

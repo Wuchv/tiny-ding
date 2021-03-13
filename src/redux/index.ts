@@ -4,16 +4,23 @@ import rootEpic from './epics';
 import rootReducer from './reducers';
 import API from '../services';
 
-const epicMiddleware = createEpicMiddleware({
-  dependencies: API,
-});
+const getStoreAsync = async () => {
+  const epicMiddleware = createEpicMiddleware({
+    dependencies: API,
+  });
 
-const middleware = [...getDefaultMiddleware({ thunk: false }), epicMiddleware];
+  const middleware = [
+    ...getDefaultMiddleware({ thunk: false }),
+    epicMiddleware,
+  ];
 
-const store = configureStore({
-  reducer: rootReducer,
-  middleware,
-});
-epicMiddleware.run(rootEpic);
+  const store = configureStore({
+    reducer: rootReducer,
+    middleware,
+  });
+  epicMiddleware.run(rootEpic);
 
-export default store;
+  return store;
+};
+
+export default getStoreAsync;

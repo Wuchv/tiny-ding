@@ -2,7 +2,7 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import store from '@src/redux';
+import getStoreAsync from '@src/redux';
 
 // import { mockApi } from './mock';
 // import { isDev } from './constants';
@@ -16,14 +16,16 @@ import { Main } from './pages/Main';
 
 const $root: HTMLElement = document.getElementById('root') || null;
 
-render(
-  <Provider store={store}>
-    <HashRouter>
-      <Switch>
-        <Route path="/login" component={Login}></Route>
-        <Route path="/main" component={Main}></Route>
-      </Switch>
-    </HashRouter>
-  </Provider>,
-  $root
-);
+getStoreAsync().then((store) => {
+  render(
+    <Provider store={store}>
+      <HashRouter>
+        <Switch>
+          <Route path="/login" component={Login}></Route>
+          <Route path="/main" component={Main}></Route>
+        </Switch>
+      </HashRouter>
+    </Provider>,
+    $root
+  );
+});

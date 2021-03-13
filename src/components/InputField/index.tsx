@@ -39,9 +39,9 @@ export const InputField: React.FunctionComponent<IInputField> = React.memo(
 
     const sendMessage = React.useCallback(() => {
       MessageCenter.sendMsg({
-        from: 'uid',
+        from: uid,
         to: currentTo,
-        sender: 'nickname',
+        sender: nickname || uid,
         avatarUrl,
         msgType: EMsgType.TEXT,
         content: textAreaContent,

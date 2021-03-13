@@ -40,6 +40,7 @@ class MessageCenter {
 
   private initSocket() {
     this.socket = io.connect('http://127.0.0.1:7000/im', {
+      reconnectionAttempts: 5,
       transports: ['websocket'],
       query: {
         uid: 'uid',
