@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Input, Button } from 'antd';
-import MessageCenter, { EMsgType } from '@src/modules/MessageCenter';
+import MessageCenter from '@src/modules/MessageCenter';
 
 import { useReduxData } from '@src/hooks/useRedux';
 
@@ -13,29 +13,16 @@ interface IInputField {}
 export const InputField: React.FunctionComponent<IInputField> = React.memo(
   () => {
     const { uid, currentTo, nickname, avatarUrl } = useReduxData()[1];
-    const InputFieldRef: React.RefObject<HTMLDivElement> = React.useRef(null);
     const [textAreaContent, setTextAreaContent] = React.useState<string>('');
 
-    React.useEffect(() => {
-      if (InputFieldRef.current) {
-        const dragHandler = (e: DragEvent) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const files = e.dataTransfer.files;
-          if (files.length > 0) {
-            console.log(files);
-          }
-        };
-        InputFieldRef.current.addEventListener('drop', dragHandler);
-        InputFieldRef.current.addEventListener('dragover', (e: DragEvent) => {
-          e.preventDefault();
-          e.stopPropagation();
-        });
-
-        return () =>
-          InputFieldRef.current.removeEventListener('drop', dragHandler);
+    const fileDrop = React.useCallback((e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        console.log(files);
       }
-    }, [InputFieldRef.current]);
+    }, []);
 
     const sendMessage = React.useCallback(() => {
       MessageCenter.sendMsg({
@@ -50,7 +37,7 @@ export const InputField: React.FunctionComponent<IInputField> = React.memo(
     }, [textAreaContent]);
 
     return (
-      <div ref={InputFieldRef} className="input-field-container">
+      <div className="input-field-container">
         <div className="tool-container">工具栏</div>
         <Input.TextArea
           className="textarea"
@@ -58,6 +45,11 @@ export const InputField: React.FunctionComponent<IInputField> = React.memo(
           autoSize={{ minRows: 3, maxRows: 3 }}
           value={textAreaContent}
           onChange={(e) => setTextAreaContent(e.currentTarget.value)}
+          onDrop={fileDrop}
+          onDragOver={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
         />
         <div className="submit-container">
           <Button

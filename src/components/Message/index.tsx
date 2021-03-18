@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IMessage, EMsgType } from '@src/modules/MessageCenter';
+import { EMsgType } from '@src/modules/MessageCenter';
 import { useReduxData } from '@src/hooks/useRedux';
 import { resolveTimestamp } from '@src/utils';
 import { Avatar } from '@src/components/Avatar';

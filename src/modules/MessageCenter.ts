@@ -1,21 +1,10 @@
 import * as io from 'socket.io-client';
+import { fromEvent, Observable } from 'rxjs';
 
 export enum EMsgType {
   TEXT = 'text',
   IMAGE = 'image',
   FILE = 'file',
-}
-
-export interface IMessage {
-  msgId: string;
-  cid: string;
-  from: string;
-  to: string;
-  sender: string;
-  avatarUrl: string;
-  msgType: EMsgType;
-  content: string;
-  timestamp: number;
 }
 
 const localMessages = window.$client.localDatabase.messages;
@@ -47,17 +36,13 @@ class MessageCenter {
       },
     });
 
-    this.socket.on('connect', () => {
-      console.error(`socket connected ${this.socket.id}`);
-    });
+    // this.socket.on('connect', () => {
+    //   console.error(`socket connected ${this.socket.id}`);
+    // });
 
-    this.socket.on('disconnect', () => {
-      console.log(`socket disconnected ${this.socket.id}`);
-    });
-
-    this.socket.on('message', (data: any) => {
-      console.log('message---', data);
-    });
+    // this.socket.on('disconnect', () => {
+    //   console.log(`socket disconnected ${this.socket.id}`);
+    // });
   }
 
   private sendMsgBySocket(msg: IMessage) {
@@ -66,10 +51,12 @@ class MessageCenter {
     });
   }
 
-  public getMsgBySocket() {
-    this.socket.on('getSocket', (msg: IMessage) => {
-      console.log(msg);
-    });
+  public msgSource() {
+    const msgSource$: Observable<IMessage> = fromEvent(
+      this.socket,
+      'obtainMsgFromServer'
+    );
+    return msgSource$;
   }
 
   public sendMsg(msg: Partial<IMessage>) {

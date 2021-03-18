@@ -1,5 +1,5 @@
 import * as React from 'react';
-import MessageCenter, { IMessage } from '@src/modules/MessageCenter';
+import MessageCenter from '@src/modules/MessageCenter';
 
 import { Message } from '@src/components/Message';
 
