@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Input, Button } from 'antd';
-import MessageCenter from '@src/modules/MessageCenter';
+import MessageCenter, { EMsgType } from '@src/modules/MessageCenter';
 
 import { useReduxData } from '@src/hooks/useRedux';
 
@@ -26,8 +26,8 @@ export const InputField: React.FunctionComponent<IInputField> = React.memo(
 
     const sendMessage = React.useCallback(() => {
       MessageCenter.sendMsg({
-        from: uid,
-        to: currentTo,
+        fromId: uid,
+        toId: currentTo,
         sender: nickname || uid,
         avatarUrl,
         msgType: EMsgType.TEXT,

@@ -15,7 +15,7 @@ const TextMessage: React.FunctionComponent<Partial<IMessage>> = React.memo(
 );
 
 export const Message: React.FunctionComponent<IMessage> = React.memo(
-  ({ msgId, msgType, from, sender, avatarUrl, timestamp, content }) => {
+  ({ msgId, msgType, fromId, sender, avatarUrl, timestamp, content }) => {
     const [, { uid }] = useReduxData();
 
     const MessageContent: JSX.Element = React.useMemo(() => {
@@ -37,7 +37,7 @@ export const Message: React.FunctionComponent<IMessage> = React.memo(
     }, [timestamp]);
 
     return (
-      <div className={`message-container ${uid === from ? 'rt' : ''}`}>
+      <div className={`message-container ${uid === fromId ? 'rt' : ''}`}>
         <Avatar text={sender} src={avatarUrl} />
         <div className="message-body">
           <div className="message-meta">

@@ -41,10 +41,10 @@ export const messageSchema: RxJsonSchema<IMessage> = {
     cid: {
       type: 'string',
     },
-    from: {
+    fromId: {
       type: 'string',
     },
-    to: {
+    toId: {
       type: 'string',
     },
     sender: {
@@ -66,8 +66,8 @@ export const messageSchema: RxJsonSchema<IMessage> = {
   required: [
     'msgId',
     'cid',
-    'from',
-    'to',
+    'fromId',
+    'toId',
     'msgType',
     'sender',
     'content',

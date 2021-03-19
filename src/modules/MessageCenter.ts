@@ -1,5 +1,8 @@
 import * as io from 'socket.io-client';
 import { fromEvent, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { message } from 'antd';
+import UserManager from './dbManager/UserManager';
 
 export enum EMsgType {
   TEXT = 'text',
@@ -18,43 +21,53 @@ class MessageCenter {
 
   private msgWrap(msg: Partial<IMessage>): IMessage {
     const timestamp = Date.now();
-    const { from, to } = msg;
+    const { fromId, toId } = msg;
     return {
       ...msg,
-      cid: `${from}:${to}`,
-      msgId: `${from}:${to}:${timestamp}`,
+      cid: `${fromId}:${toId}`,
+      msgId: `${fromId}:${toId}:${timestamp}`,
       timestamp,
     } as IMessage;
   }
 
-  private initSocket() {
-    this.socket = io.connect('http://127.0.0.1:7000/im', {
-      reconnectionAttempts: 5,
+  private async initSocket() {
+    const own = await UserManager.getOwnInfo();
+    this.socket = io.connect('ws://127.0.0.1:7000/im', {
       transports: ['websocket'],
       query: {
-        uid: 'uid',
+        uid: own.uid,
       },
     });
 
-    // this.socket.on('connect', () => {
-    //   console.error(`socket connected ${this.socket.id}`);
-    // });
+    this.socket.on('connect', () => {
+      console.log(`socket connected ${this.socket.id}`);
+    });
 
-    // this.socket.on('disconnect', () => {
-    //   console.log(`socket disconnected ${this.socket.id}`);
-    // });
+    this.socket.on('disconnect', () => {
+      this.socket.disconnect();
+      console.log(`socket disconnected ${this.socket.id}`);
+    });
+
+    this.socket.on('throwSendMessageError', (e: Error) => {
+      message.error(e);
+    });
   }
 
   private sendMsgBySocket(msg: IMessage) {
     this.socket.emit('sendMessageToServer', msg, (data: any) => {
-      console.log(data);
+      console.log('sendMessageToServer', data);
     });
   }
 
   public msgSource() {
     const msgSource$: Observable<IMessage> = fromEvent(
       this.socket,
-      'obtainMsgFromServer'
+      'obtainMessageFromServer'
+    ).pipe(
+      map((msg: IMessage) => {
+        localMessages.insert(msg);
+        return msg;
+      })
     );
     return msgSource$;
   }
@@ -62,7 +75,7 @@ class MessageCenter {
   public sendMsg(msg: Partial<IMessage>) {
     const _msg = this.msgWrap(msg);
     this.sendMsgBySocket(_msg);
-    localMessages.insert(_msg);
+    // localMessages.insert(_msg);
   }
 
   public async filterMsg(

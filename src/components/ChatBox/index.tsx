@@ -22,6 +22,10 @@ export const ChatBox: React.FunctionComponent<IChatBox> = React.memo(() => {
       const msgList = docs.map((doc) => doc.toJSON());
       setMsgList(msgList);
     });
+    const msgSource$ = MessageCenter.msgSource();
+    msgSource$.subscribe((msg) => {
+      console.log(msg);
+    });
   }, []);
 
   return (

@@ -15,8 +15,8 @@ declare enum EMsgType {
 declare interface IMessage {
   msgId: string;
   cid: string;
-  from: string;
-  to: string;
+  fromId: string;
+  toId: string;
   sender: string;
   avatarUrl: string;
   msgType: EMsgType;
