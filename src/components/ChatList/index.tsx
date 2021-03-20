@@ -3,40 +3,33 @@ import { List } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { chooseChatPartnerAction } from '@src/redux/reducers/chatReducer';
+import ConversationManager from '@src/modules/dbManager/ConversationManager';
 
 import { Avatar } from '@src/components/Avatar';
 
 import './style.less';
+import { useReduxData } from '@src/hooks/useRedux';
 
 interface IChatList {}
 
 export const ChatList: React.FunctionComponent<IChatList> = React.memo(() => {
-  const dispatch = useDispatch();
+  const [dispatch, { currentCid }] = useReduxData();
+  const [chatList, setChatList] = React.useState<IConversation[]>([]);
 
-  const data = [
-    {
-      title: 'Ant Design Title 1',
-      subtitle: 'subtitle',
-      avatarUrl: '',
-    },
-    {
-      title: 'Ant Design Title 2',
-      subtitle: 'subtitle',
-      avatarUrl: '',
-    },
-    {
-      title: 'Ant Design Title 3',
-      subtitle: 'subtitle',
-      avatarUrl: '',
-    },
-  ];
+  React.useEffect(() => {
+    ConversationManager.getAllDocuments().then((res) =>
+      setChatList(res as IConversation[])
+    );
+  }, []);
 
   const handleChooseChatPartner = React.useCallback(
-    (chatPartner) =>
+    (conversation: IConversation) =>
       dispatch(
         chooseChatPartnerAction({
-          currentConversationTitle: chatPartner.title,
-          currentConversationAvatar: chatPartner.avatarUrl,
+          currentCid: conversation.cid,
+          currentTo: conversation.toId,
+          currentConversationTitle: conversation.title,
+          currentConversationAvatar: conversation.avatarUrl,
         })
       ),
     []
@@ -46,16 +39,23 @@ export const ChatList: React.FunctionComponent<IChatList> = React.memo(() => {
     <List
       className="list"
       itemLayout="horizontal"
-      dataSource={data}
-      renderItem={(item) => (
-        <List.Item onClick={() => handleChooseChatPartner(item)}>
+      dataSource={chatList}
+      renderItem={(conversation: IConversation) => (
+        <List.Item
+          className={`${conversation.cid === currentCid ? 'active' : ''}`}
+          onClick={() => handleChooseChatPartner(conversation)}
+        >
           <CloseOutlined />
           <List.Item.Meta
             avatar={
-              <Avatar text={item.title} src={item.avatarUrl} size="large" />
+              <Avatar
+                text={conversation.title}
+                src={conversation.avatarUrl}
+                size="large"
+              />
             }
-            title={item.title}
-            description={item.subtitle}
+            title={conversation.title}
+            description={conversation.subtitle}
           />
         </List.Item>
       )}

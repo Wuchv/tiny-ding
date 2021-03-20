@@ -4,10 +4,15 @@
 
     .ant-list-item {
         padding: 12px 6px;
+        margin: 4px 0;
         border: none;
         border-radius: 6px;
         user-select: none;
         cursor: pointer;
+
+        &.active {
+            background: @gray-common-level4;
+        }
 
         .anticon-close {
             visibility: hidden;

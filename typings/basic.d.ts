@@ -1,6 +1,6 @@
 declare interface IUser {
   uid: string;
-  access_token: string;
+  access_token?: string;
   account: string;
   avatarUrl: string;
   nickname: string;
@@ -26,6 +26,7 @@ declare interface IMessage {
 
 declare interface IConversation {
   cid: string;
+  toId: string;
   title: string;
   subtitle?: string;
   avatarUrl?: string;

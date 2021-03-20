@@ -86,6 +86,9 @@ export const conversationSchema: RxJsonSchema<IConversation> = {
       type: 'string',
       primary: true,
     },
+    toId: {
+      type: 'string',
+    },
     title: {
       type: 'string',
     },
@@ -96,5 +99,5 @@ export const conversationSchema: RxJsonSchema<IConversation> = {
       type: 'string',
     },
   },
-  required: ['cid', 'title'],
+  required: ['cid', 'toId', 'title'],
 };

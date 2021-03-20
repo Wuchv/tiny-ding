@@ -53,12 +53,10 @@ export default class Http {
   //响应拦截器
   private setResponseInterceptor() {
     this.axiosInstance.interceptors.response.use(
-      (response: AxiosResponse<any>): any => {
-        console.log(response);
-        return response.status === 200
+      (response: AxiosResponse<any>): any =>
+        response.status === 200
           ? Promise.resolve(response.data)
-          : Promise.reject(response.data);
-      },
+          : Promise.reject(response.data),
       (error) => {
         let e = error.response.data.message;
         if (error.response) {

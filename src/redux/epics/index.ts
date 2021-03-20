@@ -6,7 +6,7 @@ import {
 } from 'redux-observable';
 import { catchError } from 'rxjs/operators';
 import { PayloadAction } from '@reduxjs/toolkit';
-import API from '../../services';
+import * as API from '../../services';
 import { IRootState } from '../reducers';
 import { loginEpic } from './userEpic';
 // import { chooseEpic } from './chatEpic';

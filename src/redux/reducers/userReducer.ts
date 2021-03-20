@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IRootState } from './index';
-import { ILoginRequest } from '../../services/login';
+import { ILoginRequest } from '../../services/user';
 import UserManager from '@src/modules/dbManager/UserManager';
 
 // @ts-ignore:Top-level 'await' expressions are only allowed when the 'module' option is set to 'esnext' or 'system', and the 'target' option is set to 'es2017' or higher.
