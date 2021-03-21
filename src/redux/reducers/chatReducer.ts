@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import ConversationManager from '@src/modules/dbManager/ConversationManager';
 import { IRootState } from './index';
 
 export interface IChat {
@@ -7,13 +8,8 @@ export interface IChat {
   currentConversationTitle: string;
   currentConversationAvatar: string;
 }
-
-const initialState: IChat = {
-  currentTo: '',
-  currentCid: '',
-  currentConversationTitle: '',
-  currentConversationAvatar: '',
-};
+// @ts-ignore
+const initialState: IChat = await ConversationManager.getLatestConversation();
 
 const chatSlice = createSlice({
   name: 'chat',

@@ -1,8 +1,8 @@
 import * as io from 'socket.io-client';
-import { fromEvent, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import { message } from 'antd';
 import UserManager from './dbManager/UserManager';
+import MessageManager from './dbManager/MessageManager';
 
 export enum EMsgType {
   TEXT = 'text',
@@ -10,12 +10,22 @@ export enum EMsgType {
   FILE = 'file',
 }
 
-const localMessages = window.$client.localDatabase.messages;
+export enum EMessageEvent {
+  SEND = 'send',
+  OBTAIN = 'obtain',
+}
+
+export interface IMessageEvent {
+  action: EMessageEvent;
+  message: IMessage;
+}
 
 class MessageCenter {
   public socket: SocketIOClient.Socket;
+  public msgEvent$: Subject<IMessageEvent>;
 
   constructor() {
+    this.msgEvent$ = new Subject();
     this.initSocket();
   }
 
@@ -28,6 +38,16 @@ class MessageCenter {
       msgId: `${fromId}:${toId}:${timestamp}`,
       timestamp,
     } as IMessage;
+  }
+
+  public sendMsg(msg: Partial<IMessage>) {
+    const _msg = this.msgWrap(msg);
+    // this.socket.emit('sendMessageToServer', msg);
+    MessageManager.insert(_msg);
+    this.msgEvent$.next({
+      action: EMessageEvent.SEND,
+      message: msg as IMessage,
+    });
   }
 
   private async initSocket() {
@@ -51,43 +71,11 @@ class MessageCenter {
     this.socket.on('throwSendMessageError', (e: Error) => {
       message.error(e);
     });
-  }
 
-  private sendMsgBySocket(msg: IMessage) {
-    this.socket.emit('sendMessageToServer', msg, (data: any) => {
-      console.log('sendMessageToServer', data);
+    this.socket.on('obtainMessageFromServer', (message: IMessage) => {
+      MessageManager.insert(message);
+      this.msgEvent$.next({ action: EMessageEvent.OBTAIN, message });
     });
-  }
-
-  public msgSource() {
-    const msgSource$: Observable<IMessage> = fromEvent(
-      this.socket,
-      'obtainMessageFromServer'
-    ).pipe(
-      map((msg: IMessage) => {
-        localMessages.insert(msg);
-        return msg;
-      })
-    );
-    return msgSource$;
-  }
-
-  public sendMsg(msg: Partial<IMessage>) {
-    const _msg = this.msgWrap(msg);
-    this.sendMsgBySocket(_msg);
-    // localMessages.insert(_msg);
-  }
-
-  public async filterMsg(
-    from?: string | null,
-    to?: string | null,
-    limit: number = 20
-  ) {
-    return localMessages.find().exec();
-  }
-
-  public msgChange$() {
-    return localMessages.$;
   }
 }
 

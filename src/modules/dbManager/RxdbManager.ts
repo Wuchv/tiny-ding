@@ -10,8 +10,16 @@ class RxdbManager {
     return this.collection;
   }
 
+  public getCollection$() {
+    return this.collection.$;
+  }
+
   public async getAllDocuments(): Promise<RxDB.IDocument[]> {
     return (await this.collection.dump()).docs;
+  }
+
+  public async insert(doc: RxDB.IDocument): Promise<RxDB.IDocument> {
+    return await this.collection.insert(doc as any);
   }
 
   public async upsert(doc: RxDB.IDocument): Promise<RxDB.IDocument> {
