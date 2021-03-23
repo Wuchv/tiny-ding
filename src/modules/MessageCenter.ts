@@ -44,10 +44,10 @@ class MessageCenter {
     const _msg = this.msgWrap(msg);
     // this.socket.emit('sendMessageToServer', msg);
     MessageManager.insert(_msg);
-    this.msgEvent$.next({
-      action: EMessageEvent.SEND,
-      message: msg as IMessage,
-    });
+    // this.msgEvent$.next({
+    //   action: EMessageEvent.SEND,
+    //   message: msg as IMessage,
+    // });
   }
 
   private async initSocket() {
@@ -74,7 +74,7 @@ class MessageCenter {
 
     this.socket.on('obtainMessageFromServer', (message: IMessage) => {
       MessageManager.insert(message);
-      this.msgEvent$.next({ action: EMessageEvent.OBTAIN, message });
+      // this.msgEvent$.next({ action: EMessageEvent.OBTAIN, message });
     });
   }
 }

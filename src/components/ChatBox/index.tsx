@@ -6,6 +6,7 @@ import './style.less';
 import { useReduxData } from '@src/hooks/useRedux';
 import MessageCenter, { EMessageEvent } from '@src/modules/MessageCenter';
 import { filter } from 'rxjs/operators';
+import { RxChangeEvent } from 'rxdb';
 
 interface IChatBox {}
 
@@ -24,14 +25,12 @@ export const ChatBox: React.FunctionComponent<IChatBox> = React.memo(() => {
 
   React.useEffect(() => {
     updateMsg();
-    const msgSub = MessageCenter.msgEvent$
+    const msgSub = MessageManager.insert$
       .pipe(
-        filter(
-          (event) =>
-            event.action === EMessageEvent.OBTAIN &&
-            event.message.fromId === uid &&
-            event.message.toId === currentTo
-        )
+        filter((changeEvent: RxChangeEvent) => {
+          const msg = changeEvent.rxDocument.toJSON();
+          return msg.fromId === uid && msg.toId === currentTo;
+        })
       )
       .subscribe(() => {
         updateMsg();

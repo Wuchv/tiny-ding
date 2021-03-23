@@ -1,3 +1,11 @@
+import { filter } from 'rxjs/operators';
+import { RxChangeEvent } from 'rxdb';
+
+enum EWriteOperation {
+  INSERT = 'INSERT',
+  UPDATE = 'UPDATE',
+  DELETE = 'DELETE',
+}
 class RxdbManager {
   protected localDatabase: RxDB.LocalDatabaseType;
   protected collection: valueOf<RxDB.ICollection>;
@@ -8,6 +16,24 @@ class RxdbManager {
 
   public getCollection() {
     return this.collection;
+  }
+
+  public get insert$() {
+    return this.collection.$.pipe(
+      filter(
+        (changeEvent: RxChangeEvent) =>
+          changeEvent.operation === EWriteOperation.INSERT
+      )
+    );
+  }
+
+  public get update$() {
+    return this.collection.$.pipe(
+      filter(
+        (changeEvent: RxChangeEvent) =>
+          changeEvent.operation === EWriteOperation.UPDATE
+      )
+    );
   }
 
   public getCollection$() {

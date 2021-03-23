@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Layout, Divider } from 'antd';
+import { useReduxData } from '@src/hooks/useRedux';
 
 import { Header } from '@src/components/Header';
 import { ChatList } from '@src/components/ChatList';
@@ -9,6 +10,14 @@ import { InputField } from '@src/components/InputField';
 import './Main.less';
 
 export const Main: React.FunctionComponent<unknown> = React.memo(() => {
+  const [, { uid, currentTo }] = useReduxData();
+  const [comMap, setComMap] = React.useState<any>({});
+
+  React.useEffect(() => {
+    setComMap({ ...comMap, [currentTo]: <ChatBox /> });
+    console.log(comMap);
+  }, [currentTo]);
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Header />
