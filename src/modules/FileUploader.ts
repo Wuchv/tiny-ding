@@ -1,15 +1,10 @@
 import OSS from 'ali-oss';
-
+import { ossOptions } from '../../ossConfig';
 class FileUploader {
   private client: OSS;
 
   constructor() {
-    this.client = new OSS({
-      region: 'oss-cn-hangzhou',
-      accessKeyId: 'LTAI5tApF7d4zdPs5nV6sYJs',
-      accessKeySecret: 'nl8tDSCTxBTdlETr728aTmMVjoPtZm',
-      bucket: 'tiny-ding',
-    });
+    this.client = new OSS(ossOptions);
   }
 
   public async putObject(file: File): NodeStyleReturn<OSS.PutObjectResult> {
