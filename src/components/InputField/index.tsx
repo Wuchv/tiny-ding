@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Input, Button } from 'antd';
+import { Input, Button, message } from 'antd';
 import MessageCenter, { EMsgType } from '@src/modules/MessageCenter';
-
+import FileUploader from '@src/modules/FileUploader';
 import { useReduxData } from '@src/hooks/useRedux';
 
 import './style.less';
@@ -15,26 +15,38 @@ export const InputField: React.FunctionComponent<IInputField> = React.memo(
     const { uid, currentTo, nickname, avatarUrl } = useReduxData()[1];
     const [textAreaContent, setTextAreaContent] = React.useState<string>('');
 
-    const fileDrop = React.useCallback((e) => {
+    const fileDrop = React.useCallback(async (e) => {
       e.preventDefault();
       e.stopPropagation();
       const files = e.dataTransfer.files;
       if (files.length > 0) {
-        console.log(files);
+        const file: File = files[0];
+        const [err, result] = await FileUploader.putObject(file);
+        if (err) {
+          message.error(err);
+          return;
+        }
+        let msgType = EMsgType.FILE;
+        if (file.type.includes('image')) {
+          msgType = EMsgType.IMAGE;
+        }
+        sendMessage(result.url, msgType);
       }
     }, []);
 
-    const sendMessage = React.useCallback(() => {
-      MessageCenter.sendMsg({
-        fromId: uid,
-        toId: currentTo,
-        sender: nickname || uid,
-        avatarUrl,
-        msgType: EMsgType.TEXT,
-        content: textAreaContent,
-      });
-      setTextAreaContent('');
-    }, [textAreaContent]);
+    const sendMessage = React.useCallback(
+      (content: string, msgType: EMsgType = EMsgType.TEXT) => {
+        MessageCenter.sendMsg({
+          fromId: uid,
+          toId: currentTo,
+          sender: nickname || uid,
+          avatarUrl,
+          msgType,
+          content,
+        });
+      },
+      []
+    );
 
     return (
       <div className="input-field-container">
@@ -55,7 +67,10 @@ export const InputField: React.FunctionComponent<IInputField> = React.memo(
           <Button
             type="primary"
             disabled={!textAreaContent}
-            onClick={() => sendMessage()}
+            onClick={() => {
+              sendMessage(textAreaContent);
+              setTextAreaContent('');
+            }}
           >
             发送
           </Button>

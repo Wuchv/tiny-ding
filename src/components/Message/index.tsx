@@ -8,6 +8,8 @@ import { Typography } from 'antd';
 
 import './style.less';
 
+// TODO: 编写下载图片并显示的组件
+
 const TextMessage: React.FunctionComponent<Partial<IMessage>> = React.memo(
   ({ content }) => {
     return <div className="text-massage">{content}</div>;

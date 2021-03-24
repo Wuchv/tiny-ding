@@ -16,6 +16,8 @@ declare global {
     $client: client;
   }
 
+  type NodeStyleReturn<T> = Promise<[string | Record<string, unknown>, T]>;
+
   namespace RxDB {
     type IDocument = IUser | IMessage | IConversation;
 
