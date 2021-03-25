@@ -62,6 +62,17 @@ export const messageSchema: RxJsonSchema<IMessage> = {
     timestamp: {
       type: 'number',
     },
+    attachment: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+        },
+        url: {
+          type: 'string',
+        },
+      },
+    },
   },
   required: [
     'msgId',

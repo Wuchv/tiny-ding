@@ -12,6 +12,11 @@ declare enum EMsgType {
   FILE = 'file',
 }
 
+declare interface IAttachment {
+  name: string;
+  url: string;
+}
+
 declare interface IMessage {
   msgId: string;
   cid: string;
@@ -21,6 +26,7 @@ declare interface IMessage {
   avatarUrl: string;
   msgType: EMsgType;
   content: string;
+  attachment?: IAttachment;
   timestamp: number;
 }
 

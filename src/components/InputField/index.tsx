@@ -21,21 +21,28 @@ export const InputField: React.FunctionComponent<IInputField> = React.memo(
       const files = e.dataTransfer.files;
       if (files.length > 0) {
         const file: File = files[0];
-        const [err, result] = await FileUploader.putObject(file);
+        const [err, result] = await FileUploader.putObject(
+          file,
+          `${uid}:${currentTo}:${Date.now()}`
+        );
         if (err) {
           message.error(err);
           return;
         }
-        let msgType = EMsgType.FILE;
         if (file.type.includes('image')) {
-          msgType = EMsgType.IMAGE;
+          sendMessage(result.url, EMsgType.IMAGE);
+        } else {
+          sendMessage(result.name, EMsgType.FILE, result);
         }
-        sendMessage(result.url, msgType);
       }
     }, []);
 
     const sendMessage = React.useCallback(
-      (content: string, msgType: EMsgType = EMsgType.TEXT) => {
+      (
+        content: string,
+        msgType: EMsgType = EMsgType.TEXT,
+        attachment?: IAttachment
+      ) => {
         MessageCenter.sendMsg({
           fromId: uid,
           toId: currentTo,
@@ -43,6 +50,7 @@ export const InputField: React.FunctionComponent<IInputField> = React.memo(
           avatarUrl,
           msgType,
           content,
+          attachment,
         });
       },
       []

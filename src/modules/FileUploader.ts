@@ -1,5 +1,6 @@
 import OSS from 'ali-oss';
 import { ossOptions } from '../../ossConfig';
+import md5 from 'md5';
 class FileUploader {
   private client: OSS;
 
@@ -7,15 +8,29 @@ class FileUploader {
     this.client = new OSS(ossOptions);
   }
 
-  public async putObject(file: File): NodeStyleReturn<OSS.PutObjectResult> {
-    let result: OSS.PutObjectResult = null;
+  public generateDownloadUrl(objectKey: string, filename: string): string {
+    const response = {
+      'content-disposition': `attachment; filename=${encodeURIComponent(
+        filename
+      )}`,
+    };
+    const url = this.client.signatureUrl(objectKey, { response });
+    return url;
+  }
+
+  public async putObject(
+    file: File,
+    salt: string
+  ): NodeStyleReturn<IAttachment> {
     let err = null;
+    const objectKey = md5(`${file.name}:${salt}`);
     try {
-      result = await this.client.put(file.name, file);
+      await this.client.put(objectKey, file);
     } catch (e) {
       err = e;
     }
-    return [err, result];
+    const url = this.generateDownloadUrl(objectKey, file.name);
+    return [err, { name: file.name, url }];
   }
 }
 

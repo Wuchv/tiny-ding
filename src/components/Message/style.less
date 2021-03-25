@@ -8,9 +8,14 @@
         .message-meta {
             display: flex;
             flex-direction: row-reverse;
+            margin-bottom: 3px;
         }
 
         .text-massage {
+            float: right;
+        }
+
+        .ant-image {
             float: right;
         }
     }
@@ -37,12 +42,14 @@
 }
 
 .text-massage {
-    display: inline-flex;
+    width: 100%;
     padding: 4px 8px;
     border-radius: 5px;
     background-color: @gray-common-level4;
+}
 
-    .ant-card-body {
-        padding: 0;
-    }
+.image-message {
+    border-radius: 5px;
+    border: 1px solid @gray-common-level4;
+    user-select: none;
 }
