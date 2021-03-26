@@ -19,20 +19,37 @@ const TextMessage: React.FunctionComponent<Partial<IMessage>> = React.memo(
 
 const ImageMessage: React.FunctionComponent<Partial<IMessage>> = React.memo(
   ({ content }) => {
-    //TODO:会实例化两个image对象，待优化；可能获取不到宽高，image图片加载是异步的
-    const img: HTMLImageElement = new Image();
-    img.src = content;
-    let aspectRatio = 1;
-    let width = 100;
-    if (img.width != 0 && img.height != 0) {
-      aspectRatio = img.width / img.height;
-      width = 351 * (aspectRatio > 1 ? 1 : aspectRatio);
-    }
+    const [imgBase64, setImgBase64] = React.useState<string>('');
+    const [width, setWidth] = React.useState<number>(100);
+
+    React.useEffect(() => {
+      //获取到image的宽高，然后转成base64，防止请求两次图片
+      let canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      const img: HTMLImageElement = new Image();
+      img.src = content;
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        context.drawImage(img, 0, 0);
+        const URLData = canvas.toDataURL('image/png');
+        if (img.width && img.height) {
+          const aspectRatio = img.width / img.height;
+          setWidth(351 * (aspectRatio > 1 ? 1 : aspectRatio));
+          setImgBase64(URLData);
+        }
+        canvas = null;
+      };
+      img.onerror = () => {
+        canvas = null;
+      };
+    }, [content]);
+
     return (
       <AntdImage
         className="image-message"
         width={width}
-        src={content}
+        src={imgBase64}
         fallback={errorImg}
       />
     );
