@@ -15,6 +15,7 @@ declare enum EMsgType {
 declare interface IAttachment {
   name: string;
   url: string;
+  cache?: any;
 }
 
 declare interface IMessage {

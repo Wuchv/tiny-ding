@@ -71,6 +71,17 @@ export const messageSchema: RxJsonSchema<IMessage> = {
         url: {
           type: 'string',
         },
+        cache: {
+          type: [
+            'array',
+            'boolean',
+            'integer',
+            'number',
+            'null',
+            'object',
+            'string',
+          ],
+        },
       },
     },
   },
