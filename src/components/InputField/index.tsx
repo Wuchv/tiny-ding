@@ -10,7 +10,7 @@ import './style.less';
 
 interface IInputField {}
 
-export const InputField: React.FunctionComponent<IInputField> = React.memo(
+export const InputField: React.FC<IInputField> = React.memo(
   () => {
     const { uid, currentTo, nickname, avatarUrl } = useReduxData()[1];
     const [textAreaContent, setTextAreaContent] = React.useState<string>('');

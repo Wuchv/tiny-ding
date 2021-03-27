@@ -10,7 +10,7 @@ import './style.less';
 
 interface IHeader {}
 
-export const Header: React.FunctionComponent<IHeader> = React.memo(() => {
+export const Header: React.FC<IHeader> = React.memo(() => {
   const {
     nickname,
     avatarUrl,

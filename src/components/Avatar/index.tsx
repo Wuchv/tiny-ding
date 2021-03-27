@@ -9,7 +9,7 @@ interface IAvatar {
   text?: string;
 }
 
-export const Avatar: React.FunctionComponent<IAvatar> = React.memo(
+export const Avatar: React.FC<IAvatar> = React.memo(
   ({ size = 'middle', src, text }) => {
     const avatarComponent = React.useMemo(() => {
       let textInterception = text;

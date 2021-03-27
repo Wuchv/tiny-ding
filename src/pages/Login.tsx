@@ -7,7 +7,7 @@ import { useReduxData } from '@src/hooks/useRedux';
 
 import './Login.less';
 
-export const Login: React.FunctionComponent<unknown> = React.memo(() => {
+export const Login: React.FC<unknown> = React.memo(() => {
   const [dispatch, { uid, access_token }] = useReduxData();
   const [account, setAccount] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');

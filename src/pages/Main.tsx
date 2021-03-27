@@ -10,7 +10,7 @@ import { InputField } from '@src/components/InputField';
 import './Main.less';
 import { openLoginWindow } from '@src/utils';
 
-export const Main: React.FunctionComponent<unknown> = React.memo(() => {
+export const Main: React.FC<unknown> = React.memo(() => {
   const [, { uid, currentTo }] = useReduxData();
   const [comMap, setComMap] = React.useState<any>({});
 
@@ -19,7 +19,7 @@ export const Main: React.FunctionComponent<unknown> = React.memo(() => {
       openLoginWindow();
     }
   }, []);
-  
+
   React.useEffect(() => {
     setComMap({ ...comMap, [currentTo]: <ChatBox /> });
     console.log(comMap);

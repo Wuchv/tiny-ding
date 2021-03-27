@@ -12,7 +12,7 @@ import { useReduxData } from '@src/hooks/useRedux';
 
 interface IChatList {}
 
-export const ChatList: React.FunctionComponent<IChatList> = React.memo(() => {
+export const ChatList: React.FC<IChatList> = React.memo(() => {
   const [dispatch, { currentCid }] = useReduxData();
   const [chatList, setChatList] = React.useState<IConversation[]>([]);
 

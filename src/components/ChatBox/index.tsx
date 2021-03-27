@@ -10,7 +10,7 @@ import { RxChangeEvent } from 'rxdb';
 
 interface IChatBox {}
 
-export const ChatBox: React.FunctionComponent<IChatBox> = React.memo(() => {
+export const ChatBox: React.FC<IChatBox> = React.memo(() => {
   const chatBoxRef: React.RefObject<HTMLDivElement> = React.useRef(null);
   const [, { uid, currentTo }] = useReduxData();
   const [msgList, setMsgList] = React.useState<IMessage[]>([]);
