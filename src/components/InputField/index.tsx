@@ -5,6 +5,8 @@ import FileUploader from '@src/modules/FileUploader';
 import { useReduxData } from '@src/hooks/useRedux';
 import { fileToBase64 } from '@src/utils';
 
+import { Toolbar } from '@src/components/Toolbar';
+
 import './style.less';
 
 interface IInputField {}
@@ -29,11 +31,11 @@ export const InputField: React.FC<IInputField> = React.memo(() => {
       }
       if (file.type.includes('image')) {
         const ob$ = fileToBase64(file);
-        ob$.subscribe((base64) => {
+        ob$.subscribe((data: Rxjs.INext) => {
           sendMessage(result.url, EMsgType.IMAGE, {
             name: file.name,
             url: result.url,
-            cache: base64,
+            cache: data.payload,
           });
         });
       } else {
@@ -63,7 +65,7 @@ export const InputField: React.FC<IInputField> = React.memo(() => {
 
   return (
     <div className="input-field-container">
-      <div className="tool-container">工具栏</div>
+      <Toolbar />
       <Input.TextArea
         className="textarea"
         placeholder="请输入消息"

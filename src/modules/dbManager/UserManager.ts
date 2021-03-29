@@ -1,9 +1,11 @@
+import { getAllUsers } from '@src/services';
 import RxdbManager from './RxdbManager';
 
 class UserManage extends RxdbManager {
   constructor() {
     super();
     this.collection = this.localDatabase.users;
+    // getAllUsers().then((res) => this.bulkInsert(res));
   }
 
   public async getOwnInfo(): Promise<IUser> {

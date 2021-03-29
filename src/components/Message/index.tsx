@@ -18,7 +18,7 @@ const ImageMessage: React.FC<Partial<IMessage>> = React.memo(
   ({ content, attachment }) => {
     const [imgBase64, setImgBase64] = React.useState<string>('');
     const [width, setWidth] = React.useState<number>(100);
-
+    
     React.useEffect(() => {
       let imgSub: Subscription = null;
       if (attachment.cache) {

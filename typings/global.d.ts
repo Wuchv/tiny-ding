@@ -30,6 +30,13 @@ declare global {
     }
   }
 
+  namespace Rxjs {
+    interface INext {
+      action: string;
+      payload: any;
+    }
+  }
+
   type valueOf<T> = T[keyof T];
 
   type PromiseReturnType<
