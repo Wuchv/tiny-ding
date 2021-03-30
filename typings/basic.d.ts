@@ -38,3 +38,5 @@ declare interface IConversation {
   subtitle?: string;
   avatarUrl?: string;
 }
+
+declare module 'recorder-core';
