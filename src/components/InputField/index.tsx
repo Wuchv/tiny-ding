@@ -3,7 +3,7 @@ import { Input, Button, message } from 'antd';
 import MessageCenter, { EMsgType } from '@src/modules/MessageCenter';
 import FileUploader from '@src/modules/FileUploader';
 import { useReduxData } from '@src/hooks/useRedux';
-import { fileToBase64 } from '@src/utils';
+import { fileToBase64 } from '@src/modules/RxSubject';
 
 import { Toolbar } from '@src/components/Toolbar';
 
@@ -31,11 +31,11 @@ export const InputField: React.FC<IInputField> = React.memo(() => {
       }
       if (file.type.includes('image')) {
         const ob$ = fileToBase64(file);
-        ob$.subscribe((data: Rxjs.INext) => {
+        ob$.subscribe(({ payload }) => {
           sendMessage(result.url, EMsgType.IMAGE, {
             name: file.name,
             url: result.url,
-            cache: data.payload,
+            cache: payload,
           });
         });
       } else {

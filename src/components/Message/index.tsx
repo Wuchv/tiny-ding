@@ -2,7 +2,8 @@ import * as React from 'react';
 import { Subscription } from 'rxjs';
 import { EMsgType } from '@src/modules/MessageCenter';
 import { useReduxData } from '@src/hooks/useRedux';
-import { resolveTimestamp, imageToBase64 } from '@src/utils';
+import { resolveTimestamp } from '@src/utils';
+import { imageToBase64 } from '@src/modules/RxSubject';
 import { Avatar } from '@src/components/Avatar';
 import { errorImg } from '@src/public/base64Img';
 
@@ -18,7 +19,7 @@ const ImageMessage: React.FC<Partial<IMessage>> = React.memo(
   ({ content, attachment }) => {
     const [imgBase64, setImgBase64] = React.useState<string>('');
     const [width, setWidth] = React.useState<number>(100);
-    
+
     React.useEffect(() => {
       let imgSub: Subscription = null;
       if (attachment.cache) {
@@ -36,7 +37,8 @@ const ImageMessage: React.FC<Partial<IMessage>> = React.memo(
         };
       } else {
         const img$ = imageToBase64(content);
-        imgSub = img$.subscribe(({ base64, width, height }) => {
+        imgSub = img$.subscribe(({ payload }) => {
+          const { base64, width, height } = payload;
           if (width && height) {
             const aspectRatio = width / height;
             setWidth(351 * (aspectRatio > 1 ? 1 : aspectRatio));

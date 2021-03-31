@@ -33,7 +33,7 @@ declare global {
   namespace Rxjs {
     interface INext {
       action: string;
-      payload: any;
+      payload?: any;
     }
   }
 
