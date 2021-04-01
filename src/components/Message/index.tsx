@@ -66,6 +66,25 @@ const FileMessage: React.FC<Partial<IMessage>> = React.memo(({ content }) => {
   return <div>file:{content}</div>;
 });
 
+const AudioMessage: React.FC<Partial<IMessage>> = React.memo(
+  ({ content, attachment }) => {
+    const audioRef = React.useRef<HTMLAudioElement>(null);
+    React.useEffect(() => {
+      if (audioRef.current) {
+        // const audioURL = (window.URL || webkitURL).createObjectURL(
+        //   attachment.cache
+        // );
+        audioRef.current.src = attachment.cache;
+      }
+    }, [audioRef]);
+    return (
+      <div>
+        <audio ref={audioRef} controls />
+      </div>
+    );
+  }
+);
+
 export const Message: React.FC<IMessage> = React.memo((msg) => {
   const {
     msgId,
@@ -87,6 +106,8 @@ export const Message: React.FC<IMessage> = React.memo((msg) => {
       result = <ImageMessage content={content} attachment={attachment} />;
     } else if (msgType === EMsgType.FILE) {
       result = <FileMessage content={content} />;
+    } else if (msgType === EMsgType.AUDIO) {
+      result = <AudioMessage content={content} attachment={attachment} />;
     }
     return result;
   }, [msgId, msgType, content]);

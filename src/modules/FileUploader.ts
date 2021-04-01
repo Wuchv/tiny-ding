@@ -32,6 +32,21 @@ class FileUploader {
     const url = this.generateDownloadUrl(objectKey, file.name);
     return [err, { name: file.name, url }];
   }
+
+  public async putObjectBlob(
+    blob: Blob,
+    salt: string
+  ): NodeStyleReturn<IAttachment> {
+    let err = null;
+    const objectKey = md5(salt);
+    try {
+      await this.client.put(objectKey, blob);
+    } catch (e) {
+      err = e;
+    }
+    const url = this.generateDownloadUrl(objectKey, `${salt}-audio`);
+    return [err, { name: `${salt}-audio`, url }];
+  }
 }
 
 export default new FileUploader();

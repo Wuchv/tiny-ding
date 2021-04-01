@@ -65,7 +65,7 @@ export const InputField: React.FC<IInputField> = React.memo(() => {
 
   return (
     <div className="input-field-container">
-      <Toolbar />
+      <Toolbar sendMessage={sendMessage} uid={uid} currentTo={currentTo} />
       <Input.TextArea
         className="textarea"
         placeholder="请输入消息"

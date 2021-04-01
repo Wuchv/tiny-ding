@@ -8,6 +8,7 @@ export enum EMsgType {
   TEXT = 'text',
   IMAGE = 'image',
   FILE = 'file',
+  AUDIO = 'audio',
 }
 
 export enum EMessageEvent {

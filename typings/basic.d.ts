@@ -10,10 +10,11 @@ declare enum EMsgType {
   TEXT = 'text',
   IMAGE = 'image',
   FILE = 'file',
+  AUDIO = 'audio',
 }
 
 declare interface IAttachment {
-  name: string;
+  name?: string;
   url: string;
   cache?: any;
 }
