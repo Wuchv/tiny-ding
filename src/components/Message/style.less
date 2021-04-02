@@ -11,11 +11,9 @@
             margin-bottom: 3px;
         }
 
-        .text-massage {
-            float: right;
-        }
-
-        .ant-image {
+        .text-massage,
+        .ant-image,
+        .audio-message {
             float: right;
         }
     }
@@ -52,4 +50,25 @@
     border-radius: 5px;
     border: 1px solid @gray-common-level4;
     user-select: none;
+}
+
+.audio-message {
+    display: flex;
+    align-items: center;
+    width: 210px;
+    font-size: 16px;
+    padding-left: 10px;
+    background-color: @gray-common-level4;
+    border-radius: 8px;
+
+    & .anticon {
+        cursor: pointer;
+        color: @gray-common-level1;
+        font-size: 20px;
+
+        &:active,
+        &:hover {
+            color: @primary-color;
+        }
+    }
 }

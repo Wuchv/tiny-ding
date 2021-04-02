@@ -2,24 +2,30 @@ import * as React from 'react';
 import { notification } from 'antd';
 import { AudioOutlined } from '@ant-design/icons';
 import { filter } from 'rxjs/operators';
-import { generalSubject$, ERxEvent } from '@src/modules/RxSubject';
+import { useSubject } from '@src/hooks/useSubject';
 
 import { AudioModal } from './AudioModal';
 
 import './style.less';
 
 interface IToolbar {
-  sendMessage: (content: string, msgType: EMsgType, attachment?: any) => void;
+  sendMessage: (
+    content: string,
+    msgType: EMsgType,
+    attachment?: IAttachment,
+    file?: Pick<File, 'name' | 'type'> & { data: any }
+  ) => void;
   uid: string;
   currentTo: string;
 }
 
 export const Toolbar: React.FC<IToolbar> = React.memo(
   ({ sendMessage, uid, currentTo }) => {
+    const [globalSubject$, ERxEvent] = useSubject();
     const [isAudioShow, setIsAudioShow] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-      const audioCloseSub = generalSubject$
+      const audioCloseSub = globalSubject$
         .pipe(filter((next) => next.action === ERxEvent.AUDIO_CLOSE))
         .subscribe(() => setIsAudioShow(false));
 
@@ -44,7 +50,7 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
           bottom: 170,
           onClose: () => {
             setIsAudioShow(false);
-            generalSubject$.next({ action: ERxEvent.AUDIO_CLOSE });
+            globalSubject$.next({ action: ERxEvent.AUDIO_CLOSE });
           },
         });
       }

@@ -12,25 +12,6 @@
     align-items: center;
     margin: 0;
     padding-right: 35px;
-
-    .progress {
-      width: 160px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      font-size: 14px;
-      margin: 0 10px;
-      color: @gray-common-level1;
-
-      .ant-progress-outer {
-        display: flex;
-      }
-
-      span {
-        margin-left: 6px;
-        user-select: none;
-      }
-    }
   }
 
   .ant-notification-notice-close {
@@ -41,5 +22,24 @@
     width: 150px;
     height: 44px;
     margin: 0 15px;
+  }
+}
+
+.audio-control-progress {
+  width: 160px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin: 0 10px;
+  color: @gray-common-level1;
+
+  .ant-progress-outer {
+    display: flex;
+  }
+
+  span {
+    margin-left: 6px;
+    user-select: none;
   }
 }

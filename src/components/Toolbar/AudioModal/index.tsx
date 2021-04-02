@@ -14,24 +14,30 @@ import 'recorder-core/src/engine/mp3-engine';
 import 'recorder-core/src/extensions/waveview';
 import { EMsgType } from '@src/modules/MessageCenter';
 import FileUploader from '@src/modules/FileUploader';
-import { generalSubject$, ERxEvent } from '@src/modules/RxSubject';
+import { useSubject } from '@src/hooks/useSubject';
 
 import './style.less';
+import { fileToBase64 } from '@src/modules/FileTransform';
 
 interface IAudioControl {
   isShow: boolean;
-  duration: number;
   audioRef: React.RefObject<HTMLAudioElement>;
 }
-const AudioControl: React.FC<IAudioControl> = React.memo(
-  ({ audioRef, isShow, duration }) => {
+export const AudioControl: React.FC<IAudioControl> = React.memo(
+  ({ audioRef, isShow }) => {
     if (!isShow) return null;
 
     const [isAudioPlay, setIsAudioPlay] = React.useState<boolean>(false);
     const [currentTime, setCurrentTime] = React.useState<number>(0);
+    const [duration, setDuration] = React.useState<number>(0);
 
     React.useEffect(() => {
       if (audioRef.current) {
+        const audioLoaded = fromEvent(audioRef.current, 'loadeddata').subscribe(
+          () => {
+            setDuration(parseFloat(audioRef.current.duration.toFixed(2)));
+          }
+        );
         const playSub = fromEvent(
           audioRef.current,
           'timeupdate'
@@ -45,13 +51,16 @@ const AudioControl: React.FC<IAudioControl> = React.memo(
         return () => {
           playSub.unsubscribe();
           endSub.unsubscribe();
+          audioLoaded.unsubscribe();
         };
       }
     }, [audioRef]);
 
     const audioPlay = React.useCallback(() => {
+      audioRef.current.play().catch((e) => {
+        message.error(e.toString());
+      });
       setIsAudioPlay(true);
-      audioRef.current.play();
     }, [audioRef]);
 
     const audioPause = React.useCallback(() => {
@@ -63,7 +72,7 @@ const AudioControl: React.FC<IAudioControl> = React.memo(
       <>
         {!isAudioPlay && <PauseCircleOutlined onClick={audioPlay} />}
         {!!isAudioPlay && <PlayCircleOutlined onClick={audioPause} />}
-        <div className="progress">
+        <div className="audio-control-progress">
           <Progress
             percent={parseFloat((currentTime / duration).toFixed(2)) * 100}
             showInfo={false}
@@ -80,7 +89,12 @@ const AudioControl: React.FC<IAudioControl> = React.memo(
 );
 
 interface IAudioModal {
-  sendMessage: (content: string, msgType: EMsgType, attachment?: any) => void;
+  sendMessage: (
+    content: string,
+    msgType: EMsgType,
+    attachment?: IAttachment,
+    file?: Pick<File, 'name' | 'type'> & { data: any }
+  ) => void;
   uid: string;
   currentTo: string;
 }
@@ -89,7 +103,6 @@ export const AudioModal: React.FC<IAudioModal> = React.memo(
   ({ sendMessage, uid, currentTo }) => {
     const [isRecord, setIsRecord] = React.useState<boolean>(false);
     const [isRecordShow, setIsRecordShow] = React.useState<boolean>(true);
-    const [duration, setDuration] = React.useState<number>(0);
     const [recorder] = React.useState(
       Recorder({
         type: 'mp3',
@@ -113,9 +126,10 @@ export const AudioModal: React.FC<IAudioModal> = React.memo(
       null
     );
     const wave = React.useRef(null);
+    const [globalSubject$, ERxEvent] = useSubject();
 
     React.useEffect(() => {
-      const audioCloseSub = generalSubject$
+      const audioCloseSub = globalSubject$
         .pipe(filter((next) => next.action === ERxEvent.AUDIO_CLOSE))
         .subscribe(() => {
           recorder.close();
@@ -147,9 +161,8 @@ export const AudioModal: React.FC<IAudioModal> = React.memo(
     const stopRecord = React.useCallback(() => {
       setIsRecord(false);
       recorder.stop(
-        (blob: Blob, duration: number) => {
+        (blob: Blob) => {
           setIsRecordShow(false);
-          setDuration(parseFloat((duration / 1000).toFixed(2)));
           const audioURL = (window.URL || webkitURL).createObjectURL(blob);
           audioRef.current.src = audioURL;
         },
@@ -194,14 +207,23 @@ export const AudioModal: React.FC<IAudioModal> = React.memo(
           return;
         }
         audioRef.current.src = result.url;
-        // TODO: 修改rxdb以存储blob等attachment
-        sendMessage(result.url, EMsgType.AUDIO, {
-          name: result.name,
-          url: result.url,
-          caches: blob,
-        });
+        fileToBase64(blob, (payload: string) =>
+          sendMessage(
+            result.url,
+            EMsgType.AUDIO,
+            {
+              name: result.name,
+              url: result.url,
+            },
+            {
+              name: result.name,
+              type: 'audio/mpeg',
+              data: payload,
+            }
+          )
+        );
         notification.close('audio');
-        generalSubject$.next({ action: ERxEvent.AUDIO_CLOSE });
+        globalSubject$.next({ action: ERxEvent.AUDIO_CLOSE });
       } else {
         message.error('请先录音！');
       }
@@ -211,11 +233,7 @@ export const AudioModal: React.FC<IAudioModal> = React.memo(
       <>
         {recorderControl}
         <audio ref={audioRef} />
-        <AudioControl
-          audioRef={audioRef}
-          isShow={!isRecordShow}
-          duration={duration}
-        />
+        <AudioControl audioRef={audioRef} isShow={!isRecordShow} />
         <SendOutlined onClick={sendAudioMessage} />
       </>
     );

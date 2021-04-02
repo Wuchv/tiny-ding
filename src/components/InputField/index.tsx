@@ -3,7 +3,7 @@ import { Input, Button, message } from 'antd';
 import MessageCenter, { EMsgType } from '@src/modules/MessageCenter';
 import FileUploader from '@src/modules/FileUploader';
 import { useReduxData } from '@src/hooks/useRedux';
-import { fileToBase64 } from '@src/modules/RxSubject';
+import { fileToBase64 } from '@src/modules/FileTransform';
 
 import { Toolbar } from '@src/components/Toolbar';
 
@@ -30,14 +30,13 @@ export const InputField: React.FC<IInputField> = React.memo(() => {
         return;
       }
       if (file.type.includes('image')) {
-        const ob$ = fileToBase64(file);
-        ob$.subscribe(({ payload }) => {
-          sendMessage(result.url, EMsgType.IMAGE, {
+        fileToBase64(file, (payload: string) =>
+          sendMessage(result.url, EMsgType.IMAGE, result, {
             name: file.name,
-            url: result.url,
-            cache: payload,
-          });
-        });
+            type: file.type,
+            data: payload,
+          })
+        );
       } else {
         sendMessage(result.name, EMsgType.FILE, result);
       }
@@ -48,17 +47,21 @@ export const InputField: React.FC<IInputField> = React.memo(() => {
     (
       content: string,
       msgType: EMsgType = EMsgType.TEXT,
-      attachment?: IAttachment
+      attachment: IAttachment = null,
+      file: Pick<File, 'name' | 'type'> & { data: any } = null
     ) => {
-      MessageCenter.sendMsg({
-        fromId: uid,
-        toId: currentTo,
-        sender: nickname || uid,
-        avatarUrl,
-        msgType,
-        content,
-        attachment,
-      });
+      MessageCenter.sendMsg(
+        {
+          fromId: uid,
+          toId: currentTo,
+          sender: nickname || uid,
+          avatarUrl,
+          msgType,
+          content,
+          attachment,
+        },
+        file
+      );
     },
     []
   );

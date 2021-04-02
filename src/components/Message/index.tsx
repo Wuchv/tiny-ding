@@ -1,13 +1,16 @@
 import * as React from 'react';
-import { Subscription } from 'rxjs';
+import { fromEvent, Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { EMsgType } from '@src/modules/MessageCenter';
 import { useReduxData } from '@src/hooks/useRedux';
 import { resolveTimestamp } from '@src/utils';
-import { imageToBase64 } from '@src/modules/RxSubject';
+import { imageToBase64 } from '@src/modules/FileTransform';
 import { Avatar } from '@src/components/Avatar';
 import { errorImg } from '@src/public/base64Img';
+import { useSubject } from '@src/hooks/useSubject';
 
 import { Typography, Image as AntdImage } from 'antd';
+import { AudioControl } from '../Toolbar/AudioModal';
 
 import './style.less';
 
@@ -19,36 +22,51 @@ const ImageMessage: React.FC<Partial<IMessage>> = React.memo(
   ({ content, attachment }) => {
     const [imgBase64, setImgBase64] = React.useState<string>('');
     const [width, setWidth] = React.useState<number>(100);
+    const [globalSubject$, ERxEvent] = useSubject();
 
     React.useEffect(() => {
-      let imgSub: Subscription = null;
+      let cacheErrorSub: Subscription = null;
       if (attachment.cache) {
-        const img: HTMLImageElement = new Image();
-        img.src = attachment.cache;
-        img.onload = () => {
-          if (img.width && img.height) {
-            const aspectRatio = img.width / img.height;
-            setWidth(351 * (aspectRatio > 1 ? 1 : aspectRatio));
-            setImgBase64(attachment.cache);
-          }
-        };
-        img.onerror = () => {
-          //TODO: cache异常处理
-        };
+        cacheErrorSub = globalSubject$
+          .pipe(
+            filter((next) => next.action === ERxEvent.READ_IMAGE_CACHE_ERROR)
+          )
+          .subscribe(() => readImgFromUrl());
+        readCache();
       } else {
-        const img$ = imageToBase64(content);
-        imgSub = img$.subscribe(({ payload }) => {
-          const { base64, width, height } = payload;
-          if (width && height) {
-            const aspectRatio = width / height;
-            setWidth(351 * (aspectRatio > 1 ? 1 : aspectRatio));
-            setImgBase64(base64);
-          }
-        });
+        readImgFromUrl();
       }
       return () => {
-        imgSub && imgSub.unsubscribe();
+        cacheErrorSub && cacheErrorSub.unsubscribe();
       };
+    }, [content]);
+
+    const readCache = React.useCallback(async () => {
+      const img: HTMLImageElement = new Image();
+      const base64Cache = await attachment.cache.getData();
+      img.src = base64Cache;
+      img.onload = () => {
+        if (img.width && img.height) {
+          const aspectRatio = img.width / img.height;
+          setWidth(351 * (aspectRatio > 1 ? 1 : aspectRatio));
+          setImgBase64(base64Cache);
+        }
+      };
+      img.onerror = () => {
+        globalSubject$.next({ action: ERxEvent.READ_IMAGE_CACHE_ERROR });
+        //TODO:缓存失效后重新缓存
+      };
+    }, [attachment]);
+
+    const readImgFromUrl = React.useCallback(() => {
+      imageToBase64(content, (payload: any) => {
+        const { base64, width, height } = payload;
+        if (width && height) {
+          const aspectRatio = width / height;
+          setWidth(351 * (aspectRatio > 1 ? 1 : aspectRatio));
+          setImgBase64(base64);
+        }
+      });
     }, [content]);
 
     return (
@@ -69,17 +87,27 @@ const FileMessage: React.FC<Partial<IMessage>> = React.memo(({ content }) => {
 const AudioMessage: React.FC<Partial<IMessage>> = React.memo(
   ({ content, attachment }) => {
     const audioRef = React.useRef<HTMLAudioElement>(null);
+
     React.useEffect(() => {
       if (audioRef.current) {
-        // const audioURL = (window.URL || webkitURL).createObjectURL(
-        //   attachment.cache
-        // );
-        audioRef.current.src = attachment.cache;
+        if (attachment.cache) {
+          readCache();
+        } else {
+          audioRef.current.src = content;
+        }
       }
     }, [audioRef]);
+
+    const readCache = React.useCallback(async () => {
+      const bufferCache = await attachment.cache.getData();
+      audioRef.current.src = 'bufferCache';
+      //TODO:缓存失效后重新缓存
+    }, [attachment]);
+
     return (
-      <div>
-        <audio ref={audioRef} controls />
+      <div className="audio-message">
+        <audio ref={audioRef} />
+        <AudioControl isShow={true} audioRef={audioRef} />
       </div>
     );
   }
