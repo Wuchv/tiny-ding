@@ -11,7 +11,7 @@ class UserManage extends RxdbManager {
   public async getOwnInfo(): Promise<IUser> {
     const allDoc = await this.getAllDocuments();
     const filterDocByToken = allDoc.filter((doc: IUser) => doc.access_token);
-    return filterDocByToken[0] as IUser;
+    return (filterDocByToken[0] || {}) as IUser;
   }
 
   public async getOther(): Promise<IUser[]> {

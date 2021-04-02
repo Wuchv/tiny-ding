@@ -63,7 +63,7 @@ export const messageSchema: RxJsonSchema<IMessage> = {
       type: 'number',
     },
     attachment: {
-      type: 'object',
+      type: ['object', 'null'],
       properties: {
         name: {
           type: 'string',
@@ -71,20 +71,11 @@ export const messageSchema: RxJsonSchema<IMessage> = {
         url: {
           type: 'string',
         },
-        cache: {
-          type: [
-            'array',
-            'boolean',
-            'integer',
-            'number',
-            'null',
-            'object',
-            'string',
-          ],
-        },
       },
+      required: ['url'],
     },
   },
+  attachments: { encrypted: false },
   required: [
     'msgId',
     'cid',

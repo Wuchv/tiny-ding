@@ -1,5 +1,5 @@
 import { filter } from 'rxjs/operators';
-import { RxChangeEvent } from 'rxdb';
+import { RxChangeEvent, RxDocument } from 'rxdb';
 
 enum EWriteOperation {
   INSERT = 'INSERT',
@@ -44,11 +44,15 @@ class RxdbManager {
     return (await this.collection.dump()).docs;
   }
 
-  public async insert(doc: RxDB.IDocument): Promise<RxDB.IDocument> {
+  public async insert(
+    doc: RxDB.IDocument
+  ): Promise<RxDocument<RxDB.IDocument, any>> {
     return await this.collection.insert(doc as any);
   }
 
-  public async upsert(doc: RxDB.IDocument): Promise<RxDB.IDocument> {
+  public async upsert(
+    doc: RxDB.IDocument
+  ): Promise<RxDocument<RxDB.IDocument, any>> {
     return await this.collection.upsert(doc);
   }
 

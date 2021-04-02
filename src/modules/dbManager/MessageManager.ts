@@ -16,7 +16,17 @@ class MessageManager extends RxdbManager {
         },
       })
       .exec();
-    return docs.map((doc: RxDocument<any>) => doc.toJSON());
+    return docs.map((doc: RxDocument<any>) => {
+      const msg: IMessage = doc.toJSON();
+      if (msg.attachment) {
+        const attachment = doc.getAttachment(
+          `${msg.attachment.name}:${msg.msgId}`
+        );
+        msg.attachment.cache = attachment;
+        return msg;
+      }
+      return msg;
+    });
   }
 }
 
