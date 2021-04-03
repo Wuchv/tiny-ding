@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { fromEvent, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { EMsgType } from '@src/modules/MessageCenter';
 import { useReduxData } from '@src/hooks/useRedux';
@@ -10,6 +10,7 @@ import { errorImg } from '@src/public/base64Img';
 import { useSubject } from '@src/hooks/useSubject';
 
 import { Typography, Image as AntdImage } from 'antd';
+import { FileProtectOutlined } from '@ant-design/icons';
 import { AudioControl } from '../Toolbar/AudioModal';
 
 import './style.less';
@@ -81,7 +82,16 @@ const ImageMessage: React.FC<Partial<IMessage>> = React.memo(
 );
 
 const FileMessage: React.FC<Partial<IMessage>> = React.memo(({ content }) => {
-  return <div>file:{content}</div>;
+  return (
+    <div className="file-message">
+      <FileProtectOutlined />
+      <div className="file-info">
+        <Typography.Text ellipsis={{ tooltip: content }}>
+          {content}
+        </Typography.Text>
+      </div>
+    </div>
+  );
 });
 
 const AudioMessage: React.FC<Partial<IMessage>> = React.memo(
@@ -100,7 +110,7 @@ const AudioMessage: React.FC<Partial<IMessage>> = React.memo(
 
     const readCache = React.useCallback(async () => {
       const bufferCache = await attachment.cache.getData();
-      audioRef.current.src = 'bufferCache';
+      audioRef.current.src = bufferCache;
       //TODO:缓存失效后重新缓存
     }, [attachment]);
 
@@ -131,7 +141,8 @@ export const Message: React.FC<IMessage> = React.memo((msg) => {
     if (msgType === EMsgType.TEXT) {
       result = <TextMessage content={content} />;
     } else if (msgType === EMsgType.IMAGE) {
-      result = <ImageMessage content={content} attachment={attachment} />;
+      // result = <ImageMessage content={content} attachment={attachment} />;
+      result = <FileMessage content={content} />;
     } else if (msgType === EMsgType.FILE) {
       result = <FileMessage content={content} />;
     } else if (msgType === EMsgType.AUDIO) {

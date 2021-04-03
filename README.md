@@ -1,5 +1,5 @@
 # tiny-ding
-迷你钉钉，基于 electron + react + typescript + antd 的即时通讯软件
+迷你钉钉，基于 typescript + electron + react + rxdb + antd 的即时通讯软件
 
 # 命令
 ```bash
