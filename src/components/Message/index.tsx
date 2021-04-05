@@ -81,18 +81,20 @@ const ImageMessage: React.FC<Partial<IMessage>> = React.memo(
   }
 );
 
-const FileMessage: React.FC<Partial<IMessage>> = React.memo(({ content }) => {
-  return (
-    <div className="file-message">
-      <FileProtectOutlined />
-      <div className="file-info">
-        <Typography.Text ellipsis={{ tooltip: content }}>
-          {content}
-        </Typography.Text>
+const FileMessage: React.FC<Partial<IMessage>> = React.memo(
+  ({ content, attachment }) => {
+    return (
+      <div className="file-message">
+        <FileProtectOutlined />
+        <div className="file-info">
+          <Typography.Text ellipsis={{ tooltip: content }}>
+            {attachment.name}
+          </Typography.Text>
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 const AudioMessage: React.FC<Partial<IMessage>> = React.memo(
   ({ content, attachment }) => {
@@ -142,7 +144,7 @@ export const Message: React.FC<IMessage> = React.memo((msg) => {
       result = <TextMessage content={content} />;
     } else if (msgType === EMsgType.IMAGE) {
       // result = <ImageMessage content={content} attachment={attachment} />;
-      result = <FileMessage content={content} />;
+      result = <FileMessage content={content} attachment={attachment} />;
     } else if (msgType === EMsgType.FILE) {
       result = <FileMessage content={content} />;
     } else if (msgType === EMsgType.AUDIO) {
