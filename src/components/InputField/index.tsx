@@ -31,11 +31,17 @@ export const InputField: React.FC<IInputField> = React.memo(() => {
       }
       if (file.type.includes('image')) {
         fileToBase64(file, (payload: string) =>
-          sendMessage(result.url, EMsgType.IMAGE, result, {
-            name: file.name,
-            type: file.type,
-            data: payload,
-          })
+          sendMessage(
+            result.url,
+            EMsgType.IMAGE,
+            result,
+            {
+              name: file.name,
+              type: file.type,
+              data: payload,
+            },
+            true
+          )
         );
       } else {
         sendMessage(result.name, EMsgType.FILE, result);
@@ -48,7 +54,8 @@ export const InputField: React.FC<IInputField> = React.memo(() => {
       content: string,
       msgType: EMsgType = EMsgType.TEXT,
       attachment: IAttachment = null,
-      file: Pick<File, 'name' | 'type'> & { data: any } = null
+      file: Pick<File, 'name' | 'type'> & { data?: any } = null,
+      iscCache: boolean = false
     ) => {
       MessageCenter.sendMsg(
         {
@@ -60,7 +67,8 @@ export const InputField: React.FC<IInputField> = React.memo(() => {
           content,
           attachment,
         },
-        file
+        file,
+        iscCache
       );
     },
     []

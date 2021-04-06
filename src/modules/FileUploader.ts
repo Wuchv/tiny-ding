@@ -14,7 +14,10 @@ class FileUploader {
         filename
       )}`,
     };
-    const url = this.client.signatureUrl(objectKey, { response });
+    const url = this.client.signatureUrl(objectKey, {
+      response,
+      expires: 1000 * 60 * 60 * 24 * 90,
+    });
     return url;
   }
 

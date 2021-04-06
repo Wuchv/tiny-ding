@@ -15,14 +15,16 @@ import 'recorder-core/src/extensions/waveview';
 import { EMsgType } from '@src/modules/MessageCenter';
 import FileUploader from '@src/modules/FileUploader';
 import { useSubject } from '@src/hooks/useSubject';
+import { fileToBase64 } from '@src/modules/FileTransform';
+import { IToolbar } from '..';
 
 import './style.less';
-import { fileToBase64 } from '@src/modules/FileTransform';
 
 interface IAudioControl {
   isShow: boolean;
   audioRef: React.RefObject<HTMLAudioElement>;
 }
+
 export const AudioControl: React.FC<IAudioControl> = React.memo(
   ({ audioRef, isShow }) => {
     if (!isShow) return null;
@@ -88,16 +90,7 @@ export const AudioControl: React.FC<IAudioControl> = React.memo(
   }
 );
 
-interface IAudioModal {
-  sendMessage: (
-    content: string,
-    msgType: EMsgType,
-    attachment?: IAttachment,
-    file?: Pick<File, 'name' | 'type'> & { data: any }
-  ) => void;
-  uid: string;
-  currentTo: string;
-}
+interface IAudioModal extends IToolbar {}
 
 export const AudioModal: React.FC<IAudioModal> = React.memo(
   ({ sendMessage, uid, currentTo }) => {

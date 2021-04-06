@@ -43,11 +43,12 @@ class MessageCenter {
 
   public async sendMsg(
     msg: Partial<IMessage>,
-    file: Pick<File, 'name' | 'type'> & { data: any }
+    file: Pick<File, 'name' | 'type'> & { data?: any },
+    isCache: boolean
   ) {
     const _msg = this.msgWrap(msg);
     // this.socket.emit('sendMessageToServer', msg);
-    if (_msg.attachment && file) {
+    if (isCache && _msg.attachment && file) {
       const msgDoc = await MessageManager.insert(_msg);
       msgDoc.putAttachment(
         {
@@ -60,10 +61,6 @@ class MessageCenter {
     } else {
       MessageManager.insert(_msg);
     }
-    // this.msgEvent$.next({
-    //   action: EMessageEvent.SEND,
-    //   message: msg as IMessage,
-    // });
   }
 
   private async initSocket() {

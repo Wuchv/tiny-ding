@@ -9,12 +9,13 @@ import { Uploader } from './Uploader';
 
 import './style.less';
 
-interface IToolbar {
+export interface IToolbar {
   sendMessage: (
     content: string,
     msgType: EMsgType,
     attachment?: IAttachment,
-    file?: Pick<File, 'name' | 'type'> & { data: any }
+    file?: Pick<File, 'name' | 'type'> & { data?: any },
+    cache?: boolean
   ) => void;
   uid: string;
   currentTo: string;
@@ -61,7 +62,7 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
     return (
       <div className="toolbar">
         <AudioOutlined onClick={showAudioModal} />
-        <Uploader />
+        <Uploader sendMessage={sendMessage} />
         <VideoCameraOutlined onClick={openVideoChat} />
       </div>
     );
