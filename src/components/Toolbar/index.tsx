@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { notification } from 'antd';
 import { AudioOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import { filter } from 'rxjs/operators';
-import { useSubject } from '@src/hooks/useSubject';
+import { useSubject, ofAction } from '@src/hooks/useSubject';
 
 import { AudioModal } from './AudioModal';
 import { Uploader } from './Uploader';
@@ -23,12 +22,12 @@ export interface IToolbar {
 
 export const Toolbar: React.FC<IToolbar> = React.memo(
   ({ sendMessage, uid, currentTo }) => {
-    const [globalSubject$, ERxEvent] = useSubject();
+    const [globalSubject$, RxEvent] = useSubject();
     const [isAudioShow, setIsAudioShow] = React.useState<boolean>(false);
 
     React.useEffect(() => {
       const audioCloseSub = globalSubject$
-        .pipe(filter((next) => next.action === ERxEvent.AUDIO_CLOSE))
+        .pipe(ofAction(RxEvent.AUDIO_CLOSE))
         .subscribe(() => setIsAudioShow(false));
 
       return () => audioCloseSub.unsubscribe();
@@ -52,7 +51,7 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
           bottom: 170,
           onClose: () => {
             setIsAudioShow(false);
-            globalSubject$.next({ action: ERxEvent.AUDIO_CLOSE });
+            globalSubject$.next({ action: RxEvent.AUDIO_CLOSE });
           },
         });
       }

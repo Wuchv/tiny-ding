@@ -7,14 +7,13 @@ import {
   StopOutlined,
 } from '@ant-design/icons';
 import { fromEvent } from 'rxjs';
-import { filter } from 'rxjs/operators';
 import Recorder from 'recorder-core';
 import 'recorder-core/src/engine/mp3';
 import 'recorder-core/src/engine/mp3-engine';
 import 'recorder-core/src/extensions/waveview';
 import { EMsgType } from '@src/modules/MessageCenter';
 import FileUploader from '@src/modules/FileUploader';
-import { useSubject } from '@src/hooks/useSubject';
+import { useSubject, ofAction } from '@src/hooks/useSubject';
 import { fileToBase64 } from '@src/modules/FileTransform';
 import { IToolbar } from '..';
 
@@ -123,7 +122,7 @@ export const AudioModal: React.FC<IAudioModal> = React.memo(
 
     React.useEffect(() => {
       const audioCloseSub = globalSubject$
-        .pipe(filter((next) => next.action === ERxEvent.AUDIO_CLOSE))
+        .pipe(ofAction(ERxEvent.AUDIO_CLOSE))
         .subscribe(() => {
           recorder.close();
           (window.URL || webkitURL).revokeObjectURL(audioRef.current.src);

@@ -1,6 +1,4 @@
-import Http from '../modules/Http';
-
-const fetch = new Http();
+import { fetch } from '../modules/Http';
 
 export interface ILoginRequest {
   account: string;

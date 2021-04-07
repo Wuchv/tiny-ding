@@ -1,4 +1,5 @@
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 enum ERxEvent {
   AUDIO_CLOSE = 'audio_close',
@@ -12,3 +13,7 @@ const subject: Subject<Rxjs.INext> = new Subject();
 export const useSubject = (): [Subject<Rxjs.INext>, typeof ERxEvent] => {
   return [subject, ERxEvent];
 };
+
+export const ofAction = (action: ERxEvent) => (
+  source: Observable<Rxjs.INext>
+) => source.pipe(filter((next) => next.action === action));

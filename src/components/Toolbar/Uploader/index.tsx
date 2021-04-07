@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { filter } from 'rxjs/operators';
 import { FolderOpenOutlined } from '@ant-design/icons';
-import { useSubject } from '@src/hooks/useSubject';
+import { useSubject, ofAction } from '@src/hooks/useSubject';
 import { EMsgType } from '@src/modules/MessageCenter';
 import { IToolbar } from '..';
 
@@ -15,7 +14,7 @@ export const Uploader: React.FunctionComponent<IUpload> = React.memo(
 
     React.useEffect(() => {
       const sub = globalSubject$
-        .pipe(filter((next) => next.action === RxEvent.GET_FILE_FROM_TOOLBAR))
+        .pipe(ofAction(RxEvent.GET_FILE_FROM_TOOLBAR))
         .subscribe(() =>
           globalSubject$.next({
             action: RxEvent.UPLOAD_FILE_FROM_TOOLBAR,

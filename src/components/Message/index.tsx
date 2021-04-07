@@ -1,24 +1,16 @@
 import * as React from 'react';
-import moment from 'moment';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 import { Typography, Image as AntdImage } from 'antd';
-import { FileProtectOutlined } from '@ant-design/icons';
 import { EMsgType } from '@src/modules/MessageCenter';
 import { useReduxData } from '@src/hooks/useRedux';
 import { resolveTimestamp } from '@src/utils';
 import { imageToBase64 } from '@src/modules/FileTransform';
 import { Avatar } from '@src/components/Avatar';
 import { errorImg } from '@src/public/base64Img';
-import { useSubject } from '@src/hooks/useSubject';
-import {
-  ossHost,
-  ossOptions,
-  policyBase64,
-  signature,
-} from '../../../ossConfig';
+import { useSubject, ofAction } from '@src/hooks/useSubject';
 
 import { AudioControl } from '../Toolbar/AudioModal';
+import { FileMessage } from './FileMessage';
 
 import './style.less';
 
@@ -30,15 +22,13 @@ const ImageMessage: React.FC<Partial<IMessage>> = React.memo(
   ({ content, attachment }) => {
     const [imgBase64, setImgBase64] = React.useState<string>('');
     const [width, setWidth] = React.useState<number>(100);
-    const [globalSubject$, ERxEvent] = useSubject();
+    const [globalSubject$, RxEvent] = useSubject();
 
     React.useEffect(() => {
       let cacheErrorSub: Subscription = null;
       if (attachment.cache) {
         cacheErrorSub = globalSubject$
-          .pipe(
-            filter((next) => next.action === ERxEvent.READ_IMAGE_CACHE_ERROR)
-          )
+          .pipe(ofAction(RxEvent.READ_IMAGE_CACHE_ERROR))
           .subscribe(() => readImgFromUrl());
         readCache();
       } else {
@@ -61,7 +51,7 @@ const ImageMessage: React.FC<Partial<IMessage>> = React.memo(
         }
       };
       img.onerror = () => {
-        globalSubject$.next({ action: ERxEvent.READ_IMAGE_CACHE_ERROR });
+        globalSubject$.next({ action: RxEvent.READ_IMAGE_CACHE_ERROR });
         //TODO:缓存失效后重新缓存
       };
     }, [attachment]);
@@ -84,54 +74,6 @@ const ImageMessage: React.FC<Partial<IMessage>> = React.memo(
         src={imgBase64}
         fallback={errorImg}
       />
-    );
-  }
-);
-
-const FileMessage: React.FC<Partial<IMessage>> = React.memo(
-  ({ content, attachment }) => {
-    const [, { uid, currentTo }] = useReduxData();
-    const [globalSubject$, ERxEvent] = useSubject();
-    const [isDownload, setIsDownload] = React.useState<boolean>(false);
-    const [isUpload, setIsUpload] = React.useState<boolean>(false);
-
-    React.useEffect(() => {
-      if (!content || !attachment.url) {
-        globalSubject$.next({ action: ERxEvent.GET_FILE_FROM_TOOLBAR });
-
-        const sub = globalSubject$
-          .pipe(
-            filter((next) => next.action === ERxEvent.UPLOAD_FILE_FROM_TOOLBAR)
-          )
-          .subscribe(console.log);
-
-        return () => sub.unsubscribe();
-      } else {
-        setIsUpload(true);
-      }
-    }, []);
-
-    //TODO:axios上传文件并获取进度
-    const getExtraData = React.useCallback(
-      (file: File) => ({
-        key: `${moment().format('YYYYMMDD')}/${uid}:${currentTo}/${file.name}`,
-        policy: policyBase64,
-        OSSAccessKeyId: ossOptions.accessKeyId,
-        success_action_status: 200,
-        signature,
-      }),
-      []
-    );
-
-    return (
-      <div className="file-message">
-        <FileProtectOutlined />
-        <div className="file-info">
-          <Typography.Text ellipsis={{ tooltip: attachment?.name }}>
-            {attachment?.name}
-          </Typography.Text>
-        </div>
-      </div>
     );
   }
 );
@@ -185,7 +127,7 @@ export const Message: React.FC<IMessage> = React.memo((msg) => {
     } else if (msgType === EMsgType.IMAGE) {
       result = <ImageMessage content={content} attachment={attachment} />;
     } else if (msgType === EMsgType.FILE) {
-      result = <FileMessage content={content} attachment={attachment} />;
+      result = <FileMessage {...msg} />;
     } else if (msgType === EMsgType.AUDIO) {
       result = <AudioMessage content={content} attachment={attachment} />;
     }

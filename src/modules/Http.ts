@@ -4,8 +4,8 @@ import { message } from 'antd';
 import { delay } from 'lodash';
 import UserManager from './dbManager/UserManager';
 
-const DEFAULT_HEADER = 'application/x-www-form-urlencoded';
-const FILE_HEADER = 'multipart/form-data';
+export const DEFAULT_HEADER = 'application/x-www-form-urlencoded';
+export const FILE_HEADER = 'multipart/form-data';
 
 const baseAxiosConfig: AxiosRequestConfig = {
   headers: { 'Content-Type': DEFAULT_HEADER },
@@ -15,7 +15,7 @@ const baseAxiosConfig: AxiosRequestConfig = {
   baseURL: 'http://127.0.0.1:7000',
 };
 
-export default class Http {
+class Http {
   private axiosRequestConfig: AxiosRequestConfig;
   private axiosInstance: AxiosInstance;
 
@@ -114,13 +114,17 @@ export default class Http {
       .post(url, data, {
         transformRequest: [
           (data) => {
-            let ret = '';
-            for (let it in data) {
-              ret +=
-                encodeURIComponent(it) +
-                '=' +
-                encodeURIComponent(data[it]) +
-                '&';
+            let ret: string | FormData = null;
+            if (data instanceof FormData) {
+              ret = data;
+            } else {
+              for (let it in data) {
+                ret +=
+                  encodeURIComponent(it) +
+                  '=' +
+                  encodeURIComponent(data[it]) +
+                  '&';
+              }
             }
             return ret;
           },
@@ -142,3 +146,7 @@ export default class Http {
       );
   }
 }
+
+export const fetch = new Http();
+
+export default Http;
