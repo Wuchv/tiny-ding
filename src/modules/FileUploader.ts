@@ -33,10 +33,10 @@ class FileUploader {
       err = e;
     }
     const url = this.generateDownloadUrl(objectKey, file.name);
-    return [err, { name: file.name, url }];
+    return [err, { name: file.name, url, type: file.type, size: file.size }];
   }
 
-  public async putObjectBlob(
+  public async putObjectAudioBlob(
     blob: Blob,
     salt: string
   ): NodeStyleReturn<IAttachment> {
@@ -48,7 +48,10 @@ class FileUploader {
       err = e;
     }
     const url = this.generateDownloadUrl(objectKey, `${salt}-audio`);
-    return [err, { name: `${salt}-audio`, url }];
+    return [
+      err,
+      { name: `${salt}-audio`, url, type: 'audio/mpeg', size: blob.size },
+    ];
   }
 }
 

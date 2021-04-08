@@ -57,7 +57,7 @@ export const messageSchema: RxJsonSchema<IMessage> = {
       type: 'string',
     },
     content: {
-      type: 'string',
+      type: ['string', 'null'],
     },
     timestamp: {
       type: 'number',
@@ -65,14 +65,20 @@ export const messageSchema: RxJsonSchema<IMessage> = {
     attachment: {
       type: ['object', 'null'],
       properties: {
+        url: {
+          type: ['string', 'null'],
+        },
         name: {
           type: 'string',
         },
-        url: {
-          type: 'string',
+        size: {
+          type: ['string', 'number'],
+        },
+        type: {
+          type: ['string', null],
         },
       },
-      required: ['url'],
+      required: ['url', 'type', 'name'],
     },
   },
   attachments: { encrypted: false },

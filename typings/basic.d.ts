@@ -14,8 +14,10 @@ declare enum EMsgType {
 }
 
 declare interface IAttachment {
-  name?: string;
   url: string;
+  name?: string;
+  size?: string | number;
+  type?: string;
   cache?: any;
 }
 

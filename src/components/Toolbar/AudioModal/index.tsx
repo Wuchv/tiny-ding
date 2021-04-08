@@ -190,7 +190,7 @@ export const AudioModal: React.FC<IAudioModal> = React.memo(
         let blob: Blob = await fetch(audioRef.current.src).then((r) =>
           r.blob()
         );
-        const [err, result] = await FileUploader.putObjectBlob(
+        const [err, result] = await FileUploader.putObjectAudioBlob(
           blob,
           `${uid}:${currentTo}:${Date.now()}`
         );
@@ -200,19 +200,11 @@ export const AudioModal: React.FC<IAudioModal> = React.memo(
         }
         audioRef.current.src = result.url;
         fileToBase64(blob, (payload: string) =>
-          sendMessage(
-            result.url,
-            EMsgType.AUDIO,
-            {
-              name: result.name,
-              url: result.url,
-            },
-            {
-              name: result.name,
-              type: 'audio/mpeg',
-              data: payload,
-            }
-          )
+          sendMessage(result.url, EMsgType.AUDIO, result, {
+            name: result.name,
+            type: 'audio/mpeg',
+            data: payload,
+          })
         );
         notification.close('audio');
         globalSubject$.next({ action: ERxEvent.AUDIO_CLOSE });
