@@ -1,5 +1,10 @@
 import { openLoginWindow } from '@src/utils';
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  CancelTokenSource,
+} from 'axios';
 import { message } from 'antd';
 import { delay } from 'lodash';
 import UserManager from './dbManager/UserManager';
@@ -18,9 +23,15 @@ const baseAxiosConfig: AxiosRequestConfig = {
 class Http {
   private axiosRequestConfig: AxiosRequestConfig;
   private axiosInstance: AxiosInstance;
+  private source: CancelTokenSource;
 
   constructor(config?: AxiosRequestConfig) {
-    this.axiosRequestConfig = { ...baseAxiosConfig, ...config };
+    this.source = axios.CancelToken.source();
+    this.axiosRequestConfig = {
+      ...baseAxiosConfig,
+      ...config,
+      cancelToken: this.source.token,
+    };
     this.createAxiosInstance();
   }
 
@@ -39,6 +50,10 @@ class Http {
     return this.axiosInstance;
   }
 
+  public cancel(msg: string) {
+    this.source.cancel(msg);
+  }
+
   //请求拦截器
   private setRequestInterceptor() {
     this.axiosInstance.interceptors.request.use(async (config) => {
@@ -55,10 +70,9 @@ class Http {
     this.axiosInstance.interceptors.response.use(
       (response: AxiosResponse<any>): any =>
         response.status === 200
-          ? Promise.resolve(response.data)
-          : Promise.reject(response.data),
+          ? Promise.resolve(response.data || response.headers)
+          : Promise.reject(response.data || response.headers),
       (error) => {
-        let e = error.response.data.message;
         if (error.response) {
           switch (error.response.status) {
             case 401: //Unauthorized
@@ -73,10 +87,10 @@ class Http {
         }
         //断网处理
         if (!window.navigator.onLine) {
-          e = '网络出现波动';
+          message.error('网络出现波动');
         }
-        message.error(e);
-        return Promise.reject(error.response.data);
+        //axios cancel 后取 error.message
+        return Promise.reject(error.response?.data || error.message);
       }
     );
   }
@@ -114,7 +128,7 @@ class Http {
       .post(url, data, {
         transformRequest: [
           (data) => {
-            let ret: string | FormData = null;
+            let ret: string | FormData = '';
             if (data instanceof FormData) {
               ret = data;
             } else {

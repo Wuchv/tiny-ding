@@ -25,7 +25,7 @@ export const ChatBox: React.FC<IChatBox> = React.memo(() => {
 
   React.useEffect(() => {
     updateMsg();
-    const msgSub = MessageManager.insert$
+    const msgSub = MessageManager.getCollection$()
       .pipe(
         filter((changeEvent: RxChangeEvent) => {
           const msg = changeEvent.rxDocument.toJSON();

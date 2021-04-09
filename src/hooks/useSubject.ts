@@ -14,6 +14,15 @@ export const useSubject = (): [Subject<Rxjs.INext>, typeof ERxEvent] => {
   return [subject, ERxEvent];
 };
 
-export const ofAction = (action: ERxEvent) => (
+export const ofAction = (action: ERxEvent, id: string = null) => (
   source: Observable<Rxjs.INext>
-) => source.pipe(filter((next) => next.action === action));
+) =>
+  source.pipe(
+    filter((next) => {
+      let result = next.action === action;
+      if (id && next.id) {
+        result = result && next.id === id;
+      }
+      return result;
+    })
+  );

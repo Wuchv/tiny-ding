@@ -75,7 +75,7 @@ export const messageSchema: RxJsonSchema<IMessage> = {
           type: ['string', 'number'],
         },
         type: {
-          type: ['string', null],
+          type: ['string', 'null'],
         },
       },
       required: ['url', 'type', 'name'],

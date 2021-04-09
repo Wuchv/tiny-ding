@@ -16,10 +16,11 @@ export const Uploader: React.FunctionComponent<IUpload> = React.memo(
       const sub = globalSubject$
         .pipe(ofAction(RxEvent.GET_FILE_FROM_TOOLBAR))
         .subscribe(
-          () =>
+          (next) =>
             !!file &&
             globalSubject$.next({
               action: RxEvent.UPLOAD_FILE_FROM_TOOLBAR,
+              id: next.payload,
               payload: file,
             })
         );
@@ -32,7 +33,12 @@ export const Uploader: React.FunctionComponent<IUpload> = React.memo(
         if (inputFileRef.current) {
           const file: File = e.currentTarget.files[0];
           setFile(file);
-          sendMessage(null, EMsgType.FILE, { name: file.name, url: null });
+          sendMessage(null, EMsgType.FILE, {
+            url: null,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+          });
           inputFileRef.current.value = null;
         }
       },

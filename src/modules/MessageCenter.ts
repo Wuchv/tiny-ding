@@ -1,4 +1,5 @@
 import * as io from 'socket.io-client';
+import { RxDocument } from 'rxdb';
 import { Subject } from 'rxjs';
 import { message } from 'antd';
 import UserManager from './dbManager/UserManager';
@@ -61,6 +62,23 @@ class MessageCenter {
     } else {
       MessageManager.insert(_msg);
     }
+  }
+
+  public async updateMsg(msg: Partial<IMessage>) {
+    const { msgId, content, attachment } = msg;
+    const doc: RxDocument<IMessage, any> = await MessageManager.findOne(msgId);
+    const oldAttachment = doc.get('attachment');
+    await doc.update({
+      $set: {
+        content: content,
+        attachment: { ...oldAttachment, ...attachment },
+      },
+    });
+  }
+
+  public async deleteMsg(msgId: string) {
+    const doc: RxDocument<IMessage, any> = await MessageManager.findOne(msgId);
+    doc.remove();
   }
 
   private async initSocket() {

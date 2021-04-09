@@ -59,6 +59,12 @@ class RxdbManager {
   public async bulkInsert(docs: RxDB.IDocument[]): Promise<any> {
     return await this.collection.bulkInsert(docs as any);
   }
+
+  public async findOne(
+    primaryId: string
+  ): Promise<RxDocument<RxDB.IDocument, any>> {
+    return await this.collection.findOne(primaryId).exec();
+  }
 }
 
 export default RxdbManager;

@@ -17,6 +17,25 @@
     display: flex;
     flex-direction: column;
     max-width: calc(100% - 40px);
-    margin-left: 4px;
+    width: calc(100% - 40px);
+    margin-left: 8px;
+
+    .upload-progress {
+      display: flex;
+      align-items: center;
+
+      .anticon {
+        font-size: 12px;
+        margin-left: 10px;
+      }
+    }
+
+    &-uploaded {
+      .ant-typography {
+        display: inline;
+        font-size: 12px;
+        margin-right: 20px;
+      }
+    }
   }
 }

@@ -5,6 +5,7 @@ class MessageManager extends RxdbManager {
   constructor() {
     super();
     this.collection = this.localDatabase.messages;
+    // this.collection.remove();
   }
 
   public async filterMsgByCid(fromId: string, toId: string) {
@@ -16,6 +17,7 @@ class MessageManager extends RxdbManager {
         },
       })
       .exec();
+
     return docs.map((doc: RxDocument<any>) => {
       const msg: IMessage = doc.toJSON();
       if (msg.attachment) {

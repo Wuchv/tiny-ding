@@ -29,3 +29,16 @@ export const resolveTimestamp = (timestamp: number) => {
 
   return { Y, M, D, h, m, s };
 };
+
+export const calcFileSize = (size: number | string): string => {
+  if (typeof size === 'string') return size;
+  const sizeLabel = ['B', 'KB', 'MB', 'GB'];
+  let result = '';
+  let cursor = 0;
+  while (size >= 1024) {
+    size = size / 1024;
+    cursor++;
+  }
+  result = `${parseFloat(size.toFixed(2))} ${sizeLabel[cursor]}`;
+  return result;
+};
