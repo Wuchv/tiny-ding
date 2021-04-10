@@ -13,8 +13,9 @@ export enum EMsgType {
 }
 
 export enum EMessageEvent {
-  SEND = 'send',
-  OBTAIN = 'obtain',
+  SEND = 'sendMessageToServer',
+  OBTAIN = 'obtainMessageFromServer',
+  THROW_ERROR = 'throwSendMessageError',
 }
 
 export interface IMessageEvent {
@@ -24,10 +25,8 @@ export interface IMessageEvent {
 
 class MessageCenter {
   public socket: SocketIOClient.Socket;
-  public msgEvent$: Subject<IMessageEvent>;
 
   constructor() {
-    this.msgEvent$ = new Subject();
     this.initSocket();
   }
 
@@ -42,13 +41,17 @@ class MessageCenter {
     } as IMessage;
   }
 
-  public async sendMsg(
+  public async sendMsg(msg: IMessage) {
+    console.log(EMessageEvent.SEND, msg);
+    // this.socket.emit(EMessageEvent.SEND, msg);
+  }
+
+  public async insertMsg(
     msg: Partial<IMessage>,
     file: Pick<File, 'name' | 'type'> & { data?: any },
     isCache: boolean
-  ) {
+  ): Promise<IMessage> {
     const _msg = this.msgWrap(msg);
-    // this.socket.emit('sendMessageToServer', msg);
     if (isCache && _msg.attachment && file) {
       const msgDoc = await MessageManager.insert(_msg);
       msgDoc.putAttachment(
@@ -62,18 +65,18 @@ class MessageCenter {
     } else {
       MessageManager.insert(_msg);
     }
+    return _msg;
   }
 
   public async updateMsg(msg: Partial<IMessage>) {
     const { msgId, content, attachment } = msg;
     const doc: RxDocument<IMessage, any> = await MessageManager.findOne(msgId);
-    const oldAttachment = doc.get('attachment');
-    await doc.update({
-      $set: {
-        content: content,
-        attachment: { ...oldAttachment, ...attachment },
-      },
+    await doc.atomicUpdate((oldDoc: RxDocument<IMessage, any>) => {
+      oldDoc.content = content;
+      oldDoc.attachment = { ...oldDoc.attachment, ...attachment };
+      return oldDoc;
     });
+    return doc.toJSON();
   }
 
   public async deleteMsg(msgId: string) {
@@ -99,13 +102,12 @@ class MessageCenter {
       console.log(`socket disconnected ${this.socket.id}`);
     });
 
-    this.socket.on('throwSendMessageError', (e: Error) => {
+    this.socket.on(EMessageEvent.THROW_ERROR, (e: Error) => {
       message.error(e);
     });
 
-    this.socket.on('obtainMessageFromServer', (message: IMessage) => {
+    this.socket.on(EMessageEvent.OBTAIN, (message: IMessage) => {
       MessageManager.insert(message);
-      // this.msgEvent$.next({ action: EMessageEvent.OBTAIN, message });
     });
   }
 }

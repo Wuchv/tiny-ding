@@ -4,16 +4,16 @@ import MessageCenter, { EMsgType } from '@src/modules/MessageCenter';
 import FileUploader from '@src/modules/FileUploader';
 import { useReduxData } from '@src/hooks/useRedux';
 import { fileToBase64 } from '@src/modules/FileTransform';
+import { useUploadFile } from '@src/hooks/useUploadFile';
 
 import { Toolbar } from '@src/components/Toolbar';
 
 import './style.less';
 
-interface IInputField {}
-
-export const InputField: React.FC<IInputField> = React.memo(() => {
+export const InputField: React.FC<unknown> = React.memo(() => {
   const { uid, currentTo, nickname, avatarUrl } = useReduxData()[1];
   const [textAreaContent, setTextAreaContent] = React.useState<string>('');
+  const [, setFile] = useUploadFile();
 
   const fileDrop = React.useCallback(async (e) => {
     e.preventDefault();
@@ -44,20 +44,26 @@ export const InputField: React.FC<IInputField> = React.memo(() => {
           )
         );
       } else {
-        sendMessage(result.name, EMsgType.FILE, result);
+        setFile(file);
+        sendMessage(null, EMsgType.FILE, {
+          url: null,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        });
       }
     }
   }, []);
 
   const sendMessage = React.useCallback(
-    (
+    async (
       content: string,
       msgType: EMsgType = EMsgType.TEXT,
       attachment: IAttachment = null,
       file: Pick<File, 'name' | 'type'> & { data?: any } = null,
       iscCache: boolean = false
     ) => {
-      MessageCenter.sendMsg(
+      const msg = await MessageCenter.insertMsg(
         {
           fromId: uid,
           toId: currentTo,
@@ -70,6 +76,10 @@ export const InputField: React.FC<IInputField> = React.memo(() => {
         file,
         iscCache
       );
+      //FILE类型文件上传文件后再发出msg
+      if (msg.msgType !== EMsgType.FILE) {
+        MessageCenter.sendMsg(msg);
+      }
     },
     []
   );

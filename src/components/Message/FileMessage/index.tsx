@@ -6,7 +6,6 @@ import { useSubject, ofAction } from '@src/hooks/useSubject';
 import Http, { FILE_HEADER } from '@src/modules/Http';
 import MessageCenter from '@src/modules/MessageCenter';
 import { calcFileSize, resolveTimestamp } from '@src/utils';
-import { delay } from 'lodash';
 import {
   ossHost,
   ossOptions,
@@ -62,34 +61,34 @@ export const FileMessage: React.FC<Partial<IMessage>> = React.memo(
     React.useEffect(() => {
       if (!content || !attachment.url) {
         const sub = globalSubject$
-          .pipe(ofAction(RxEvent.UPLOAD_FILE_FROM_TOOLBAR, msgId))
-          .subscribe((next: Rxjs.INext) => {
+          .pipe(ofAction(RxEvent.UPLOAD_FILE, msgId))
+          .subscribe(async (next: Rxjs.INext) => {
             const file = next.payload;
             if (file) {
               const extraData = getExtraData(file);
               const downloadUrl = `${ossHost}/${extraData.get('key')}`;
-              uploadFetch
-                .post(null, extraData)
-                .then((res) => {
-                  if (res.etag) {
-                    MessageCenter.updateMsg({
-                      msgId,
-                      content: downloadUrl,
-                      attachment: { url: downloadUrl },
-                    });
-                  } else {
-                    setIsUploadedSuccess(false);
-                    message.error(res, 1.5, () =>
-                      MessageCenter.deleteMsg(msgId)
-                    );
-                  }
-                })
-                .catch((e) => message.error(e));
+              let res = null;
+              try {
+                res = await uploadFetch.post(null, extraData);
+              } catch (e) {
+                message.error(e);
+              }
+              if (res?.etag) {
+                const msg = await MessageCenter.updateMsg({
+                  msgId,
+                  content: downloadUrl,
+                  attachment: { url: downloadUrl },
+                });
+                MessageCenter.sendMsg(msg);
+              } else {
+                setIsUploadedSuccess(false);
+                message.error(res, 1.5, () => MessageCenter.deleteMsg(msgId));
+              }
             }
           });
 
         globalSubject$.next({
-          action: RxEvent.GET_FILE_FROM_TOOLBAR,
+          action: RxEvent.GET_FILE,
           payload: msgId,
         });
 
