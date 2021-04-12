@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Input, Divider, Checkbox, Typography, message } from 'antd';
+import { Input, Divider, Checkbox, Typography } from 'antd';
 import { LoginOutlined, CloseOutlined } from '@ant-design/icons';
 import { openMainWindow } from '@src/utils';
 import { loginAction } from '@src/redux/reducers/userReducer';
