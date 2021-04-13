@@ -20,7 +20,7 @@ const start = () => {
   });
 
   app.on('ready', () => {
-    createWindow(WindowName.main);
+    createWindow(WindowName.MAIN);
   });
 
   app.on('window-all-closed', () => {

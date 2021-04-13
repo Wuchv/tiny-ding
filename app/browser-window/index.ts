@@ -9,12 +9,14 @@ import { messageBox } from '../dialog';
 
 import { createLoginAndRegisterWindow } from './windows/login-register-window';
 import { createMainWindow } from './windows/main-window';
+import { createVideoCallWindow } from './windows/video-call-window';
 
 const client = require('electron-connect').client;
 
 export enum WindowName {
-  login_register = 'login_register',
-  main = 'main',
+  LOGIN_REGISTER = 'login_register',
+  MAIN = 'main',
+  VIDEO_CALL = 'video_call',
 }
 
 export type CreateWindowHandler = (
@@ -22,8 +24,9 @@ export type CreateWindowHandler = (
 ) => BrowserWindow;
 
 const HandlersMap: Record<WindowName, CreateWindowHandler> = {
-  [WindowName.login_register]: createLoginAndRegisterWindow,
-  [WindowName.main]: createMainWindow,
+  [WindowName.LOGIN_REGISTER]: createLoginAndRegisterWindow,
+  [WindowName.MAIN]: createMainWindow,
+  [WindowName.VIDEO_CALL]: createVideoCallWindow,
 };
 
 Object.freeze(HandlersMap); //冻结map，防止修改
@@ -71,7 +74,7 @@ export const createWindow = (
 };
 
 export const restoreMainWindow = () => {
-  const win = WindowMap.get(WindowName.login_register);
+  const win = WindowMap.get(WindowName.LOGIN_REGISTER);
   win?.restore();
   win?.show();
 };

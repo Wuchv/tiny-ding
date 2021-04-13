@@ -1,17 +1,18 @@
 export enum WindowName {
-  login_register = 'login_register',
-  main = 'main',
+  LOGIN_REGISTER = 'login_register',
+  MAIN = 'main',
+  VIDEO_CALL = 'video_call',
 }
-
-export const openLoginWindow = () => {
-  window.$client.openWindow(WindowName.login_register);
-  window.$client.closeWindow();
+export const openWindow = (name: WindowName) => (isClose: boolean = true) => {
+  window.$client.openWindow(name);
+  isClose && window.$client.closeWindow();
 };
 
-export const openMainWindow = () => {
-  window.$client.openWindow(WindowName.main);
-  window.$client.closeWindow();
-};
+export const openLoginWindow = openWindow(WindowName.LOGIN_REGISTER);
+
+export const openMainWindow = openWindow(WindowName.MAIN);
+
+export const openVideoCallWindow = openWindow(WindowName.VIDEO_CALL);
 
 export const resolveTimestamp = (timestamp: number) => {
   const date = new Date(timestamp);

@@ -9,6 +9,7 @@ import getStoreAsync from '@src/redux';
 
 import { Login } from './pages/Login';
 import { Main } from './pages/Main';
+import { VideoCall } from './pages/VideoCall';
 
 // if (isDev) {
 //   mockApi();
@@ -23,6 +24,7 @@ getStoreAsync().then((store) => {
         <Switch>
           <Route path="/login" component={Login}></Route>
           <Route path="/main" component={Main}></Route>
+          <Route path="/video-call" component={VideoCall}></Route>
         </Switch>
       </HashRouter>
     </Provider>,

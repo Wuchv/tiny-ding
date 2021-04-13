@@ -2,6 +2,7 @@ import * as React from 'react';
 import { notification } from 'antd';
 import { AudioOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { useSubject, ofAction } from '@src/hooks/useSubject';
+import { openVideoCallWindow } from '@src/utils';
 
 import { AudioModal } from './AudioModal';
 import { Uploader } from './Uploader';
@@ -57,12 +58,11 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
       }
     }, [isAudioShow]);
 
-    const openVideoChat = React.useCallback(() => {}, []);
     return (
       <div className="toolbar">
         <AudioOutlined onClick={showAudioModal} />
         <Uploader sendMessage={sendMessage} />
-        <VideoCameraOutlined onClick={openVideoChat} />
+        <VideoCameraOutlined onClick={() => openVideoCallWindow(false)} />
       </div>
     );
   }
