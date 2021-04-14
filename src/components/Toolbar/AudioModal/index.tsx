@@ -72,10 +72,10 @@ export const AudioControl: React.FC<IAudioControl> = React.memo(
     return (
       <>
         {!isAudioPlay && <PauseCircleOutlined onClick={audioPlay} />}
-        {!!isAudioPlay && <PlayCircleOutlined onClick={audioPause} />}
+        {isAudioPlay && <PlayCircleOutlined onClick={audioPause} />}
         <div className="audio-control-progress">
           <Progress
-            percent={parseFloat((currentTime / duration).toFixed(2)) * 100}
+            percent={(currentTime / duration) * 100}
             showInfo={false}
             width={100}
             strokeWidth={3}

@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { List } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
 import { chooseChatPartnerAction } from '@src/redux/reducers/chatReducer';
-import ConversationManager from '@src/modules/dbManager/ConversationManager';
+import { ConversationManager } from '@src/modules/RxdbManager';
 
 import { Avatar } from '@src/components/Avatar';
 
@@ -17,7 +16,7 @@ export const ChatList: React.FC<IChatList> = React.memo(() => {
   const [chatList, setChatList] = React.useState<IConversation[]>([]);
 
   React.useEffect(() => {
-    ConversationManager.getAllDocuments().then((res) =>
+    ConversationManager.getAllDocuments().then((res: IConversation[]) =>
       setChatList(res as IConversation[])
     );
   }, []);

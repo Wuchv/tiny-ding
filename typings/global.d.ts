@@ -1,5 +1,5 @@
 /// <reference path="./basic.d.ts" />
-import { IpcRenderer } from 'electron';
+import { IpcRenderer, Remote } from 'electron';
 import { RxCollection, RxDatabase } from 'rxdb';
 
 interface client {
@@ -8,7 +8,7 @@ interface client {
   closeWindow: Function;
   maximizeWindow: Function;
   minimizeWindow: Function;
-  localDatabase: RxDB.LocalDatabaseType;
+  remote: Remote;
 }
 
 declare global {

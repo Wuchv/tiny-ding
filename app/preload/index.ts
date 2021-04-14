@@ -1,6 +1,6 @@
 import { WindowName } from '../browser-window';
 import { ipcRenderer } from 'electron';
-import { createLocalDB } from '../db';
+import { remote } from 'electron';
 
 // 打开新的窗口
 function openWindow(name: WindowName) {
@@ -23,14 +23,11 @@ function minimizeWindow(name?: WindowName) {
   return result;
 }
 
-(async () => {
-  const localDatabase = await createLocalDB();
-  window.$client = {
-    ipcRenderer,
-    openWindow,
-    closeWindow,
-    maximizeWindow,
-    minimizeWindow,
-    localDatabase,
-  };
-})();
+window.$client = {
+  ipcRenderer,
+  openWindow,
+  closeWindow,
+  maximizeWindow,
+  minimizeWindow,
+  remote,
+};

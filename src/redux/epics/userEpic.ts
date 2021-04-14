@@ -7,7 +7,7 @@ import {
   loginFailedAction,
 } from '../reducers/userReducer';
 import { IEpic } from '.';
-import UserManage from '@src/modules/dbManager/UserManager';
+import { UserManager } from '@src/modules/RxdbManager';
 
 export const loginEpic: IEpic = (action$, store$, { login }) =>
   action$.pipe(
@@ -17,7 +17,7 @@ export const loginEpic: IEpic = (action$, store$, { login }) =>
         map((res: PromiseReturnType<typeof login>) => {
           if (res.uid) {
             // 将个人信息存入RxDB
-            UserManage.upsert(res);
+            UserManager.upsert(res);
             return loginSuccessAction(res);
           } else {
             return loginFailedAction();

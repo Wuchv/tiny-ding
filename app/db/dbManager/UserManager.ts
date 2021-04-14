@@ -1,7 +1,7 @@
 import { getAllUsers } from '@src/services';
-import RxdbManager from './RxdbManager';
+import DBManager from './DBManager';
 
-class UserManage extends RxdbManager {
+export default class UserManager extends DBManager {
   constructor() {
     super();
     this.collection = this.localDatabase.users;
@@ -19,5 +19,3 @@ class UserManage extends RxdbManager {
     return allDoc.filter((doc: IUser) => !doc.access_token) as IUser[];
   }
 }
-
-export default new UserManage();

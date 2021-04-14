@@ -7,7 +7,7 @@ import axios, {
 } from 'axios';
 import { message } from 'antd';
 import { delay } from 'lodash';
-import UserManager from './dbManager/UserManager';
+import { UserManager } from './RxdbManager';
 
 export const DEFAULT_HEADER = 'application/x-www-form-urlencoded';
 export const FILE_HEADER = 'multipart/form-data';

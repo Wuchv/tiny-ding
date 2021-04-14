@@ -1,43 +1,16 @@
-import { filter } from 'rxjs/operators';
-import { RxChangeEvent, RxDocument } from 'rxdb';
+import { RxDocument } from 'rxdb';
+import { database } from '..';
 
-enum EWriteOperation {
-  INSERT = 'INSERT',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
-}
-class RxdbManager {
+class DBManager {
   protected localDatabase: RxDB.LocalDatabaseType;
   protected collection: valueOf<RxDB.ICollection>;
 
   constructor() {
-    this.localDatabase = window.$client.localDatabase;
+    this.localDatabase = database;
   }
 
   public getCollection() {
     return this.collection;
-  }
-
-  public get insert$() {
-    return this.collection.$.pipe(
-      filter(
-        (changeEvent: RxChangeEvent) =>
-          changeEvent.operation === EWriteOperation.INSERT
-      )
-    );
-  }
-
-  public get update$() {
-    return this.collection.$.pipe(
-      filter(
-        (changeEvent: RxChangeEvent) =>
-          changeEvent.operation === EWriteOperation.UPDATE
-      )
-    );
-  }
-
-  public getCollection$() {
-    return this.collection.$;
   }
 
   public async getAllDocuments(): Promise<RxDB.IDocument[]> {
@@ -67,4 +40,4 @@ class RxdbManager {
   }
 }
 
-export default RxdbManager;
+export default DBManager;

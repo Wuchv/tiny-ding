@@ -1,16 +1,11 @@
 import * as React from 'react';
-import MessageManager from '@src/modules/dbManager/MessageManager';
+import { MessageManager } from '@src/modules/RxdbManager';
 import { Message } from '@src/components/Message';
+import { useReduxData } from '@src/hooks/useRedux';
 
 import './style.less';
-import { useReduxData } from '@src/hooks/useRedux';
-import MessageCenter, { EMessageEvent } from '@src/modules/MessageCenter';
-import { filter } from 'rxjs/operators';
-import { RxChangeEvent } from 'rxdb';
 
-interface IChatBox {}
-
-export const ChatBox: React.FC<IChatBox> = React.memo(() => {
+export const ChatBox: React.FC<unknown> = React.memo(() => {
   const chatBoxRef: React.RefObject<HTMLDivElement> = React.useRef(null);
   const [, { uid, currentTo }] = useReduxData();
   const [msgList, setMsgList] = React.useState<IMessage[]>([]);
@@ -25,16 +20,10 @@ export const ChatBox: React.FC<IChatBox> = React.memo(() => {
 
   React.useEffect(() => {
     updateMsg();
-    const msgSub = MessageManager.getCollection$()
-      .pipe(
-        filter((changeEvent: RxChangeEvent) => {
-          const msg = changeEvent.rxDocument.toJSON();
-          return msg.fromId === uid && msg.toId === currentTo;
-        })
-      )
-      .subscribe(() => {
-        updateMsg();
-      });
+    const msgSub = MessageManager.collectionFilterById$(
+      uid,
+      currentTo
+    ).subscribe(updateMsg);
 
     return () => msgSub.unsubscribe();
   }, [uid, currentTo]);

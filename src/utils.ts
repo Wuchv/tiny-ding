@@ -43,3 +43,8 @@ export const calcFileSize = (size: number | string): string => {
   result = `${parseFloat(size.toFixed(2))} ${sizeLabel[cursor]}`;
   return result;
 };
+
+export const SingleInstance = <T>(P: T) => {
+  let instance: T = null;
+  return () => instance || (instance = new (P as any)());
+};

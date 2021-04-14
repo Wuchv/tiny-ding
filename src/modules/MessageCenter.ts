@@ -1,9 +1,7 @@
 import * as io from 'socket.io-client';
 import { RxDocument } from 'rxdb';
-import { Subject } from 'rxjs';
 import { message } from 'antd';
-import UserManager from './dbManager/UserManager';
-import MessageManager from './dbManager/MessageManager';
+import { UserManager, MessageManager } from './RxdbManager';
 
 export enum EMsgType {
   TEXT = 'text',

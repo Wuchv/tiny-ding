@@ -16,6 +16,7 @@ const devConfig = WebpackMerge.merge(baseConfig, {
     main: ['@babel/polyfill', entryMainDir],
   },
   plugins: [
+    new Webpack.ExternalsPlugin('commonjs', ['leveldown']),
     new CleanWebpackPlugin({
       cleanOnceBeforeBuildPatterns: [
         //自定义要删除的文件

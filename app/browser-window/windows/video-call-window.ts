@@ -9,8 +9,6 @@ import {
 const options: BrowserWindowConstructorOptions = {
   width: 700,
   height: 500,
-  minWidth: 820,
-  minHeight: 650,
   webPreferences: {
     nodeIntegration: true,
     webSecurity: false,

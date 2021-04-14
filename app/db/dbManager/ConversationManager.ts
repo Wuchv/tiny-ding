@@ -1,16 +1,19 @@
-import RxdbManager from './RxdbManager';
+import DBManager from './DBManager';
 import UserManager from './UserManager';
+import { getUserManager } from '.';
 
-class ConversationManager extends RxdbManager {
+export default class ConversationManager extends DBManager {
+  private userManager: UserManager;
   constructor() {
     super();
     this.collection = this.localDatabase.conversations;
+    this.userManager = getUserManager() as UserManager;
     this.generateConversation();
   }
 
   public async generateConversation() {
-    const users: IUser[] = await UserManager.getOther();
-    const own: IUser = await UserManager.getOwnInfo();
+    const users: IUser[] = await this.userManager.getOther();
+    const own: IUser = await this.userManager.getOwnInfo();
     const conversations = users.map((user) => ({
       cid: `${own.uid}:${user.uid}`,
       toId: user.uid,
@@ -20,8 +23,8 @@ class ConversationManager extends RxdbManager {
   }
 
   public async getLatestConversation() {
-    const own: IUser = await UserManager.getOwnInfo();
-    const users: IUser[] = await UserManager.getOther();
+    const own: IUser = await this.userManager.getOwnInfo();
+    const users: IUser[] = await this.userManager.getOther();
     const latestUser = users[0];
     if (!latestUser) {
       return {};
@@ -33,5 +36,3 @@ class ConversationManager extends RxdbManager {
     };
   }
 }
-
-export default new ConversationManager();

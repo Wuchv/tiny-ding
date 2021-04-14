@@ -5,6 +5,22 @@ import {
   restoreMainWindow,
   closeMainWindow,
 } from './browser-window';
+import {
+  getUserManager,
+  getMessageManager,
+  getConversationManager,
+} from './db/dbManager';
+import { createLocalDB } from './db';
+
+const init = async () => {
+  await createLocalDB();
+  (global as any).localDatabase = {
+    userManager: getUserManager(),
+    messageManager: getMessageManager(),
+    conversationManager: getConversationManager(),
+  };
+  Object.freeze(global);
+};
 
 const start = () => {
   // 请求单例锁，避免打开多个electron实例
@@ -19,7 +35,8 @@ const start = () => {
     restoreMainWindow();
   });
 
-  app.on('ready', () => {
+  app.on('ready', async () => {
+    await init();
     createWindow(WindowName.MAIN);
   });
 
