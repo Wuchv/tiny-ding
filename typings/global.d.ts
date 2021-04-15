@@ -14,6 +14,19 @@ interface client {
 declare global {
   interface Window {
     $client: client;
+    console: any;
+  }
+
+  interface Console {
+    red: Function;
+    green: Function;
+    yellow: Function;
+    blue: Function;
+    magenta: Function;
+    cyan: Function;
+    white: Function;
+    gray: Function;
+    grey: Function;
   }
 
   type NodeStyleReturn<T> = Promise<[string | Record<string, unknown>, T]>;

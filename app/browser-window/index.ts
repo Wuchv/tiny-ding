@@ -61,7 +61,7 @@ export const createWindow = (
   win.on('closed', () => WindowMap.delete(name));
 
   win.webContents.on('render-process-gone', async (event, details) => {
-    console.log(event, details);
+    console.red(event, details);
     messageBox.error({
       message: `The renderer process gone. ${details.reason}`,
       buttons: ['quit', 'relaunch'],
@@ -101,7 +101,7 @@ export const closeMainWindow = () => {
 
   ipcMain.on('MAXIMIZE_WINDOW', (e, options) => {
     const win = BrowserWindow.fromWebContents(e.sender);
-    console.log(win?.isMaximized());
+    console.green(win?.isMaximized());
     win?.isMaximized() ? win?.unmaximize() : win?.maximize();
   });
 

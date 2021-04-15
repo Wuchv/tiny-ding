@@ -1,27 +1,28 @@
 import { WindowName } from '../browser-window';
 import { ipcRenderer } from 'electron';
 import { remote } from 'electron';
+import { proxyConsole } from '../modules/Console';
 
 // 打开新的窗口
-function openWindow(name: WindowName) {
+const openWindow = (name: WindowName) => {
   const result = ipcRenderer.send('OPEN_WINDOW', name);
   return result;
-}
+};
 
-function closeWindow(name?: WindowName) {
+const closeWindow = (name?: WindowName) => {
   const result = ipcRenderer.send('CLOSE_WINDOW', name);
   return result;
-}
+};
 
-function maximizeWindow(name?: WindowName) {
+const maximizeWindow = (name?: WindowName) => {
   const result = ipcRenderer.send('MAXIMIZE_WINDOW', name);
   return result;
-}
+};
 
-function minimizeWindow(name?: WindowName) {
+const minimizeWindow = (name?: WindowName) => {
   const result = ipcRenderer.send('MINIMIZE_WINDOW', name);
   return result;
-}
+};
 
 window.$client = {
   ipcRenderer,
@@ -31,3 +32,5 @@ window.$client = {
   minimizeWindow,
   remote,
 };
+
+window.console = proxyConsole();

@@ -29,7 +29,7 @@ export const Header: React.FC<IHeader> = React.memo(() => {
     (type: 'message' | 'friendList') => {
       setIsMessageIconClicked(!isMessageIconClicked);
       setIsTeamIconClicked(!isTeamIconClicked);
-      console.log(type);
+      console.green(type);
     },
     [isMessageIconClicked, isTeamIconClicked]
   );

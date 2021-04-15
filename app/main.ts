@@ -12,8 +12,11 @@ import {
   getMessageCenter,
 } from './modules';
 import { createLocalDB } from './db';
+import { proxyConsole } from './modules/Console';
 
 const init = async () => {
+  //代理原生 console 对象
+  console = proxyConsole();
   await createLocalDB();
   (global as any).localDatabase = {
     userManager: getUserManager(),

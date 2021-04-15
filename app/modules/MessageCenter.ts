@@ -41,7 +41,7 @@ export default class MessageCenter {
   }
 
   public sendMsg(msg: IMessage) {
-    console.log(EMessageEvent.SEND, msg);
+    console.green(EMessageEvent.SEND, msg);
     // this.socket.emit(EMessageEvent.SEND, msg);
   }
 
