@@ -9,7 +9,8 @@ import {
   getUserManager,
   getMessageManager,
   getConversationManager,
-} from './db/dbManager';
+  getMessageCenter,
+} from './modules';
 import { createLocalDB } from './db';
 
 const init = async () => {
@@ -19,6 +20,7 @@ const init = async () => {
     messageManager: getMessageManager(),
     conversationManager: getConversationManager(),
   };
+  (global as any).MessageCenter = getMessageCenter();
   Object.freeze(global);
 };
 

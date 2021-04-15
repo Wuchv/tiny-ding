@@ -11,7 +11,7 @@ import Recorder from 'recorder-core';
 import 'recorder-core/src/engine/mp3';
 import 'recorder-core/src/engine/mp3-engine';
 import 'recorder-core/src/extensions/waveview';
-import { EMsgType } from '@src/modules/MessageCenter';
+import { EMsgType } from '@src/modules/RemoteGlobal';
 import FileUploader from '@src/modules/FileUploader';
 import { useSubject, ofAction } from '@src/hooks/useSubject';
 import { fileToBase64 } from '@src/modules/FileTransform';

@@ -1,5 +1,5 @@
 import { RxDocument } from 'rxdb';
-import { database } from '..';
+import { database } from '../../db';
 
 class DBManager {
   protected localDatabase: RxDB.LocalDatabaseType;

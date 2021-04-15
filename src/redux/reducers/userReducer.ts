@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IRootState } from './index';
 import { ILoginRequest } from '../../services/user';
-import { UserManager } from '@src/modules/RxdbManager';
+import { UserManager } from '@src/modules/RemoteGlobal';
 
 // @ts-ignore:Top-level 'await' expressions are only allowed when the 'module' option is set to 'esnext' or 'system', and the 'target' option is set to 'es2017' or higher.
 const initialState: Partial<IUser> = (await UserManager.getOwnInfo()) || {};

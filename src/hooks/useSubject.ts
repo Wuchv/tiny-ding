@@ -1,5 +1,5 @@
 import { Subject, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, retryWhen, delay, scan } from 'rxjs/operators';
 
 enum ERxEvent {
   AUDIO_CLOSE = 'audio_close',
@@ -25,4 +25,21 @@ export const ofAction = (action: ERxEvent, id: string = null) => (
       }
       return result;
     })
+  );
+
+export const retryWithDelay = (count: number, delayMilliseconds: number) => (
+  source: Observable<any>
+) =>
+  source.pipe(
+    retryWhen((err$) =>
+      err$.pipe(
+        scan((errCount, err) => {
+          if (errCount >= count) {
+            throw err;
+          }
+          return errCount + 1;
+        }, 0),
+        delay(delayMilliseconds)
+      )
+    )
   );

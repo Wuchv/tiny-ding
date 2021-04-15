@@ -2,7 +2,7 @@ import * as React from 'react';
 import { List } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { chooseChatPartnerAction } from '@src/redux/reducers/chatReducer';
-import { ConversationManager } from '@src/modules/RxdbManager';
+import { ConversationManager } from '@src/modules/RemoteGlobal';
 
 import { Avatar } from '@src/components/Avatar';
 

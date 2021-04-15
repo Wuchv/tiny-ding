@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ConversationManager } from '@src/modules/RxdbManager';
+import { ConversationManager } from '@src/modules/RemoteGlobal';
 import { IRootState } from './index';
 
 export interface IChat {

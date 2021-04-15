@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Input, Button, message } from 'antd';
-import MessageCenter, { EMsgType } from '@src/modules/MessageCenter';
+import { MessageCenter, EMsgType } from '@src/modules/RemoteGlobal';
 import FileUploader from '@src/modules/FileUploader';
 import { useReduxData } from '@src/hooks/useRedux';
 import { fileToBase64 } from '@src/modules/FileTransform';

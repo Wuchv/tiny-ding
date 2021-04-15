@@ -1,7 +1,9 @@
 import * as io from 'socket.io-client';
 import { RxDocument } from 'rxdb';
-import { message } from 'antd';
-import { UserManager, MessageManager } from './RxdbManager';
+import { messageBox } from '../dialog';
+import { getUserManager, getMessageManager } from '.';
+import UserManager from './dbManager/UserManager';
+import MessageManager from './dbManager/MessageManager';
 
 export enum EMsgType {
   TEXT = 'text',
@@ -16,15 +18,14 @@ export enum EMessageEvent {
   THROW_ERROR = 'throwSendMessageError',
 }
 
-export interface IMessageEvent {
-  action: EMessageEvent;
-  message: IMessage;
-}
-
-class MessageCenter {
+export default class MessageCenter {
+  private userManager: UserManager;
+  private messageManager: MessageManager;
   public socket: SocketIOClient.Socket;
 
   constructor() {
+    this.userManager = getUserManager();
+    this.messageManager = getMessageManager();
     this.initSocket();
   }
 
@@ -39,7 +40,7 @@ class MessageCenter {
     } as IMessage;
   }
 
-  public async sendMsg(msg: IMessage) {
+  public sendMsg(msg: IMessage) {
     console.log(EMessageEvent.SEND, msg);
     // this.socket.emit(EMessageEvent.SEND, msg);
   }
@@ -51,7 +52,7 @@ class MessageCenter {
   ): Promise<IMessage> {
     const _msg = this.msgWrap(msg);
     if (isCache && _msg.attachment && file) {
-      const msgDoc = await MessageManager.insert(_msg);
+      const msgDoc = await this.messageManager.insert(_msg);
       msgDoc.putAttachment(
         {
           id: `${file.name}:${_msg.msgId}`,
@@ -61,14 +62,16 @@ class MessageCenter {
         true
       );
     } else {
-      MessageManager.insert(_msg);
+      this.messageManager.insert(_msg);
     }
     return _msg;
   }
 
   public async updateMsg(msg: Partial<IMessage>) {
     const { msgId, content, attachment } = msg;
-    const doc: RxDocument<IMessage, any> = await MessageManager.findOne(msgId);
+    const doc: RxDocument<IMessage, any> = await this.messageManager.findOne(
+      msgId
+    );
     await doc.atomicUpdate((oldDoc: RxDocument<IMessage, any>) => {
       oldDoc.content = content;
       oldDoc.attachment = { ...oldDoc.attachment, ...attachment };
@@ -78,12 +81,14 @@ class MessageCenter {
   }
 
   public async deleteMsg(msgId: string) {
-    const doc: RxDocument<IMessage, any> = await MessageManager.findOne(msgId);
+    const doc: RxDocument<IMessage, any> = await this.messageManager.findOne(
+      msgId
+    );
     doc.remove();
   }
 
   private async initSocket() {
-    const own = await UserManager.getOwnInfo();
+    const own = await this.userManager.getOwnInfo();
     this.socket = io.connect('ws://127.0.0.1:7000/im', {
       transports: ['websocket'],
       query: {
@@ -92,22 +97,20 @@ class MessageCenter {
     });
 
     this.socket.on('connect', () => {
-      console.log(`socket connected ${this.socket.id}`);
+      messageBox.info({ message: `socket connected ${this.socket.id}` });
     });
 
     this.socket.on('disconnect', () => {
       this.socket.disconnect();
-      console.log(`socket disconnected ${this.socket.id}`);
+      messageBox.info({ message: `socket disconnected ${this.socket.id}` });
     });
 
     this.socket.on(EMessageEvent.THROW_ERROR, (e: Error) => {
-      message.error(e);
+      messageBox.error(e);
     });
 
     this.socket.on(EMessageEvent.OBTAIN, (message: IMessage) => {
-      MessageManager.insert(message);
+      this.messageManager.insert(message);
     });
   }
 }
-
-export default new MessageCenter();

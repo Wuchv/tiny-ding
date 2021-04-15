@@ -4,7 +4,7 @@ import { FileTextTwoTone, CloseCircleOutlined } from '@ant-design/icons';
 import { useReduxData } from '@src/hooks/useRedux';
 import { useSubject, ofAction } from '@src/hooks/useSubject';
 import Http, { FILE_HEADER } from '@src/modules/Http';
-import MessageCenter from '@src/modules/MessageCenter';
+import { MessageCenter } from '@src/modules/RemoteGlobal';
 import { calcFileSize, resolveTimestamp } from '@src/utils';
 import {
   ossHost,

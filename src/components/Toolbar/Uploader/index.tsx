@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FolderOpenOutlined } from '@ant-design/icons';
 import { useUploadFile } from '@src/hooks/useUploadFile';
-import { EMsgType } from '@src/modules/MessageCenter';
+import { EMsgType } from '@src/modules/RemoteGlobal';
 import { IToolbar } from '..';
 
 type IUpload = Pick<IToolbar, 'sendMessage'>;

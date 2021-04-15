@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Subscription } from 'rxjs';
 import { Typography, Image as AntdImage } from 'antd';
-import { EMsgType } from '@src/modules/MessageCenter';
+import { EMsgType } from '@src/modules/RemoteGlobal';
 import { useReduxData } from '@src/hooks/useRedux';
 import { resolveTimestamp } from '@src/utils';
 import { imageToBase64 } from '@src/modules/FileTransform';

@@ -1,13 +1,13 @@
 import DBManager from './DBManager';
 import UserManager from './UserManager';
-import { getUserManager } from '.';
+import { getUserManager } from '..';
 
 export default class ConversationManager extends DBManager {
   private userManager: UserManager;
   constructor() {
     super();
     this.collection = this.localDatabase.conversations;
-    this.userManager = getUserManager() as UserManager;
+    this.userManager = getUserManager();
     this.generateConversation();
   }
 

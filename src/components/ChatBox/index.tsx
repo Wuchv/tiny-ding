@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { MessageManager } from '@src/modules/RxdbManager';
+import { MessageManager } from '@src/modules/RemoteGlobal';
 import { Message } from '@src/components/Message';
 import { useReduxData } from '@src/hooks/useRedux';
 
