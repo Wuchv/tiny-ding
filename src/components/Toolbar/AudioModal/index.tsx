@@ -199,11 +199,13 @@ export const AudioModal: React.FC<IAudioModal> = React.memo(
           return;
         }
         audioRef.current.src = result.url;
-        sendMessage(result.url, EMsgType.AUDIO, result, {
-          name: result.name,
-          type: 'audio/mpeg',
-          data: blob,
-        });
+        fileToBase64(blob, (payload: string) =>
+          sendMessage(result.url, EMsgType.AUDIO, result, {
+            name: result.name,
+            type: 'audio/mpeg',
+            data: payload,
+          })
+        );
         notification.close('audio');
         globalSubject$.next({ action: ERxEvent.AUDIO_CLOSE });
       } else {
