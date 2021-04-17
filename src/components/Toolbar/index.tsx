@@ -51,10 +51,10 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
             currentTo={currentTo}
           />
         ),
-        placement: 'bottomRight',
-        duration: null,
-        className: 'audio-modal',
         bottom: 170,
+        duration: null,
+        placement: 'bottomRight',
+        className: 'audio-modal',
         onClose: () => {
           setIsAudioShow(false);
           globalSubject$.next({ action: RxEvent.AUDIO_CLOSE });
@@ -71,10 +71,10 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
       notification.open({
         key: 'initiateVideoCall',
         message: <VideoInvitationModal />,
+        bottom: 170,
+        duration: null,
         className: 'video-invitation-modal',
         placement: 'bottomRight',
-        duration: null,
-        bottom: 170,
         onClose: () => {
           setIsVideoCallInviteShow(false);
         },

@@ -1,12 +1,102 @@
 .video-invitation-modal {
+  width: 224px;
+  height: 60px;
   position: relative;
-  width: 400px;
-  height: 100px;
+  display: flex;
+  align-items: center;
+  margin-right: 140px;
 
   canvas {
     position: absolute;
-    width: 150px;
-    height: 75px;
+    top: 0;
+    left: -16px;
+    height: 60px;
     cursor: pointer;
+  }
+
+  .ant-notification-notice-message {
+    margin: 0;
+    font-size: 18px;
+
+    .ant-typography {
+      margin-left: 50px;
+    }
+
+    span:nth-child(3) {
+      animation: fadeOut1 3s linear 0s infinite;
+    }
+
+    span:nth-child(4) {
+      animation: fadeOut2 3s linear 0s infinite;
+    }
+
+    span:nth-child(5) {
+      animation: fadeOut3 3s linear 0s infinite;
+    }
+  }
+
+  .ant-notification-notice-close {
+    top: auto;
+
+    .ant-notification-close-x {
+      font-size: 20px;
+    }
+  }
+
+  @keyframes fadeOut1 {
+    0% {
+      opacity: 0;
+    }
+
+    33% {
+      opacity: 1;
+    }
+
+    66% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 1;
+
+    }
+  }
+
+  @keyframes fadeOut2 {
+    0% {
+      opacity: 0;
+    }
+
+    33% {
+      opacity: 0;
+    }
+
+    66% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 1;
+
+    }
+  }
+
+  @keyframes fadeOut3 {
+    0% {
+      opacity: 0;
+    }
+
+    33% {
+      opacity: 0;
+    }
+
+    66% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+
+    }
   }
 }

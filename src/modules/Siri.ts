@@ -75,8 +75,9 @@ class Shape {
   private color: any;
   private cr: number;
 
-  constructor(canvas: HTMLCanvasElement, y: number, i: number) {
+  constructor(canvas: HTMLCanvasElement, y: number, i: number, cr: number) {
     this.ctx = canvas.getContext('2d');
+    this.cr = cr;
     this.init(y, i);
   }
 
@@ -148,27 +149,12 @@ class Shape {
     ctx.arc(siri.width / 2, this.y, this.cr, 0, Math.PI * 2, false);
     ctx.fill();
     ctx.stroke();
-    // click
-    if (ctx.isPointInPath(siri.mouseX, siri.mouseY)) {
-      siri.init();
-      this.cr = 50;
-      siri.mouseX = null;
-      siri.mouseY = null;
-    }
     ctx.restore();
   }
 
   updateParams() {
     this.a.incDec(1);
     this.a1.incDec(0.5);
-    if (this.cr === 51) {
-      this.color = {
-        r: Tool.randomNumber(50, 180),
-        g: Tool.randomNumber(50, 180),
-        b: Tool.randomNumber(50, 180),
-        a: 1,
-      };
-    }
     if (this.cr > 50) this.cr -= 1;
   }
 
@@ -182,8 +168,6 @@ export class Siri {
   public canvas: HTMLCanvasElement;
   public width: number;
   public height: number;
-  public mouseX: number;
-  public mouseY: number;
   private ctx: CanvasRenderingContext2D;
   private shapes: Shape[];
 
@@ -192,8 +176,6 @@ export class Siri {
     this.ctx = this.canvas.getContext('2d');
     this.width = this.canvas.width;
     this.height = this.canvas.height;
-    this.mouseX = null;
-    this.mouseY = null;
   }
 
   init(_siri?: Siri) {
@@ -202,7 +184,7 @@ export class Siri {
     }
     this.shapes = [];
     for (let i = 0; i < 3; i++) {
-      const s = new Shape(this.canvas, this.height / 2, i + 1);
+      const s = new Shape(this.canvas, this.height / 2, i + 1, this.width);
       this.shapes.push(s);
     }
   }

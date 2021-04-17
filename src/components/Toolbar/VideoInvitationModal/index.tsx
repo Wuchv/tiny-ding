@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Typography } from 'antd';
 import { Siri } from '@src/modules/Siri';
 
 import './style.less';
@@ -31,6 +32,10 @@ export const VideoInvitationModal: React.FunctionComponent<unknown> = React.memo
     return (
       <>
         <canvas ref={siriCanvasRef} onClick={() => siri.init()} />
+        <Typography.Text>正在呼叫</Typography.Text>
+        <span> .</span>
+        <span> .</span>
+        <span> .</span>
       </>
     );
   }

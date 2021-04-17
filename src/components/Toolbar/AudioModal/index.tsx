@@ -14,7 +14,6 @@ import 'recorder-core/src/extensions/waveview';
 import { EMsgType } from '@src/modules/RemoteGlobal';
 import FileUploader from '@src/modules/FileUploader';
 import { useSubject, ofAction } from '@src/hooks/useSubject';
-import { fileToBase64 } from '@src/modules/FileTransform';
 import { IToolbar } from '..';
 
 import './style.less';
