@@ -1,22 +1,29 @@
 import * as io from 'socket.io-client';
+import { fromEvent, Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { RxDocument } from 'rxdb';
 import { messageBox } from '../dialog';
 import { getUserManager, getMessageManager } from '.';
 import UserManager from './dbManager/UserManager';
 import MessageManager from './dbManager/MessageManager';
 
-export enum EMsgType {
-  TEXT = 'text',
-  IMAGE = 'image',
-  FILE = 'file',
-  AUDIO = 'audio',
+enum EMessageEvent {
+  SEND_MESSAGE = 'send_message_to_server',
+  OBTAIN_MESSAGE = 'obtain_message_from_server',
+  THROW_ERROR = 'throw_send_message_error',
+  SEND_SIGNAL = 'send_signal_to_server',
+  OBTAIN_SIGNAL = 'obtain_signal_from_server',
 }
 
-export enum EMessageEvent {
-  SEND = 'sendMessageToServer',
-  OBTAIN = 'obtainMessageFromServer',
-  THROW_ERROR = 'throwSendMessageError',
+enum ESignalType {
+  INITIATE_VIDEO_CALL = 'initiate_video_call',
+  RECEIVE_VIDEO_CALL = 'receive_video_call',
+  AGREE_TO_VIDEO_CALL = 'agree_to_video_call',
+  REJECT_VIDEO_CALL = 'reject_video_call',
 }
+
+export const ofType = (type: ESignalType) => (source: Observable<ISignal>) =>
+  source.pipe(filter((signal) => signal.type === type));
 
 export default class MessageCenter {
   private userManager: UserManager;
@@ -27,6 +34,24 @@ export default class MessageCenter {
     this.userManager = getUserManager();
     this.messageManager = getMessageManager();
     this.initSocket();
+  }
+
+  public get receiveVideoCall$(): Observable<ISignal> {
+    return fromEvent(this.socket, EMessageEvent.OBTAIN_SIGNAL).pipe(
+      ofType(ESignalType.RECEIVE_VIDEO_CALL)
+    );
+  }
+
+  public get agreeToVideoCall$(): Observable<ISignal> {
+    return fromEvent(this.socket, EMessageEvent.OBTAIN_SIGNAL).pipe(
+      ofType(ESignalType.AGREE_TO_VIDEO_CALL)
+    );
+  }
+
+  public get rejectVideoCall$(): Observable<ISignal> {
+    return fromEvent(this.socket, EMessageEvent.OBTAIN_SIGNAL).pipe(
+      ofType(ESignalType.REJECT_VIDEO_CALL)
+    );
   }
 
   private msgWrap(msg: Partial<IMessage>): IMessage {
@@ -41,8 +66,13 @@ export default class MessageCenter {
   }
 
   public sendMsg(msg: IMessage) {
-    console.green(EMessageEvent.SEND, msg);
+    console.green(EMessageEvent.SEND_MESSAGE, msg);
     // this.socket.emit(EMessageEvent.SEND, msg);
+  }
+
+  public sendSignal(signal: ISignal) {
+    console.green(EMessageEvent.SEND_SIGNAL, signal);
+    this.socket.emit(EMessageEvent.SEND_SIGNAL, signal);
   }
 
   public async insertMsg(
@@ -97,19 +127,19 @@ export default class MessageCenter {
     });
 
     this.socket.on('connect', () => {
-      messageBox.info({ message: `socket connected ${this.socket.id}` });
+      console.red(`socket connected ${this.socket.id}`);
     });
 
     this.socket.on('disconnect', () => {
-      this.socket.disconnect();
-      messageBox.info({ message: `socket disconnected ${this.socket.id}` });
+      // this.socket.disconnect();
+      console.red(`socket disconnected ${this.socket.id}`);
     });
 
     this.socket.on(EMessageEvent.THROW_ERROR, (e: Error) => {
       messageBox.error(e);
     });
 
-    this.socket.on(EMessageEvent.OBTAIN, (message: IMessage) => {
+    this.socket.on(EMessageEvent.OBTAIN_MESSAGE, (message: IMessage) => {
       this.messageManager.insert(message);
     });
   }

@@ -23,3 +23,10 @@ export enum EMsgType {
   FILE = 'file',
   AUDIO = 'audio',
 }
+
+export enum ESignalType {
+  INITIATE_VIDEO_CALL = 'initiate_video_call',
+  RECEIVE_VIDEO_CALL = 'receive_video_call',
+  AGREE_TO_VIDEO_CALL = 'agree_to_video_call',
+  REJECT_VIDEO_CALL = 'reject_video_call',
+}
