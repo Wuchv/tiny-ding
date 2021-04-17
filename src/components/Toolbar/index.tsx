@@ -8,6 +8,7 @@ import { MessageCenter, ESignalType } from '@src/modules/RemoteGlobal';
 import { AudioModal } from './AudioModal';
 import { Uploader } from './Uploader';
 import { VideoInvitationModal } from './VideoInvitationModal';
+import { VideoReceivedModal } from './VideoReceivedModal';
 
 import './style.less';
 
@@ -33,11 +34,37 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
     ] = React.useState<boolean>(false);
 
     React.useEffect(() => {
+      // 监听录音弹窗关闭
       const audioCloseSub = globalSubject$
         .pipe(ofAction(RxEvent.AUDIO_CLOSE))
         .subscribe(() => setIsAudioShow(false));
 
-      return () => audioCloseSub.unsubscribe();
+      // 收到视频通话邀请
+      const receiveCallSub = MessageCenter.receiveVideoCall$.subscribe(
+        (receivedVideoSignal: ISignal) => {
+          const { fromId, toId } = receivedVideoSignal.payload;
+          notification.open({
+            key: 'receivedVideoCall',
+            message: <VideoReceivedModal fromId={fromId} toId={toId} />,
+            duration: null,
+            className: 'video-received-modal',
+            placement: 'topRight',
+            onClose: () => {
+              MessageCenter.sendSignal({
+                type: ESignalType.REJECT_VIDEO_CALL,
+                payload: { fromId: toId, toId: fromId },
+              });
+            },
+          });
+        }
+      );
+
+      //TODO:同意/拒绝/未接听视频通话的处理
+
+      return () => {
+        receiveCallSub.unsubscribe();
+        audioCloseSub.unsubscribe();
+      };
     }, []);
 
     const showAudioModal = React.useCallback(() => {
