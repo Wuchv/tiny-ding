@@ -6,6 +6,7 @@ enum ERxEvent {
   READ_IMAGE_CACHE_ERROR = 'read_image_cache_error',
   GET_FILE = 'get_file',
   UPLOAD_FILE = 'upload_file',
+  VIDEO_INVITATION_MODAL_CLOSE = 'video_invitation_modal_close',
 }
 
 const subject: Subject<Rxjs.INext> = new Subject();

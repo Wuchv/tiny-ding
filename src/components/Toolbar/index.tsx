@@ -2,7 +2,6 @@ import * as React from 'react';
 import { notification } from 'antd';
 import { AudioOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { useSubject, ofAction } from '@src/hooks/useSubject';
-import { openVideoCallWindow } from '@src/utils';
 import { MessageCenter, ESignalType } from '@src/modules/RemoteGlobal';
 
 import { AudioModal } from './AudioModal';
@@ -34,17 +33,22 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
     ] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-      // 监听录音弹窗关闭
+      // 订阅录音弹窗关闭
       const audioCloseSub = globalSubject$
         .pipe(ofAction(RxEvent.AUDIO_CLOSE))
         .subscribe(() => setIsAudioShow(false));
+
+      // 订阅视频邀请modal关闭
+      const videoReceivedModalCloseSub = globalSubject$
+        .pipe(ofAction(RxEvent.VIDEO_INVITATION_MODAL_CLOSE))
+        .subscribe(() => setIsVideoCallInviteShow(false));
 
       // 收到视频通话邀请
       const receiveCallSub = MessageCenter.receiveVideoCall$.subscribe(
         (receivedVideoSignal: ISignal) => {
           const { fromId, toId } = receivedVideoSignal.payload;
           notification.open({
-            key: 'receivedVideoCall',
+            key: `receivedVideoCall:${fromId}`,
             message: <VideoReceivedModal fromId={fromId} toId={toId} />,
             duration: null,
             className: 'video-received-modal',
@@ -59,11 +63,10 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
         }
       );
 
-      //TODO:同意/拒绝/未接听视频通话的处理
-
       return () => {
-        receiveCallSub.unsubscribe();
         audioCloseSub.unsubscribe();
+        videoReceivedModalCloseSub.unsubscribe();
+        receiveCallSub.unsubscribe();
       };
     }, []);
 
@@ -91,13 +94,10 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
 
     const initiateVideoCall = React.useCallback(() => {
       setIsVideoCallInviteShow(true);
-      MessageCenter.sendSignal({
-        type: ESignalType.INITIATE_VIDEO_CALL,
-        payload: { fromId: uid, toId: currentTo },
-      });
+      // 打开等待视频通话邀请的modal
       notification.open({
         key: 'initiateVideoCall',
-        message: <VideoInvitationModal />,
+        message: <VideoInvitationModal fromId={uid} toId={currentTo} />,
         bottom: 170,
         duration: null,
         className: 'video-invitation-modal',
@@ -106,7 +106,6 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
           setIsVideoCallInviteShow(false);
         },
       });
-      // openVideoCallWindow(false);
     }, [uid, currentTo]);
 
     return (

@@ -1,6 +1,6 @@
 import * as io from 'socket.io-client';
-import { fromEvent, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { fromEvent, Observable, interval } from 'rxjs';
+import { filter, merge, skip, takeUntil } from 'rxjs/operators';
 import { RxDocument } from 'rxdb';
 import { messageBox } from '../dialog';
 import { getUserManager, getMessageManager } from '.';
@@ -20,6 +20,8 @@ enum ESignalType {
   RECEIVE_VIDEO_CALL = 'receive_video_call',
   AGREE_TO_VIDEO_CALL = 'agree_to_video_call',
   REJECT_VIDEO_CALL = 'reject_video_call',
+  USER_OFFLINE = 'user_offline',
+  NOT_ANSWERED = 'not_answered',
 }
 
 export const ofType = (type: ESignalType) => (source: Observable<ISignal>) =>
@@ -51,6 +53,25 @@ export default class MessageCenter {
   public get rejectVideoCall$(): Observable<ISignal> {
     return fromEvent(this.socket, EMessageEvent.OBTAIN_SIGNAL).pipe(
       ofType(ESignalType.REJECT_VIDEO_CALL)
+    );
+  }
+
+  public get userOffline$(): Observable<ISignal> {
+    return fromEvent(this.socket, EMessageEvent.OBTAIN_SIGNAL).pipe(
+      ofType(ESignalType.USER_OFFLINE)
+    );
+  }
+
+  public get notAnswered$(): Observable<ISignal> {
+    return fromEvent(this.socket, EMessageEvent.OBTAIN_SIGNAL).pipe(
+      ofType(ESignalType.NOT_ANSWERED)
+    );
+  }
+
+  public noCall(delay: number) {
+    return interval(delay).pipe(
+      skip(1),
+      takeUntil(this.rejectVideoCall$.pipe(merge(this.agreeToVideoCall$)))
     );
   }
 

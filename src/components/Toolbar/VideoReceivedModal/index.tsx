@@ -1,6 +1,6 @@
 // 收到视频通话邀请的弹窗
 import * as React from 'react';
-import { Typography, Button } from 'antd';
+import { Typography, Button, notification } from 'antd';
 import { MessageCenter, ESignalType } from '@src/modules/RemoteGlobal';
 
 import './style.less';
@@ -12,6 +12,21 @@ interface IVideoReceivedModal {
 
 export const VideoReceivedModal: React.FunctionComponent<IVideoReceivedModal> = React.memo(
   ({ fromId, toId }) => {
+    React.useEffect(() => {
+      // 未接收对方通话邀请
+      const notAnswered$ = MessageCenter.notAnswered$;
+
+      const notAnsweredSub = notAnswered$.subscribe(
+        (notAnsweredSignal: ISignal) => {
+          notification.close(`receivedVideoCall:${fromId}`);
+        }
+      );
+
+      return () => {
+        notAnsweredSub.unsubscribe();
+      };
+    }, []);
+
     const sendVideoCallSignal = React.useCallback(
       (type: ESignalType) => {
         MessageCenter.sendSignal({
