@@ -17,7 +17,6 @@ enum EMessageEvent {
 
 enum ESignalType {
   INITIATE_VIDEO_CALL = 'initiate_video_call',
-  RECEIVE_VIDEO_CALL = 'receive_video_call',
   AGREE_TO_VIDEO_CALL = 'agree_to_video_call',
   REJECT_VIDEO_CALL = 'reject_video_call',
   USER_OFFLINE = 'user_offline',
@@ -40,7 +39,7 @@ export default class MessageCenter {
 
   public get receiveVideoCall$(): Observable<ISignal> {
     return fromEvent(this.socket, EMessageEvent.OBTAIN_SIGNAL).pipe(
-      ofType(ESignalType.RECEIVE_VIDEO_CALL)
+      ofType(ESignalType.INITIATE_VIDEO_CALL)
     );
   }
 

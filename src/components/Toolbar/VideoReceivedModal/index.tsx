@@ -33,9 +33,11 @@ export const VideoReceivedModal: React.FunctionComponent<IVideoReceivedModal> = 
           type,
           payload: { fromId: toId, toId: fromId },
         });
+        notification.close(`receivedVideoCall:${fromId}`);
       },
       [fromId, toId]
     );
+
     return (
       <>
         <Typography.Text>
