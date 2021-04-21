@@ -7,15 +7,25 @@ const getRxdbManager = () => {
   };
 };
 
-const getMessageCenter = () => window.$client.remote.getGlobal('MessageCenter');
-
 const rxdbManager = getRxdbManager();
-const UserManager = rxdbManager.userManager;
-const MessageManager = rxdbManager.messageManager;
-const ConversationManager = rxdbManager.conversationManager;
-const MessageCenter = getMessageCenter();
+const UserManager: RxDB.IUserManager = rxdbManager.userManager;
+const MessageManager: RxDB.IMessageManager = rxdbManager.messageManager;
+const ConversationManager: RxDB.IConversationManager =
+  rxdbManager.conversationManager;
 
-export { UserManager, MessageManager, ConversationManager, MessageCenter };
+const MessageCenter: IMessageCenter = window.$client.remote.getGlobal(
+  'MessageCenter'
+);
+
+const RTCPeer: IRTCPeer = window.$client.remote.getGlobal('RTCPeer');
+
+export {
+  UserManager,
+  MessageManager,
+  ConversationManager,
+  MessageCenter,
+  RTCPeer,
+};
 
 export enum EMsgType {
   TEXT = 'text',

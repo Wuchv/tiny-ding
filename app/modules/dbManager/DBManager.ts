@@ -1,7 +1,7 @@
 import { RxDocument } from 'rxdb';
 import { database } from '../../db';
 
-class DBManager {
+class DBManager implements RxDB.IDBManager {
   protected localDatabase: RxDB.LocalDatabaseType;
   protected collection: valueOf<RxDB.ICollection>;
 

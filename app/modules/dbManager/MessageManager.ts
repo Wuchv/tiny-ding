@@ -1,16 +1,22 @@
 import { RxDocument, RxChangeEvent } from 'rxdb';
+import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 import DBManager from './DBManager';
 
-export default class MessageManager extends DBManager {
+export default class MessageManager
+  extends DBManager
+  implements RxDB.IMessageManager {
   constructor() {
     super();
     this.collection = this.localDatabase.messages;
     // this.collection.remove();
   }
 
-  public collectionFilterById$(uid: string, currentTo: string) {
+  public collectionFilterById$(
+    uid: string,
+    currentTo: string
+  ): Observable<RxChangeEvent> {
     return this.collection.$.pipe(
       filter((changeEvent: RxChangeEvent) => {
         const msg = changeEvent.rxDocument.toJSON();

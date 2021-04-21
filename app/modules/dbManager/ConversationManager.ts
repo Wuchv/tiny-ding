@@ -2,7 +2,9 @@ import DBManager from './DBManager';
 import UserManager from './UserManager';
 import { getUserManager } from '..';
 
-export default class ConversationManager extends DBManager {
+export default class ConversationManager
+  extends DBManager
+  implements RxDB.IConversationManager {
   private userManager: UserManager;
   constructor() {
     super();

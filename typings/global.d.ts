@@ -1,6 +1,14 @@
 /// <reference path="./basic.d.ts" />
 import { IpcRenderer, Remote } from 'electron';
 import { RxCollection, RxDatabase } from 'rxdb';
+import { RTCPeer } from './RTCPeer';
+import { MessageCenter } from './MessageCenter';
+import {
+  DBManager,
+  UserManager,
+  ConversationManager,
+  MessageManager,
+} from './RxdbManager';
 
 interface client {
   ipcRenderer: IpcRenderer;
@@ -29,6 +37,10 @@ declare global {
     grey: Function;
   }
 
+  type IRTCPeer = RTCPeer;
+
+  type IMessageCenter = MessageCenter;
+
   type NodeStyleReturn<T> = Promise<[string | Record<string, unknown>, T]>;
 
   namespace RxDB {
@@ -41,6 +53,11 @@ declare global {
       messages: RxCollection<IMessage>;
       conversations: RxCollection<IConversation>;
     }
+
+    type IDBManager = DBManager;
+    type IUserManager = UserManager;
+    type IMessageManager = MessageManager;
+    type IConversationManager = ConversationManager;
   }
 
   namespace Rxjs {

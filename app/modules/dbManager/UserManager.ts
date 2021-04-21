@@ -1,7 +1,9 @@
 import { getAllUsers } from '@src/services';
 import DBManager from './DBManager';
 
-export default class UserManager extends DBManager {
+export default class UserManager
+  extends DBManager
+  implements RxDB.IUserManager {
   constructor() {
     super();
     this.collection = this.localDatabase.users;
