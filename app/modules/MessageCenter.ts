@@ -1,6 +1,6 @@
 import * as io from 'socket.io-client';
 import { fromEvent, Observable, interval } from 'rxjs';
-import { filter, merge, skip, takeUntil } from 'rxjs/operators';
+import { filter, merge, takeUntil } from 'rxjs/operators';
 import { RxDocument } from 'rxdb';
 import { messageBox } from '../dialog';
 import { getUserManager, getMessageManager } from '.';
@@ -21,12 +21,13 @@ enum ESignalType {
   REJECT_VIDEO_CALL = 'reject_video_call',
   USER_OFFLINE = 'user_offline',
   NOT_ANSWERED = 'not_answered',
+  SYNC_ICECANDIDATE = 'sync_icecandidate',
 }
 
 export const ofType = (type: ESignalType) => (source: Observable<ISignal>) =>
   source.pipe(filter((signal) => signal.type === type));
 
-export default class MessageCenter {
+export default class MessageCenter implements IMessageCenter {
   private userManager: UserManager;
   private messageManager: MessageManager;
   public socket: SocketIOClient.Socket;
@@ -67,9 +68,14 @@ export default class MessageCenter {
     );
   }
 
+  public get syncIcecandidate$(): Observable<ISignal> {
+    return fromEvent(this.socket, EMessageEvent.OBTAIN_SIGNAL).pipe(
+      ofType(ESignalType.SYNC_ICECANDIDATE)
+    );
+  }
+
   public noCall(delay: number) {
     return interval(delay).pipe(
-      skip(1),
       takeUntil(this.rejectVideoCall$.pipe(merge(this.agreeToVideoCall$)))
     );
   }

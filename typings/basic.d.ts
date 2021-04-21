@@ -48,11 +48,15 @@ declare enum ESignalType {
   REJECT_VIDEO_CALL = 'reject_video_call',
   USER_OFFLINE = 'user_offline',
   NOT_ANSWERED = 'not_answered',
+  SYNC_ICECANDIDATE = 'sync_icecandidate',
 }
 
 declare interface ISignal {
   type: ESignalType;
-  payload: Pick<IMessage, 'fromId' | 'toId'>;
+  payload: Pick<IMessage, 'fromId' | 'toId'> & {
+    sdp?: RTCSessionDescriptionInit;
+    iceCandidate?: RTCIceCandidate;
+  };
 }
 
 declare module 'recorder-core';

@@ -10,6 +10,7 @@ import {
   getMessageManager,
   getConversationManager,
   getMessageCenter,
+  getRTCPeer,
 } from './modules';
 import { createLocalDB } from './db';
 import { proxyConsole } from './modules/Console';
@@ -24,6 +25,7 @@ const init = async () => {
     conversationManager: getConversationManager(),
   };
   (global as any).MessageCenter = getMessageCenter();
+  (global as any).RTCPeer = getRTCPeer();
   Object.freeze(global);
 };
 

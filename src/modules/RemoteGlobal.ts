@@ -40,4 +40,5 @@ export enum ESignalType {
   REJECT_VIDEO_CALL = 'reject_video_call',
   USER_OFFLINE = 'user_offline',
   NOT_ANSWERED = 'not_answered',
+  SYNC_ICECANDIDATE = 'sync_icecandidate',
 }
