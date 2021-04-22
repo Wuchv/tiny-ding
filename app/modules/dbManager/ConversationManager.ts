@@ -19,7 +19,7 @@ export default class ConversationManager
     const conversations = users.map((user) => ({
       cid: `${own.uid}:${user.uid}`,
       toId: user.uid,
-      title: user.nickname,
+      title: String(user.nickname),
     }));
     this.bulkInsert(conversations);
   }

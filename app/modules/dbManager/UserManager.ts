@@ -1,4 +1,3 @@
-import { getAllUsers } from '@src/services';
 import DBManager from './DBManager';
 
 export default class UserManager
@@ -7,7 +6,6 @@ export default class UserManager
   constructor() {
     super();
     this.collection = this.localDatabase.users;
-    // getAllUsers().then((res) => this.bulkInsert(res));
   }
 
   public async getOwnInfo(): Promise<IUser> {

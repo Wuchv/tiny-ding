@@ -20,7 +20,10 @@ export default class MessageManager
     return this.collection.$.pipe(
       filter((changeEvent: RxChangeEvent) => {
         const msg = changeEvent.rxDocument.toJSON();
-        return msg.fromId === uid && msg.toId === currentTo;
+        return (
+          (msg.fromId === uid && msg.toId === currentTo) ||
+          (msg.fromId === currentTo && msg.toId === uid)
+        );
       })
     );
   }
@@ -29,9 +32,12 @@ export default class MessageManager
     const docs = await this.collection
       .find({
         selector: {
-          fromId: { $eq: fromId },
-          toId: { $eq: toId },
+          $or: [
+            { fromId: { $eq: fromId }, toId: { $eq: toId } },
+            { fromId: { $eq: toId }, toId: { $eq: fromId } },
+          ],
         },
+        sort: [{ timestamp: 'asc' }],
       })
       .exec();
 

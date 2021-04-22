@@ -6,5 +6,6 @@ dist
 local_database-rxdb-0-_rxdb_internal
 local_database-rxdb-0-users
 local_database-rxdb-0-messages
+local_database-rxdb-0-messages-mrview-a3817413d00ed8ae9daeb9db9e1e8b60
 local_database-rxdb-0-conversations
 ossConfig.ts

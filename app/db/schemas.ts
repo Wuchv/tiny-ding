@@ -92,6 +92,7 @@ export const messageSchema: RxJsonSchema<IMessage> = {
     'content',
     'timestamp',
   ],
+  indexes: ['timestamp'],
 };
 
 export const conversationSchema: RxJsonSchema<IConversation> = {

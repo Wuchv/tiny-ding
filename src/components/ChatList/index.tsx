@@ -2,12 +2,13 @@ import * as React from 'react';
 import { List } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { chooseChatPartnerAction } from '@src/redux/reducers/chatReducer';
-import { ConversationManager } from '@src/modules/RemoteGlobal';
+import { ConversationManager, UserManager } from '@src/modules/RemoteGlobal';
+import { useReduxData } from '@src/hooks/useRedux';
+import { getAllUsers } from '@src/services';
 
 import { Avatar } from '@src/components/Avatar';
 
 import './style.less';
-import { useReduxData } from '@src/hooks/useRedux';
 
 interface IChatList {}
 
@@ -16,6 +17,8 @@ export const ChatList: React.FC<IChatList> = React.memo(() => {
   const [chatList, setChatList] = React.useState<IConversation[]>([]);
 
   React.useEffect(() => {
+    // getAllUsers().then((res) => UserManager.bulkInsert(res));
+
     ConversationManager.getAllDocuments().then((res: IConversation[]) =>
       setChatList(res as IConversation[])
     );

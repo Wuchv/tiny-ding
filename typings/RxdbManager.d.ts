@@ -20,7 +20,7 @@ export interface MessageManager extends DBManager {
     uid: string,
     currentTo: string
   ): Observable<RxChangeEvent>;
-  filterMsgByCid(fromId: string, toId: string): Promise<Partial<IMessage>[]>;
+  filterMsgByCid(fromId: string, toId: string): Promise<IMessage[]>;
 }
 
 export interface ConversationManager extends DBManager {

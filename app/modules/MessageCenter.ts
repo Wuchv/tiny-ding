@@ -6,6 +6,7 @@ import { messageBox } from '../dialog';
 import { getUserManager, getMessageManager } from '.';
 import UserManager from './dbManager/UserManager';
 import MessageManager from './dbManager/MessageManager';
+import { host } from '../constants';
 
 enum EMessageEvent {
   SEND_MESSAGE = 'send_message_to_server',
@@ -93,7 +94,7 @@ export default class MessageCenter implements IMessageCenter {
 
   public sendMsg(msg: IMessage) {
     console.green(EMessageEvent.SEND_MESSAGE, msg);
-    // this.socket.emit(EMessageEvent.SEND, msg);
+    this.socket.emit(EMessageEvent.SEND_MESSAGE, msg);
   }
 
   public sendSignal(signal: ISignal) {
@@ -145,7 +146,7 @@ export default class MessageCenter implements IMessageCenter {
 
   private async initSocket() {
     const own = await this.userManager.getOwnInfo();
-    this.socket = io.connect('ws://127.0.0.1:7000/im', {
+    this.socket = io.connect(`ws://${host}/im`, {
       transports: ['websocket'],
       query: {
         uid: own.uid,
@@ -166,6 +167,7 @@ export default class MessageCenter implements IMessageCenter {
     });
 
     this.socket.on(EMessageEvent.OBTAIN_MESSAGE, (message: IMessage) => {
+      console.green(EMessageEvent.OBTAIN_MESSAGE, message);
       this.messageManager.insert(message);
     });
   }
