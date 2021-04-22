@@ -20,6 +20,7 @@ export enum WindowName {
 }
 
 export type CreateWindowHandler = (
+  urlParams?: SafeObject,
   options?: BrowserWindowConstructorOptions
 ) => BrowserWindow;
 
@@ -49,11 +50,12 @@ const hackFakeCloseMainWindow = (win: BrowserWindow) => {
 
 export const createWindow = (
   name: WindowName,
+  urlParams: SafeObject,
   options?: BrowserWindowConstructorOptions
 ): BrowserWindow => {
   const handler = HandlersMap[name];
 
-  const win = handler(options);
+  const win = handler(urlParams, options);
   client.create(win);
 
   WindowMap.set(name, win);
@@ -89,8 +91,8 @@ export const closeMainWindow = () => {
 
 (async () => {
   await app.whenReady();
-  ipcMain.on('OPEN_WINDOW', (event: IpcMainEvent, name: WindowName) => {
-    createWindow(name);
+  ipcMain.on('OPEN_WINDOW', (event: IpcMainEvent, { name, params }) => {
+    createWindow(name, params);
     event.returnValue = 1;
   });
 

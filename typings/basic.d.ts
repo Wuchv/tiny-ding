@@ -59,4 +59,8 @@ declare interface ISignal {
   };
 }
 
+type SafeObject = Record<string, unknown>;
+
 declare module 'recorder-core';
+
+declare module 'urljs';

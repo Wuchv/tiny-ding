@@ -3,8 +3,11 @@ export enum WindowName {
   MAIN = 'main',
   VIDEO_CALL = 'video_call',
 }
-export const openWindow = (name: WindowName) => (isClose: boolean = true) => {
-  window.$client.openWindow(name);
+export const openWindow = (name: WindowName) => (
+  urlParams: SafeObject = null,
+  isClose: boolean = true
+) => {
+  window.$client.openWindow(name, urlParams);
   isClose && window.$client.closeWindow();
 };
 

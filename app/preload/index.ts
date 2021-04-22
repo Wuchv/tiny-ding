@@ -4,8 +4,8 @@ import { remote } from 'electron';
 import { proxyConsole } from '../modules/Console';
 
 // 打开新的窗口
-const openWindow = (name: WindowName) => {
-  const result = ipcRenderer.send('OPEN_WINDOW', name);
+const openWindow = (name: WindowName, params: SafeObject = null) => {
+  const result = ipcRenderer.send('OPEN_WINDOW', { name, params });
   return result;
 };
 
