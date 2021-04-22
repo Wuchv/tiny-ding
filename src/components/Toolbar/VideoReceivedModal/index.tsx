@@ -1,19 +1,18 @@
 // 收到视频通话邀请的弹窗
 import * as React from 'react';
 import { Typography, Button, notification } from 'antd';
-import { MessageCenter, ESignalType, RTCPeer } from '@src/modules/RemoteGlobal';
+import { MessageCenter, ESignalType } from '@src/modules/RemoteGlobal';
+import { openVideoCallWindow } from '@src/utils';
 
 import './style.less';
 
 interface IVideoReceivedModal {
   fromId: string;
   toId: string;
-  offerSDP: RTCSessionDescriptionInit;
-  addRTCPeerConnection: (fromId: string, toId: string) => void;
 }
 
 export const VideoReceivedModal: React.FunctionComponent<IVideoReceivedModal> = React.memo(
-  ({ fromId, toId, offerSDP, addRTCPeerConnection }) => {
+  ({ fromId, toId }) => {
     React.useEffect(() => {
       // 未接收对方通话邀请
       const notAnswered$ = MessageCenter.notAnswered$;
@@ -31,16 +30,13 @@ export const VideoReceivedModal: React.FunctionComponent<IVideoReceivedModal> = 
 
     const sendVideoCallSignal = React.useCallback(
       async (type: ESignalType) => {
-        let payload: ISignal['payload'] = { fromId: toId, toId: fromId };
-        if (type === ESignalType.AGREE_TO_VIDEO_CALL) {
-          addRTCPeerConnection(fromId, toId);
-          const answerSDP = await RTCPeer.acceptRemoteSDP(offerSDP);
-          payload = { fromId: toId, toId: fromId, sdp: answerSDP };
-        }
         MessageCenter.sendSignal({
           type,
-          payload,
+          payload: { fromId: toId, toId: fromId },
         });
+        if (type === ESignalType.AGREE_TO_VIDEO_CALL) {
+          openVideoCallWindow({ fromId: toId, toId: fromId }, false);
+        }
         notification.close(`receivedVideoCall:${fromId}`);
       },
       [fromId, toId]

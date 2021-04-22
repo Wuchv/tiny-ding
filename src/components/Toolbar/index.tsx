@@ -2,7 +2,7 @@ import * as React from 'react';
 import { notification } from 'antd';
 import { AudioOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { useSubject, ofAction } from '@src/hooks/useSubject';
-import { MessageCenter, ESignalType, RTCPeer } from '@src/modules/RemoteGlobal';
+import { MessageCenter, ESignalType } from '@src/modules/RemoteGlobal';
 
 import { AudioModal } from './AudioModal';
 import { Uploader } from './Uploader';
@@ -46,17 +46,10 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
       // 收到视频通话邀请
       const receiveCallSub = MessageCenter.receiveVideoCall$.subscribe(
         (receivedVideoSignal: ISignal) => {
-          const { fromId, toId, sdp } = receivedVideoSignal.payload;
+          const { fromId, toId } = receivedVideoSignal.payload;
           notification.open({
             key: `receivedVideoCall:${fromId}`,
-            message: (
-              <VideoReceivedModal
-                fromId={fromId}
-                toId={toId}
-                offerSDP={sdp}
-                addRTCPeerConnection={addRTCPeerConnection}
-              />
-            ),
+            message: <VideoReceivedModal fromId={fromId} toId={toId} />,
             duration: null,
             className: 'video-received-modal',
             placement: 'topRight',
@@ -104,13 +97,7 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
       // 打开等待视频通话邀请的modal
       notification.open({
         key: 'initiateVideoCall',
-        message: (
-          <VideoInvitationModal
-            fromId={uid}
-            toId={currentTo}
-            addRTCPeerConnection={addRTCPeerConnection}
-          />
-        ),
+        message: <VideoInvitationModal fromId={uid} toId={currentTo} />,
         bottom: 170,
         duration: null,
         className: 'video-invitation-modal',
@@ -120,35 +107,6 @@ export const Toolbar: React.FC<IToolbar> = React.memo(
         },
       });
     }, [uid, currentTo]);
-
-    // 增加视频流传输connection
-    const addRTCPeerConnection = React.useCallback(
-      (fromId: string, toId: string) => {
-        const addIceCandidateSub = MessageCenter.syncIcecandidate$.subscribe(
-          (signal: ISignal) => {
-            RTCPeer.addIceCandidate(signal.payload.iceCandidate);
-          }
-        );
-        RTCPeer.addConnection(
-          fromId,
-          toId,
-          (e: RTCPeerConnectionIceEvent) => {
-            if (e.candidate) {
-              MessageCenter.sendSignal({
-                type: ESignalType.SYNC_ICECANDIDATE,
-                payload: {
-                  fromId,
-                  toId,
-                  iceCandidate: e.candidate,
-                },
-              });
-            }
-          },
-          addIceCandidateSub
-        );
-      },
-      []
-    );
 
     return (
       <div className="toolbar">

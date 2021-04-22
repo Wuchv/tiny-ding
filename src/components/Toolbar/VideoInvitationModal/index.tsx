@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Typography, notification, message } from 'antd';
 import { Siri } from '@src/modules/Siri';
 import { useSubject } from '@src/hooks/useSubject';
-import { MessageCenter, ESignalType, RTCPeer } from '@src/modules/RemoteGlobal';
+import { MessageCenter, ESignalType } from '@src/modules/RemoteGlobal';
 import { openVideoCallWindow } from '@src/utils';
 
 import './style.less';
@@ -11,11 +11,10 @@ import './style.less';
 interface IVideoInvitationModal {
   fromId: string;
   toId: string;
-  addRTCPeerConnection: (fromId: string, toId: string) => void;
 }
 
 export const VideoInvitationModal: React.FunctionComponent<IVideoInvitationModal> = React.memo(
-  ({ fromId, toId, addRTCPeerConnection }) => {
+  ({ fromId, toId }) => {
     const siriCanvasRef = React.useRef<HTMLCanvasElement>(null);
     const [siri, setSiri] = React.useState<Siri>(null);
     const [globalSubject$, RxEvent] = useSubject();
@@ -52,7 +51,6 @@ export const VideoInvitationModal: React.FunctionComponent<IVideoInvitationModal
       const rejectCallSub = rejectVideoCall$.subscribe(
         (rejectVideoCall: ISignal) => {
           notification.close('initiateVideoCall');
-          RTCPeer.close(fromId, toId);
           message.warning('对方拒绝视频通话邀请');
         }
       );
@@ -61,13 +59,7 @@ export const VideoInvitationModal: React.FunctionComponent<IVideoInvitationModal
       const agreeCallSub = agreeToVideoCall$.subscribe(
         (agreeVideoCall: ISignal) => {
           notification.close('initiateVideoCall');
-          if (agreeVideoCall.payload.sdp) {
-            RTCPeer.setRemoteSDP(agreeVideoCall.payload.sdp);
-            openVideoCallWindow(false);
-          } else {
-            RTCPeer.close(fromId, toId);
-            message.warning('通话失败');
-          }
+          openVideoCallWindow({ fromId, toId }, false);
         }
       );
 
@@ -78,7 +70,6 @@ export const VideoInvitationModal: React.FunctionComponent<IVideoInvitationModal
           type: ESignalType.NOT_ANSWERED,
           payload: { fromId, toId },
         });
-        RTCPeer.close(fromId, toId);
         message.warning('对方未接听');
       });
 
@@ -86,7 +77,6 @@ export const VideoInvitationModal: React.FunctionComponent<IVideoInvitationModal
       const userOfflineSub = userOffline$.subscribe(
         (userOfflineSignal: ISignal) => {
           notification.close('initiateVideoCall');
-          RTCPeer.close(fromId, toId);
           message.warning('对方已离线');
         }
       );
@@ -100,13 +90,9 @@ export const VideoInvitationModal: React.FunctionComponent<IVideoInvitationModal
     }, []);
 
     React.useEffect(() => {
-      // 发出视频通话邀请，建立RTCPeerConnection
-      addRTCPeerConnection(fromId, toId);
-      RTCPeer.createLocalSDP().then((offerSDP: RTCSessionDescriptionInit) => {
-        MessageCenter.sendSignal({
-          type: ESignalType.INITIATE_VIDEO_CALL,
-          payload: { fromId, toId, sdp: offerSDP },
-        });
+      MessageCenter.sendSignal({
+        type: ESignalType.INITIATE_VIDEO_CALL,
+        payload: { fromId, toId },
       });
 
       return () => {
