@@ -35,7 +35,7 @@ export const VideoReceivedModal: React.FunctionComponent<IVideoReceivedModal> = 
           payload: { fromId: toId, toId: fromId },
         });
         if (type === ESignalType.AGREE_TO_VIDEO_CALL) {
-          openVideoCallWindow({ fromId: toId, toId: fromId }, false);
+          openVideoCallWindow({ fromId, toId }, false);
         }
         notification.close(`receivedVideoCall:${fromId}`);
       },

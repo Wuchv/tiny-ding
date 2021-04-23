@@ -8,7 +8,7 @@ import axios, {
 import { message } from 'antd';
 import { delay } from 'lodash';
 import { UserManager } from './RemoteGlobal';
-import { host } from '@src/constants';
+import { host, port } from '@src/constants';
 
 export const DEFAULT_HEADER = 'application/x-www-form-urlencoded';
 export const FILE_HEADER = 'multipart/form-data';
@@ -18,7 +18,7 @@ const baseAxiosConfig: AxiosRequestConfig = {
   timeout: 1000 * 10,
   // 可携带cookies
   withCredentials: true,
-  baseURL: `http://${host}`,
+  baseURL: `http://${host}:${port}`,
 };
 
 class Http {

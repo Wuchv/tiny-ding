@@ -51,3 +51,29 @@ export const SingleInstance = <T>(P: T) => {
   let instance: T = null;
   return () => instance || (instance = new (P as any)());
 };
+
+// 获取url中的value
+export const queryString = (
+  name: string,
+  notDecoded: boolean = false
+): string | boolean => {
+  name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+  const str = location.search || location.hash;
+  let regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+  let results = regex.exec(str);
+  let encoded = null;
+
+  if (results === null) {
+    regex = new RegExp('[\\?&]' + name + '(\\&([^&#]*)|$)');
+    if (regex.test(str)) {
+      return true;
+    }
+    return undefined;
+  } else {
+    encoded = results[1].replace(/\+/g, ' ');
+    if (notDecoded) {
+      return encoded;
+    }
+    return decodeURIComponent(encoded);
+  }
+};

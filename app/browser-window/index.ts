@@ -50,7 +50,7 @@ const hackFakeCloseMainWindow = (win: BrowserWindow) => {
 
 export const createWindow = (
   name: WindowName,
-  urlParams: SafeObject,
+  urlParams: SafeObject = null,
   options?: BrowserWindowConstructorOptions
 ): BrowserWindow => {
   const handler = HandlersMap[name];

@@ -7,8 +7,11 @@ import {
 } from '../../constants';
 
 const options: BrowserWindowConstructorOptions = {
-  width: 700,
-  height: 500,
+  width: 800,
+  height: 600,
+  minWidth: 800,
+  minHeight: 600,
+  resizable: false,
   webPreferences: {
     nodeIntegration: true,
     webSecurity: false,

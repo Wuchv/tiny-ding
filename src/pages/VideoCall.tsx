@@ -2,29 +2,53 @@ import * as React from 'react';
 import { fromEvent } from 'rxjs';
 import { concatMap, map, merge, takeUntil } from 'rxjs/operators';
 import Peer from 'peerjs';
-import { queryString } from 'urljs';
+import { useReduxData } from '@src/hooks/useRedux';
+import { queryString } from '@src/utils';
+import { host, stunList } from '@src/constants';
 
 import './VideoCall.less';
 
 export const VideoCall: React.FC<unknown> = React.memo(() => {
   const localVideoRef = React.useRef<HTMLVideoElement>(null);
   const remoteVideoRef = React.useRef<HTMLVideoElement>(null);
+  const [, { uid }] = useReduxData();
 
-  const [peer, remotePeerId] = React.useMemo(() => {
+  const [peer, remotePeerId, fromId] = React.useMemo(() => {
     const fromId = queryString('fromId');
     const toId = queryString('toId');
-    const peer = new Peer(`${fromId}:${toId}`);
-    return [peer, `${toId}:${fromId}`];
-  }, []);
+    let peerId = `${fromId}-${toId}`;
+    let remotePeerId = `${toId}-${fromId}`;
+    if (uid === toId) {
+      peerId = `${toId}-${fromId}`;
+      remotePeerId = `${fromId}-${toId}`;
+    }
+    const peer = new Peer(peerId, {
+      host,
+      port: 9000,
+      path: '/video',
+      debug: 3,
+      secure: false,
+      config: {
+        iceServers: [{ urls: stunList }],
+      },
+    });
+    return [peer, remotePeerId, fromId];
+  }, [uid]);
 
   // 获取本机视频流
   React.useEffect(() => {
     const localVideo: HTMLVideoElement = localVideoRef.current;
     const remoteVideo: HTMLVideoElement = remoteVideoRef.current;
-    if (localVideo && remoteVideo) {
+    if (localVideo && remoteVideo && fromId) {
       const localVideoPlaySub = fromEvent(localVideo, 'loadeddata').subscribe(
         () => {
-          localVideoRef.current.play();
+          localVideo.play();
+        }
+      );
+
+      const remoteVideoPlaySub = fromEvent(remoteVideo, 'loadeddata').subscribe(
+        () => {
+          remoteVideo.play();
         }
       );
 
@@ -42,25 +66,30 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
         })
         .then((stream) => {
           localVideo.srcObject = stream;
-          const call = peer.call(remotePeerId, stream);
-          call.on('stream', (remoteStream) => {
-            remoteVideo.srcObject = remoteStream;
-          });
-
-          peer.on('call', (call) => {
-            call.answer(stream);
+          if (fromId === uid) {
+            const call = peer.call(remotePeerId, stream);
             call.on('stream', (remoteStream) => {
+              console.log(111, remoteStream);
               remoteVideo.srcObject = remoteStream;
             });
-          });
+          } else {
+            peer.on('call', (call) => {
+              call.answer(stream);
+              call.on('stream', (remoteStream) => {
+                console.log(222, remoteStream);
+                remoteVideo.srcObject = remoteStream;
+              });
+            });
+          }
         });
 
       return () => {
         localVideoPlaySub.unsubscribe();
+        remoteVideoPlaySub.unsubscribe();
         dragSub.unsubscribe();
       };
     }
-  }, [localVideoRef, remoteVideoRef]);
+  }, [localVideoRef, remoteVideoRef, fromId]);
 
   const drag$ = React.useCallback((video: HTMLVideoElement) => {
     const mouseDown$ = fromEvent(video, 'mousedown');
