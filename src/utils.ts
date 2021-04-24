@@ -17,6 +17,9 @@ export const openMainWindow = openWindow(WindowName.MAIN);
 
 export const openVideoCallWindow = openWindow(WindowName.VIDEO_CALL);
 
+export const closeVideoCallWindow = () =>
+  window.$client.closeWindow(WindowName.VIDEO_CALL);
+
 export const resolveTimestamp = (timestamp: number) => {
   const date = new Date(timestamp);
   const Y = date.getFullYear();

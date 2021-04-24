@@ -1,19 +1,23 @@
 import * as React from 'react';
-import { fromEvent } from 'rxjs';
+import { message, Spin, Button } from 'antd';
+import { PhoneOutlined } from '@ant-design/icons';
+import { fromEvent, Subscription } from 'rxjs';
 import { concatMap, map, merge, takeUntil } from 'rxjs/operators';
 import Peer from 'peerjs';
+import { MessageCenter, ESignalType } from '../modules/RemoteGlobal';
 import { useReduxData } from '@src/hooks/useRedux';
-import { queryString } from '@src/utils';
+import { queryString, closeVideoCallWindow } from '@src/utils';
 import { host, stunList } from '@src/constants';
 
 import './VideoCall.less';
 
 export const VideoCall: React.FC<unknown> = React.memo(() => {
+  const [, { uid }] = useReduxData();
   const localVideoRef = React.useRef<HTMLVideoElement>(null);
   const remoteVideoRef = React.useRef<HTMLVideoElement>(null);
-  const [, { uid }] = useReduxData();
+  const [isSpin, setIsSpin] = React.useState<boolean>(true);
 
-  const [peer, remotePeerId, fromId] = React.useMemo(() => {
+  const [peer, remotePeerId, fromId, toId] = React.useMemo(() => {
     const fromId = queryString('fromId');
     const toId = queryString('toId');
     let peerId = `${fromId}-${toId}`;
@@ -32,10 +36,10 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
         iceServers: [{ urls: stunList }],
       },
     });
-    return [peer, remotePeerId, fromId];
+    return [peer, remotePeerId, fromId, toId];
   }, [uid]);
 
-  // 获取本机视频流
+  // 获取local和remote视频流
   React.useEffect(() => {
     const localVideo: HTMLVideoElement = localVideoRef.current;
     const remoteVideo: HTMLVideoElement = remoteVideoRef.current;
@@ -49,16 +53,18 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
       const remoteVideoPlaySub = fromEvent(remoteVideo, 'loadeddata').subscribe(
         () => {
           remoteVideo.play();
+          setIsSpin(false);
         }
       );
 
       const dragSub = drag$(localVideo).subscribe((event) => {
-        if (0 < event.x && event.x < 540 && 0 < event.y && event.y < 380) {
+        if (0 < event.x && event.x < 440 && 0 < event.y && event.y < 330) {
           localVideo.style.left = `${event.x}px`;
           localVideo.style.top = `${event.y}px`;
         }
       });
 
+      let sendStreamSub: Subscription = null;
       navigator.mediaDevices
         .getUserMedia({
           video: true,
@@ -67,18 +73,25 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
         .then((stream) => {
           localVideo.srcObject = stream;
           if (fromId === uid) {
-            const call = peer.call(remotePeerId, stream);
-            call.on('stream', (remoteStream) => {
-              console.log(111, remoteStream);
-              remoteVideo.srcObject = remoteStream;
+            sendStreamSub = MessageCenter.sendVideoStream$.subscribe(() => {
+              const call = peer.call(remotePeerId, stream);
+              call.on('stream', (remoteStream) => {
+                remoteVideo.srcObject = remoteStream;
+              });
             });
           } else {
             peer.on('call', (call) => {
               call.answer(stream);
               call.on('stream', (remoteStream) => {
-                console.log(222, remoteStream);
                 remoteVideo.srcObject = remoteStream;
               });
+            });
+            MessageCenter.sendSignal({
+              type: ESignalType.PREPARE_TO_RECEIVE_VIDEO_STREAM,
+              payload: {
+                fromId: toId as string,
+                toId: fromId as string,
+              },
             });
           }
         });
@@ -87,9 +100,32 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
         localVideoPlaySub.unsubscribe();
         remoteVideoPlaySub.unsubscribe();
         dragSub.unsubscribe();
+        sendStreamSub && sendStreamSub.unsubscribe();
       };
     }
-  }, [localVideoRef, remoteVideoRef, fromId]);
+  }, [localVideoRef, remoteVideoRef, fromId, toId]);
+
+  React.useEffect(() => {
+    const hangUdSub = MessageCenter.hangUp$.subscribe(() => {
+      message.warning('对方已挂断').then(() => closeVideoCallWindow());
+    });
+    return () => {
+      sendHangUpSignal();
+      hangUdSub.unsubscribe();
+      peer.destroy();
+    };
+  }, []);
+
+  const sendHangUpSignal = React.useCallback(() => {
+    let payload: ISignal['payload'] = {
+      fromId: fromId as string,
+      toId: toId as string,
+    };
+    if (uid !== fromId) {
+      payload = { fromId: toId as string, toId: fromId as string };
+    }
+    MessageCenter.sendSignal({ type: ESignalType.HANG_UP, payload });
+  }, [fromId, toId]);
 
   const drag$ = React.useCallback((video: HTMLVideoElement) => {
     const mouseDown$ = fromEvent(video, 'mousedown');
@@ -115,8 +151,18 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
 
   return (
     <div className="video-call">
+      <Spin className="loading" spinning={isSpin} />
       <video ref={remoteVideoRef} className="remote-video" />
       <video ref={localVideoRef} className="local-video" />
+      <Button
+        className="hang-up-button"
+        type="primary"
+        shape="circle"
+        size="large"
+        danger
+        icon={<PhoneOutlined />}
+        onClick={() => closeVideoCallWindow()}
+      />
     </div>
   );
 });

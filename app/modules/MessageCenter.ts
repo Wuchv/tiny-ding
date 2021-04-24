@@ -6,7 +6,7 @@ import { messageBox } from '../dialog';
 import { getUserManager, getMessageManager } from '.';
 import UserManager from './dbManager/UserManager';
 import MessageManager from './dbManager/MessageManager';
-import { host } from '../constants';
+import { host, port } from '../constants';
 
 enum EMessageEvent {
   SEND_MESSAGE = 'send_message_to_server',
@@ -22,7 +22,8 @@ enum ESignalType {
   REJECT_VIDEO_CALL = 'reject_video_call',
   USER_OFFLINE = 'user_offline',
   NOT_ANSWERED = 'not_answered',
-  SYNC_ICECANDIDATE = 'sync_icecandidate',
+  PREPARE_TO_RECEIVE_VIDEO_STREAM = 'prepare_to_receive_video_stream',
+  HANG_UP = 'hang_up',
 }
 
 export const ofType = (type: ESignalType) => (source: Observable<ISignal>) =>
@@ -69,9 +70,15 @@ export default class MessageCenter implements IMessageCenter {
     );
   }
 
-  public get syncIcecandidate$(): Observable<ISignal> {
+  public get sendVideoStream$(): Observable<ISignal> {
     return fromEvent(this.socket, EMessageEvent.OBTAIN_SIGNAL).pipe(
-      ofType(ESignalType.SYNC_ICECANDIDATE)
+      ofType(ESignalType.PREPARE_TO_RECEIVE_VIDEO_STREAM)
+    );
+  }
+
+  public get hangUp$(): Observable<ISignal> {
+    return fromEvent(this.socket, EMessageEvent.OBTAIN_SIGNAL).pipe(
+      ofType(ESignalType.HANG_UP)
     );
   }
 
@@ -146,7 +153,7 @@ export default class MessageCenter implements IMessageCenter {
 
   private async initSocket() {
     const own = await this.userManager.getOwnInfo();
-    this.socket = io.connect(`ws://${host}/im`, {
+    this.socket = io.connect(`ws://${host}:${port}/im`, {
       transports: ['websocket'],
       query: {
         uid: own.uid,

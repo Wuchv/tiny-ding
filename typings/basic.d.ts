@@ -49,6 +49,8 @@ declare enum ESignalType {
   USER_OFFLINE = 'user_offline',
   NOT_ANSWERED = 'not_answered',
   SYNC_ICECANDIDATE = 'sync_icecandidate',
+  PREPARE_TO_RECEIVE_VIDEO_STREAM = 'prepare_to_receive_video_stream',
+  HANG_UP = 'hang_up',
 }
 
 declare interface ISignal {

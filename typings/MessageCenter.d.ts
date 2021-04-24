@@ -7,7 +7,8 @@ export interface MessageCenter {
   rejectVideoCall$: Observable<ISignal>;
   userOffline$: Observable<ISignal>;
   notAnswered$: Observable<ISignal>;
-  syncIcecandidate$: Observable<ISignal>;
+  sendVideoStream$: Observable<ISignal>;
+  hangUp$: Observable<ISignal>;
 
   noCall(delay: number): Observable<number>;
   sendMsg(msg: IMessage): void;

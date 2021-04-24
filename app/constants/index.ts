@@ -13,4 +13,6 @@ export const RENDER_SERVER_URL: string = 'http://localhost:3000';
 
 export const isDev: boolean = process.env.NODE_ENV === 'development';
 
-export const host: string = '127.0.0.1:7000';
+export const host: string = '127.0.0.1';
+
+export const port: number = 7000;

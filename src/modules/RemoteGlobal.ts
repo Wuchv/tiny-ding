@@ -17,15 +17,7 @@ const MessageCenter: IMessageCenter = window.$client.remote.getGlobal(
   'MessageCenter'
 );
 
-const RTCPeer: IRTCPeer = window.$client.remote.getGlobal('RTCPeer');
-
-export {
-  UserManager,
-  MessageManager,
-  ConversationManager,
-  MessageCenter,
-  RTCPeer,
-};
+export { UserManager, MessageManager, ConversationManager, MessageCenter };
 
 export enum EMsgType {
   TEXT = 'text',
@@ -40,5 +32,6 @@ export enum ESignalType {
   REJECT_VIDEO_CALL = 'reject_video_call',
   USER_OFFLINE = 'user_offline',
   NOT_ANSWERED = 'not_answered',
-  SYNC_ICECANDIDATE = 'sync_icecandidate',
+  PREPARE_TO_RECEIVE_VIDEO_STREAM = 'prepare_to_receive_video_stream',
+  HANG_UP = 'hang_up',
 }

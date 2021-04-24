@@ -1,7 +1,6 @@
 /// <reference path="./basic.d.ts" />
 import { IpcRenderer, Remote } from 'electron';
 import { RxCollection, RxDatabase } from 'rxdb';
-import { RTCPeer } from './RTCPeer';
 import { MessageCenter } from './MessageCenter';
 import {
   DBManager,
@@ -36,8 +35,6 @@ declare global {
     gray: Function;
     grey: Function;
   }
-
-  type IRTCPeer = RTCPeer;
 
   type IMessageCenter = MessageCenter;
 
