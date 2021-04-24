@@ -16,6 +16,7 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
   const localVideoRef = React.useRef<HTMLVideoElement>(null);
   const remoteVideoRef = React.useRef<HTMLVideoElement>(null);
   const [isSpin, setIsSpin] = React.useState<boolean>(true);
+  const [isButtonDisabled, setIsButtonDisabled] = React.useState<boolean>(true);
 
   const [peer, remotePeerId, fromId, toId] = React.useMemo(() => {
     const fromId = queryString('fromId');
@@ -36,7 +37,7 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
         iceServers: [{ urls: stunList }],
       },
     });
-    return [peer, remotePeerId, fromId, toId];
+    return [peer, remotePeerId, fromId as string, toId as string];
   }, [uid]);
 
   // 获取local和remote视频流
@@ -54,6 +55,7 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
         () => {
           remoteVideo.play();
           setIsSpin(false);
+          setIsButtonDisabled(false);
         }
       );
 
@@ -65,6 +67,7 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
       });
 
       let sendStreamSub: Subscription = null;
+      let sendPrepareSub: Subscription = null;
       navigator.mediaDevices
         .getUserMedia({
           video: true,
@@ -74,10 +77,19 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
           localVideo.srcObject = stream;
           if (fromId === uid) {
             sendStreamSub = MessageCenter.sendVideoStream$.subscribe(() => {
+              // 向通话接受者发送已收到准备好的信号
+              MessageCenter.sendSignal({
+                type: ESignalType.STOP_SEND_PREPARE,
+                payload: {
+                  fromId,
+                  toId,
+                },
+              });
               const call = peer.call(remotePeerId, stream);
               call.on('stream', (remoteStream) => {
                 remoteVideo.srcObject = remoteStream;
               });
+              changeIceStateListener(call);
             });
           } else {
             peer.on('call', (call) => {
@@ -86,13 +98,23 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
                 remoteVideo.srcObject = remoteStream;
               });
             });
-            MessageCenter.sendSignal({
-              type: ESignalType.PREPARE_TO_RECEIVE_VIDEO_STREAM,
-              payload: {
-                fromId: toId as string,
-                toId: fromId as string,
-              },
-            });
+
+            // 不断向通话发起者发送准备好的信号
+            sendPrepareSub = MessageCenter.sendPrepareToReceiveStream$.subscribe(
+              (code: number) => {
+                if (code === -1) {
+                  closeWhenOtherDisconnect();
+                } else {
+                  MessageCenter.sendSignal({
+                    type: ESignalType.PREPARE_TO_RECEIVE_VIDEO_STREAM,
+                    payload: {
+                      fromId: toId,
+                      toId: fromId,
+                    },
+                  });
+                }
+              }
+            );
           }
         });
 
@@ -101,31 +123,28 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
         remoteVideoPlaySub.unsubscribe();
         dragSub.unsubscribe();
         sendStreamSub && sendStreamSub.unsubscribe();
+        sendStreamSub && sendPrepareSub.unsubscribe();
       };
     }
   }, [localVideoRef, remoteVideoRef, fromId, toId]);
 
-  React.useEffect(() => {
-    const hangUdSub = MessageCenter.hangUp$.subscribe(() => {
-      message.warning('对方已挂断').then(() => closeVideoCallWindow());
-    });
-    return () => {
-      sendHangUpSignal();
-      hangUdSub.unsubscribe();
-      peer.destroy();
-    };
-  }, []);
+  const changeIceStateListener = React.useCallback(
+    (call: Peer.MediaConnection) => {
+      call.peerConnection.oniceconnectionstatechange = () => {
+        if (call.peerConnection.iceConnectionState === 'disconnected') {
+          closeWhenOtherDisconnect();
+        }
+      };
+    },
+    []
+  );
 
-  const sendHangUpSignal = React.useCallback(() => {
-    let payload: ISignal['payload'] = {
-      fromId: fromId as string,
-      toId: toId as string,
-    };
-    if (uid !== fromId) {
-      payload = { fromId: toId as string, toId: fromId as string };
-    }
-    MessageCenter.sendSignal({ type: ESignalType.HANG_UP, payload });
-  }, [fromId, toId]);
+  const closeWhenOtherDisconnect = React.useCallback(() => {
+    message.warning('对方已挂断').then(() => {
+      peer.destroy();
+      closeVideoCallWindow();
+    });
+  }, []);
 
   const drag$ = React.useCallback((video: HTMLVideoElement) => {
     const mouseDown$ = fromEvent(video, 'mousedown');
@@ -161,6 +180,7 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
         size="large"
         danger
         icon={<PhoneOutlined />}
+        disabled={isButtonDisabled}
         onClick={() => closeVideoCallWindow()}
       />
     </div>

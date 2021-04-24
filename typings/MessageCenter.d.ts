@@ -8,7 +8,8 @@ export interface MessageCenter {
   userOffline$: Observable<ISignal>;
   notAnswered$: Observable<ISignal>;
   sendVideoStream$: Observable<ISignal>;
-  hangUp$: Observable<ISignal>;
+  stopSendPrepare$: Observable<ISignal>;
+  sendPrepareToReceiveStream$: Observable<number>;
 
   noCall(delay: number): Observable<number>;
   sendMsg(msg: IMessage): void;

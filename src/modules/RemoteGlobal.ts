@@ -33,5 +33,5 @@ export enum ESignalType {
   USER_OFFLINE = 'user_offline',
   NOT_ANSWERED = 'not_answered',
   PREPARE_TO_RECEIVE_VIDEO_STREAM = 'prepare_to_receive_video_stream',
-  HANG_UP = 'hang_up',
+  STOP_SEND_PREPARE = 'stop_send_prepare_to_receive_video_stream',
 }

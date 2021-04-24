@@ -1,6 +1,12 @@
 import * as io from 'socket.io-client';
-import { fromEvent, Observable, interval } from 'rxjs';
-import { filter, merge, takeUntil } from 'rxjs/operators';
+import { fromEvent, Observable, interval, of } from 'rxjs';
+import {
+  concat,
+  filter,
+  merge,
+  take,
+  takeUntil,
+} from 'rxjs/operators';
 import { RxDocument } from 'rxdb';
 import { messageBox } from '../dialog';
 import { getUserManager, getMessageManager } from '.';
@@ -23,7 +29,7 @@ enum ESignalType {
   USER_OFFLINE = 'user_offline',
   NOT_ANSWERED = 'not_answered',
   PREPARE_TO_RECEIVE_VIDEO_STREAM = 'prepare_to_receive_video_stream',
-  HANG_UP = 'hang_up',
+  STOP_SEND_PREPARE = 'stop_send_prepare_to_receive_video_stream',
 }
 
 export const ofType = (type: ESignalType) => (source: Observable<ISignal>) =>
@@ -76,9 +82,17 @@ export default class MessageCenter implements IMessageCenter {
     );
   }
 
-  public get hangUp$(): Observable<ISignal> {
+  public get stopSendPrepare$(): Observable<ISignal> {
     return fromEvent(this.socket, EMessageEvent.OBTAIN_SIGNAL).pipe(
-      ofType(ESignalType.HANG_UP)
+      ofType(ESignalType.STOP_SEND_PREPARE)
+    );
+  }
+
+  public get sendPrepareToReceiveStream$(): Observable<number> {
+    return interval(2000).pipe(
+      concat(of(-1)),
+      take(6),
+      takeUntil(this.stopSendPrepare$)
     );
   }
 
