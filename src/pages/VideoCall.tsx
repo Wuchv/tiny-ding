@@ -40,6 +40,26 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
     return [peer, remotePeerId, fromId as string, toId as string];
   }, [uid]);
 
+  React.useEffect(() => {
+    window.$client.ipcRenderer.on('beforeClose', async () => {
+      let payload = { fromId, toId };
+      if (fromId !== uid) {
+        payload = { fromId: toId, toId: fromId };
+      }
+      MessageCenter.sendSignal({ type: ESignalType.HANG_UP, payload });
+      peer.destroy();
+      window.$client.remote.getCurrentWindow().destroy();
+    });
+
+    const hangUpSub = MessageCenter.hangUp$.subscribe(() => {
+      closeWithError('对方已挂断');
+    });
+
+    return () => {
+      hangUpSub.unsubscribe();
+    };
+  }, []);
+
   // 获取local和remote视频流
   React.useEffect(() => {
     const localVideo: HTMLVideoElement = localVideoRef.current;
@@ -89,7 +109,6 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
               call.on('stream', (remoteStream) => {
                 remoteVideo.srcObject = remoteStream;
               });
-              changeIceStateListener(call);
             });
           } else {
             peer.on('call', (call) => {
@@ -103,7 +122,7 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
             sendPrepareSub = MessageCenter.sendPrepareToReceiveStream$.subscribe(
               (code: number) => {
                 if (code === -1) {
-                  closeWhenOtherDisconnect();
+                  closeWithError('无法连接');
                 } else {
                   MessageCenter.sendSignal({
                     type: ESignalType.PREPARE_TO_RECEIVE_VIDEO_STREAM,
@@ -128,22 +147,21 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
     }
   }, [localVideoRef, remoteVideoRef, fromId, toId]);
 
-  const changeIceStateListener = React.useCallback(
-    (call: Peer.MediaConnection) => {
-      call.peerConnection.oniceconnectionstatechange = () => {
-        if (call.peerConnection.iceConnectionState === 'disconnected') {
-          closeWhenOtherDisconnect();
-        }
-      };
-    },
-    []
-  );
+  // const changeIceStateListener = React.useCallback(
+  //   (call: Peer.MediaConnection) => {
+  //     call.peerConnection.oniceconnectionstatechange = () => {
+  //       if (call.peerConnection.iceConnectionState === 'disconnected') {
+  //         closeWithError('对方已挂断');
+  //       }
+  //     };
+  //   },
+  //   []
+  // );
 
-  const closeWhenOtherDisconnect = React.useCallback(() => {
-    message.warning('对方已挂断').then(() => {
-      peer.destroy();
-      closeVideoCallWindow();
-    });
+  const closeWithError = React.useCallback(async (err: string) => {
+    await message.warning(err);
+    peer.destroy();
+    closeVideoCallWindow();
   }, []);
 
   const drag$ = React.useCallback((video: HTMLVideoElement) => {

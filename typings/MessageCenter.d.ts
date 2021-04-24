@@ -10,6 +10,7 @@ export interface MessageCenter {
   sendVideoStream$: Observable<ISignal>;
   stopSendPrepare$: Observable<ISignal>;
   sendPrepareToReceiveStream$: Observable<number>;
+  hangUp$: Observable<ISignal>;
 
   noCall(delay: number): Observable<number>;
   sendMsg(msg: IMessage): void;
