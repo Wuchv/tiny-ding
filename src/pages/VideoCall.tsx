@@ -41,16 +41,6 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
   }, [uid]);
 
   React.useEffect(() => {
-    window.$client.ipcRenderer.on('beforeClose', async () => {
-      let payload = { fromId, toId };
-      if (fromId !== uid) {
-        payload = { fromId: toId, toId: fromId };
-      }
-      MessageCenter.sendSignal({ type: ESignalType.HANG_UP, payload });
-      peer.destroy();
-      window.$client.remote.getCurrentWindow().destroy();
-    });
-
     const hangUpSub = MessageCenter.hangUp$.subscribe(() => {
       closeWithError('对方已挂断');
     });
@@ -109,6 +99,7 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
               call.on('stream', (remoteStream) => {
                 remoteVideo.srcObject = remoteStream;
               });
+              changeIceStateListener(call);
             });
           } else {
             peer.on('call', (call) => {
@@ -147,19 +138,29 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
     }
   }, [localVideoRef, remoteVideoRef, fromId, toId]);
 
-  // const changeIceStateListener = React.useCallback(
-  //   (call: Peer.MediaConnection) => {
-  //     call.peerConnection.oniceconnectionstatechange = () => {
-  //       if (call.peerConnection.iceConnectionState === 'disconnected') {
-  //         closeWithError('对方已挂断');
-  //       }
-  //     };
-  //   },
-  //   []
-  // );
+  const changeIceStateListener = React.useCallback(
+    (call: Peer.MediaConnection) => {
+      call.peerConnection.oniceconnectionstatechange = () => {
+        if (call.peerConnection.iceConnectionState === 'disconnected') {
+          closeWithError('对方已挂断');
+        }
+      };
+    },
+    []
+  );
 
   const closeWithError = React.useCallback(async (err: string) => {
     await message.warning(err);
+    peer.destroy();
+    closeVideoCallWindow();
+  }, []);
+
+  const hangUp = React.useCallback(() => {
+    let payload = { fromId, toId };
+    if (fromId !== uid) {
+      payload = { fromId: toId, toId: fromId };
+    }
+    MessageCenter.sendSignal({ type: ESignalType.HANG_UP, payload });
     peer.destroy();
     closeVideoCallWindow();
   }, []);
@@ -199,7 +200,7 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
         danger
         icon={<PhoneOutlined />}
         disabled={isButtonDisabled}
-        onClick={() => closeVideoCallWindow()}
+        onClick={hangUp}
       />
     </div>
   );

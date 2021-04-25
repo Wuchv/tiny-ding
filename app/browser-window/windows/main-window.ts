@@ -23,7 +23,9 @@ const options: BrowserWindowConstructorOptions = {
   },
 };
 
-const URL = isDev ? `${RENDER_SERVER_URL}/#/main` : `${RENDER_FILE_URL}#main`;
+const URL = isDev
+  ? `${RENDER_SERVER_URL}/#/main/chat-list`
+  : `${RENDER_FILE_URL}#main/chat-list`;
 
 export const createMainWindow = () => {
   const win = new BrowserWindow(options);

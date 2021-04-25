@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useHistory } from 'react-router-dom';
 import { Layout, Typography } from 'antd';
 import { MessageOutlined, TeamOutlined } from '@ant-design/icons';
 
@@ -11,6 +12,7 @@ import './style.less';
 interface IHeader {}
 
 export const Header: React.FC<IHeader> = React.memo(() => {
+  const history = useHistory();
   const {
     nickname,
     avatarUrl,
@@ -25,14 +27,27 @@ export const Header: React.FC<IHeader> = React.memo(() => {
     false
   );
 
-  const handleIconClick = React.useCallback(
-    (type: 'message' | 'friendList') => {
-      setIsMessageIconClicked(!isMessageIconClicked);
-      setIsTeamIconClicked(!isTeamIconClicked);
-      console.green(type);
-    },
-    [isMessageIconClicked, isTeamIconClicked]
-  );
+  const changeIconState = React.useCallback((messageIconState: boolean) => {
+    setIsMessageIconClicked(messageIconState);
+    setIsTeamIconClicked(!messageIconState);
+  }, []);
+
+  React.useEffect(() => {
+    // 监听路由变化，设置icon
+    if (location.href.includes('friend-list')) {
+      changeIconState(false);
+    } else {
+      changeIconState(true);
+    }
+    history.listen((route) => {
+      const { pathname } = route;
+      if (pathname === '/main/chat-list') {
+        changeIconState(true);
+      } else if (pathname === '/main/friend-list') {
+        changeIconState(false);
+      }
+    });
+  }, []);
 
   return (
     <Layout.Header className="header-container flex">
@@ -40,11 +55,15 @@ export const Header: React.FC<IHeader> = React.memo(() => {
         <Avatar text={nickname} src={avatarUrl} size="small" />
         <MessageOutlined
           className={isMessageIconClicked ? 'icon-active' : ''}
-          onClick={() => !isMessageIconClicked && handleIconClick('message')}
+          onClick={() =>
+            !isMessageIconClicked && history.push('/main/chat-list')
+          }
         />
         <TeamOutlined
           className={isTeamIconClicked ? 'icon-active' : ''}
-          onClick={() => !isTeamIconClicked && handleIconClick('friendList')}
+          onClick={() =>
+            !isTeamIconClicked && history.push('/main/friend-list')
+          }
         />
       </div>
       <div className="flex header-rt">

@@ -2,12 +2,17 @@ import { Observable } from 'rxjs';
 import { RxDocument, RxChangeEvent } from 'rxdb';
 
 export interface DBManager {
-  getCollection(): valueOf<RxDB.ICollection>;
+  insert$: Observable<RxChangeEvent>;
+  update$: Observable<RxChangeEvent>;
   getAllDocuments(): Promise<RxDB.IDocument[]>;
   insert(doc: RxDB.IDocument): Promise<RxDocument<RxDB.IDocument, any>>;
   upsert(doc: RxDB.IDocument): Promise<RxDocument<RxDB.IDocument, any>>;
   bulkInsert(docs: RxDB.IDocument[]): Promise<any>;
   findOne(primaryId: string): Promise<RxDocument<RxDB.IDocument, any>>;
+  findWithOneKey(
+    key: string,
+    value: any
+  ): Promise<RxDocument<RxDB.IDocument, any>>;
 }
 
 export interface UserManager extends DBManager {
@@ -24,7 +29,7 @@ export interface MessageManager extends DBManager {
 }
 
 export interface ConversationManager extends DBManager {
-  generateConversation(): void;
+  // generateConversation(): void;
   getLatestConversation(): Promise<{
     currentCid?: string;
     currentTo?: string;

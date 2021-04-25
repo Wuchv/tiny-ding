@@ -60,13 +60,7 @@ export const createWindow = (
 
   WindowMap.set(name, win);
 
-  win.on('closed', (e: Event) => {
-    WindowMap.delete(name);
-    if (name === WindowName.VIDEO_CALL) {
-      e.preventDefault();
-      win.webContents.send('beforeClose');
-    }
-  });
+  win.on('closed', (e: Event) => WindowMap.delete(name));
 
   win.webContents.on('render-process-gone', async (event, details) => {
     console.red(event, details);

@@ -38,6 +38,7 @@ declare interface IConversation {
   cid: string;
   toId: string;
   title: string;
+  unread?: number;
   subtitle?: string;
   avatarUrl?: string;
 }

@@ -10,18 +10,6 @@ export default class ConversationManager
     super();
     this.collection = this.localDatabase.conversations;
     this.userManager = getUserManager();
-    this.generateConversation();
-  }
-
-  public async generateConversation() {
-    const users: IUser[] = await this.userManager.getOther();
-    const own: IUser = await this.userManager.getOwnInfo();
-    const conversations = users.map((user) => ({
-      cid: `${own.uid}:${user.uid}`,
-      toId: user.uid,
-      title: String(user.nickname),
-    }));
-    this.bulkInsert(conversations);
   }
 
   public async getLatestConversation() {

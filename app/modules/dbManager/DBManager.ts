@@ -1,5 +1,13 @@
-import { RxDocument } from 'rxdb';
+import { RxDocument, RxChangeEvent } from 'rxdb';
+import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { database } from '../../db';
+
+enum EWriteOperation {
+  INSERT = 'INSERT',
+  UPDATE = 'UPDATE',
+  DELETE = 'DELETE',
+}
 
 class DBManager implements RxDB.IDBManager {
   protected localDatabase: RxDB.LocalDatabaseType;
@@ -9,8 +17,22 @@ class DBManager implements RxDB.IDBManager {
     this.localDatabase = database;
   }
 
-  public getCollection() {
-    return this.collection;
+  public get insert$() {
+    return this.collection.$.pipe(
+      filter(
+        (changeEvent: RxChangeEvent) =>
+          changeEvent.operation === EWriteOperation.INSERT
+      )
+    );
+  }
+
+  public get update$(): Observable<RxChangeEvent> {
+    return this.collection.$.pipe(
+      filter(
+        (changeEvent: RxChangeEvent) =>
+          changeEvent.operation === EWriteOperation.UPDATE
+      )
+    );
   }
 
   public async getAllDocuments(): Promise<RxDB.IDocument[]> {
@@ -37,6 +59,10 @@ class DBManager implements RxDB.IDBManager {
     primaryId: string
   ): Promise<RxDocument<RxDB.IDocument, any>> {
     return await this.collection.findOne(primaryId).exec();
+  }
+
+  public async findWithOneKey(key: string, value: any) {
+    return await this.collection.find().where(key).eq(value).exec();
   }
 }
 
