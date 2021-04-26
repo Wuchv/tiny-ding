@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Layout, Typography } from 'antd';
+import { Layout, Typography, Menu, Dropdown, Button } from 'antd';
 import { MessageOutlined, TeamOutlined } from '@ant-design/icons';
-
 import { useReduxData } from '@src/hooks/useRedux';
+import { UserManager } from '@src/modules/RemoteGlobal';
+import { openLoginWindow } from '@src/utils';
 
 import { Avatar } from '@src/components/Avatar';
 
@@ -14,6 +15,7 @@ interface IHeader {}
 export const Header: React.FC<IHeader> = React.memo(() => {
   const history = useHistory();
   const {
+    uid,
     nickname,
     avatarUrl,
     currentConversationTitle,
@@ -26,11 +28,6 @@ export const Header: React.FC<IHeader> = React.memo(() => {
   const [isTeamIconClicked, setIsTeamIconClicked] = React.useState<boolean>(
     false
   );
-
-  const changeIconState = React.useCallback((messageIconState: boolean) => {
-    setIsMessageIconClicked(messageIconState);
-    setIsTeamIconClicked(!messageIconState);
-  }, []);
 
   React.useEffect(() => {
     // 监听路由变化，设置icon
@@ -49,10 +46,40 @@ export const Header: React.FC<IHeader> = React.memo(() => {
     });
   }, []);
 
+  const changeIconState = React.useCallback((messageIconState: boolean) => {
+    setIsMessageIconClicked(messageIconState);
+    setIsTeamIconClicked(!messageIconState);
+  }, []);
+
+  const exitLogin = React.useCallback(async () => {
+    const userDoc = await UserManager.findOne(uid);
+    await userDoc.remove();
+    openLoginWindow();
+  }, []);
+
+  const avatarMenu = React.useMemo(
+    () => (
+      <Menu>
+        <Menu.Item key="exit" onClick={exitLogin}>
+          <Typography.Text>退出登录</Typography.Text>
+        </Menu.Item>
+      </Menu>
+    ),
+    [exitLogin]
+  );
+
   return (
     <Layout.Header className="header-container flex">
       <div className="flex header-lt">
-        <Avatar text={nickname} src={avatarUrl} size="small" />
+        <Dropdown
+          overlay={avatarMenu}
+          trigger={['click']}
+          overlayClassName="avatar-dropdown"
+        >
+          <div style={{ height: '56px' }}>
+            <Avatar text={nickname} src={avatarUrl} size="small" />
+          </div>
+        </Dropdown>
         <MessageOutlined
           className={isMessageIconClicked ? 'icon-active' : ''}
           onClick={() =>

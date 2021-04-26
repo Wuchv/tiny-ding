@@ -20,7 +20,7 @@ export const Main: React.FC<unknown> = React.memo(() => {
     if (!uid) {
       openLoginWindow();
     }
-  }, []);
+  }, [uid]);
 
   React.useEffect(() => {
     setComMap({ ...comMap, [currentTo]: <ChatBox /> });

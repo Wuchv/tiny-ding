@@ -155,7 +155,7 @@ class Http {
           }
         },
         (error) => {
-          console.error(error);
+          message.error(error);
           return error;
         }
       );
