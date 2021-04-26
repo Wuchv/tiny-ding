@@ -1,14 +1,12 @@
 import * as React from 'react';
-import { filter } from 'rxjs/operators';
-import { RxChangeEvent } from 'rxdb';
-import { List } from 'antd';
+import { RxDocument } from 'rxdb';
+import { List, Badge } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
-import { chooseChatPartnerAction } from '@src/redux/reducers/chatReducer';
 import {
-  ConversationManager,
-  MessageManager,
-  UserManager,
-} from '@src/modules/RemoteGlobal';
+  chooseChatPartnerAction,
+  noConversation,
+} from '@src/redux/reducers/chatReducer';
+import { ConversationManager, MessageManager } from '@src/modules/RemoteGlobal';
 import { useReduxData } from '@src/hooks/useRedux';
 
 import { Avatar } from '@src/components/Avatar';
@@ -21,36 +19,60 @@ export const ChatList: React.FC<IChatList> = React.memo(() => {
   const [dispatch, { uid, currentTo, currentCid }] = useReduxData();
   const [chatList, setChatList] = React.useState<IConversation[]>([]);
 
+  // 获取conversations
   React.useEffect(() => {
     ConversationManager.getAllDocuments().then((res: IConversation[]) =>
       setChatList(res)
     );
+  }, []);
 
+  React.useEffect(() => {
     const insertConSub = ConversationManager.insert$.subscribe(
-      (changeEvent: RxChangeEvent) => {
-        const conversation = changeEvent.rxDocument.toJSON();
+      (conversation: IConversation) => {
         setChatList([...chatList, conversation]);
       }
     );
-    //TODO：未读消息红点；未读消息增量式拉取
+
+    //TODO：登录时未读消息增量式拉取
     // 订阅其它conversation的message insert，增加未读消息的数量
-    // MessageManager.insert$.pipe(
-    //   filter((changeEvent: RxChangeEvent) => {
-    //     const msg = changeEvent.rxDocument.toJSON();
-    //     return (
-    //       (msg.fromId !== uid && msg.toId !== currentTo) ||
-    //       (msg.fromId !== currentTo && msg.toId !== uid)
-    //     );
-    //   })
-    // );
+    const unreadDotSub = MessageManager.unreadDot$(uid, currentTo).subscribe(
+      async (msg) => {
+        const cid = `${msg.toId}:${msg.fromId}`;
+        const conversationDoc: RxDocument<IConversation> = await ConversationManager.findOne(
+          cid
+        );
+        if (conversationDoc) {
+          conversationDoc.update({
+            $inc: {
+              unread: 1,
+            },
+          });
+        }
+      }
+    );
+
+    const unreadDotUpdateSub = ConversationManager.update$.subscribe(
+      (conversation: IConversation) => {
+        const _chatList = chatList.map((chat) => {
+          if (chat.cid === conversation.cid) {
+            chat.unread = conversation.unread;
+          }
+          return chat;
+        });
+        setChatList(_chatList);
+      }
+    );
+
     return () => {
       insertConSub.unsubscribe();
+      unreadDotSub.unsubscribe();
+      unreadDotUpdateSub.unsubscribe();
     };
-  }, []);
+  }, [uid, currentTo]);
 
   // 切换conversation，拉取所有未读消息，清空未读消息数量
   const changeConversation = React.useCallback(
-    (conversation: IConversation) =>
+    async (conversation: IConversation) => {
       dispatch(
         chooseChatPartnerAction({
           currentCid: conversation.cid,
@@ -58,7 +80,20 @@ export const ChatList: React.FC<IChatList> = React.memo(() => {
           currentConversationTitle: conversation.title,
           currentConversationAvatar: conversation.avatarUrl,
         })
-      ),
+      );
+
+      // 清空未读消息红点
+      const conversationDoc: RxDocument<IConversation> = await ConversationManager.findOne(
+        conversation.cid
+      );
+      if (conversationDoc) {
+        conversationDoc.update({
+          $set: {
+            unread: 0,
+          },
+        });
+      }
+    },
     []
   );
 
@@ -68,7 +103,11 @@ export const ChatList: React.FC<IChatList> = React.memo(() => {
       conversation.remove();
       const _chatList = chatList.filter((con) => con.cid !== cid);
       setChatList(_chatList);
-      !!_chatList[0] && changeConversation(_chatList[0]);
+      if (_chatList.length > 0) {
+        changeConversation(_chatList[0]);
+      } else {
+        dispatch(noConversation());
+      }
     },
     [chatList]
   );
@@ -84,17 +123,19 @@ export const ChatList: React.FC<IChatList> = React.memo(() => {
           onClick={() => changeConversation(conversation)}
         >
           <CloseOutlined onClick={() => deleteConversation(conversation.cid)} />
-          <List.Item.Meta
-            avatar={
-              <Avatar
-                text={conversation.title}
-                src={conversation.avatarUrl}
-                size="large"
-              />
-            }
-            title={conversation.title}
-            description={conversation.subtitle}
-          />
+          <Badge count={conversation.unread} offset={[-12, 4]} size="small">
+            <List.Item.Meta
+              avatar={
+                <Avatar
+                  text={conversation.title}
+                  src={conversation.avatarUrl}
+                  size="large"
+                />
+              }
+              title={conversation.title}
+              description={conversation.subtitle}
+            />
+          </Badge>
         </List.Item>
       )}
     />

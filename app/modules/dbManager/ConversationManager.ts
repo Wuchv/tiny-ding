@@ -12,6 +12,12 @@ export default class ConversationManager
     const conversations: IConversation[] = (await this.getAllDocuments()) as IConversation[];
     if (conversations.length > 0) {
       const con = conversations[0];
+      const conDoc = await this.findOne(con.cid);
+      conDoc.update({
+        $set: {
+          unread: 0,
+        },
+      });
       return {
         currentCid: con.cid,
         currentTo: con.toId,

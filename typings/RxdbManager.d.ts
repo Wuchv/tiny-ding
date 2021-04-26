@@ -2,8 +2,8 @@ import { Observable } from 'rxjs';
 import { RxDocument, RxChangeEvent } from 'rxdb';
 
 export interface DBManager {
-  insert$: Observable<RxChangeEvent>;
-  update$: Observable<RxChangeEvent>;
+  insert$: Observable<RxDB.IDocument>;
+  update$: Observable<RxDB.IDocument>;
   getAllDocuments(): Promise<RxDB.IDocument[]>;
   insert(doc: RxDB.IDocument): Promise<RxDocument<RxDB.IDocument, any>>;
   upsert(doc: RxDB.IDocument): Promise<RxDocument<RxDB.IDocument, any>>;

@@ -5,7 +5,7 @@ import { RxDocument } from 'rxdb';
 import { ConversationManager, UserManager } from '@src/modules/RemoteGlobal';
 import { useReduxData } from '@src/hooks/useRedux';
 import { chooseChatPartnerAction } from '@src/redux/reducers/chatReducer';
-// import { getAllUsers } from '@src/services';
+import { getAllUsers } from '@src/services';
 
 import { Avatar } from '@src/components/Avatar';
 
@@ -40,7 +40,7 @@ export const FriendList: React.FC<unknown> = React.memo(() => {
         cid: `${uid}:${user.uid}`,
         toId: user.uid,
         title: String(user.nickname),
-        // unread: 0,
+        unread: 0,
         avatarUrl: user.avatarUrl ? user.avatarUrl : '',
       };
       await ConversationManager.insert(conversation);

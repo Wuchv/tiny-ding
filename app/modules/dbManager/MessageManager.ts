@@ -13,6 +13,12 @@ export default class MessageManager
     // this.collection.remove();
   }
 
+  public unreadDot$(uid: string, currentTo: string): Observable<IMessage> {
+    return this.insert$.pipe(
+      filter((msg: IMessage) => msg.fromId !== currentTo && msg.fromId !== uid)
+    );
+  }
+
   public collectionFilterById$(
     uid: string,
     currentTo: string

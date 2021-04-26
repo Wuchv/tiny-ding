@@ -1,6 +1,6 @@
 import { RxDocument, RxChangeEvent } from 'rxdb';
 import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { database } from '../../db';
 
 enum EWriteOperation {
@@ -17,21 +17,23 @@ class DBManager implements RxDB.IDBManager {
     this.localDatabase = database;
   }
 
-  public get insert$() {
+  public get insert$(): Observable<RxDB.IDocument> {
     return this.collection.$.pipe(
       filter(
         (changeEvent: RxChangeEvent) =>
           changeEvent.operation === EWriteOperation.INSERT
-      )
+      ),
+      map((changeEvent: RxChangeEvent) => changeEvent.rxDocument.toJSON())
     );
   }
 
-  public get update$(): Observable<RxChangeEvent> {
+  public get update$(): Observable<RxDB.IDocument> {
     return this.collection.$.pipe(
       filter(
         (changeEvent: RxChangeEvent) =>
           changeEvent.operation === EWriteOperation.UPDATE
-      )
+      ),
+      map((changeEvent: RxChangeEvent) => changeEvent.rxDocument.toJSON())
     );
   }
 
