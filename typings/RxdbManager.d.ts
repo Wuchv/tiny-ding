@@ -21,6 +21,7 @@ export interface UserManager extends DBManager {
 }
 
 export interface MessageManager extends DBManager {
+  unreadDot$(uid: string, currentTo: string): Observable<IMessage>;
   collectionFilterById$(
     uid: string,
     currentTo: string
@@ -34,5 +35,6 @@ export interface ConversationManager extends DBManager {
     currentCid?: string;
     currentTo?: string;
     currentConversationTitle?: string;
+    currentConversationAvatar?: string;
   }>;
 }

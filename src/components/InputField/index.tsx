@@ -11,7 +11,7 @@ import { Toolbar } from '@src/components/Toolbar';
 import './style.less';
 
 export const InputField: React.FC<unknown> = React.memo(() => {
-  const { uid, currentTo, nickname, avatarUrl } = useReduxData()[1];
+  const { uid, currentTo, nickname, avatarUrl, currentCid } = useReduxData()[1];
   const [textAreaContent, setTextAreaContent] = React.useState<string>('');
   const [, setFile] = useUploadFile();
 
@@ -81,7 +81,7 @@ export const InputField: React.FC<unknown> = React.memo(() => {
         MessageCenter.sendMsg(msg);
       }
     },
-    []
+    [uid, currentTo, nickname, avatarUrl]
   );
 
   return (
@@ -92,6 +92,7 @@ export const InputField: React.FC<unknown> = React.memo(() => {
         placeholder="请输入消息"
         autoSize={{ minRows: 3, maxRows: 3 }}
         value={textAreaContent}
+        disabled={!currentCid}
         onChange={(e) => setTextAreaContent(e.currentTarget.value)}
         onDrop={fileDrop}
         onDragOver={(e) => {

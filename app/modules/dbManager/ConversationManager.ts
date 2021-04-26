@@ -1,28 +1,30 @@
 import DBManager from './DBManager';
-import UserManager from './UserManager';
-import { getUserManager } from '..';
 
 export default class ConversationManager
   extends DBManager
   implements RxDB.IConversationManager {
-  private userManager: UserManager;
   constructor() {
     super();
     this.collection = this.localDatabase.conversations;
-    this.userManager = getUserManager();
   }
 
   public async getLatestConversation() {
-    const own: IUser = await this.userManager.getOwnInfo();
-    const users: IUser[] = await this.userManager.getOther();
-    const latestUser = users[0];
-    if (!latestUser) {
-      return {};
+    const conversations: IConversation[] = (await this.getAllDocuments()) as IConversation[];
+    if (conversations.length > 0) {
+      const con = conversations[0];
+      return {
+        currentCid: con.cid,
+        currentTo: con.toId,
+        currentConversationTitle: con.title,
+        currentConversationAvatar: con.avatarUrl,
+      };
+    } else {
+      return {
+        currentCid: null,
+        currentTo: null,
+        currentConversationTitle: null,
+        currentConversationAvatar: null,
+      };
     }
-    return {
-      currentCid: `${own.uid}:${latestUser.uid}`,
-      currentTo: latestUser.uid,
-      currentConversationTitle: latestUser.nickname,
-    };
   }
 }

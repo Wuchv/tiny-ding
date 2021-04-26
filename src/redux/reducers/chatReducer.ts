@@ -19,10 +19,16 @@ const chatSlice = createSlice({
       state,
       action: PayloadAction<Partial<IChat>>
     ) => ({ ...state, ...action.payload }),
+    noConversation: (state) => {
+      state.currentCid = null;
+      state.currentCid = null;
+      state.currentConversationTitle = null;
+      state.currentConversationAvatar = null;
+    },
   },
 });
 
-export const { chooseChatPartnerAction } = chatSlice.actions;
+export const { chooseChatPartnerAction, noConversation } = chatSlice.actions;
 
 export const selectChat = (state: IRootState) => ({
   currentTo: state.chat.currentTo,
