@@ -63,7 +63,7 @@ declare interface ISignal {
   };
 }
 
-type SafeObject = Record<string, unknown>;
+type SafeObject = Record<string, any>;
 
 declare module 'recorder-core';
 

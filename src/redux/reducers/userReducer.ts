@@ -20,7 +20,7 @@ const userSlice = createSlice({
       ...state,
       ...action.payload,
     }),
-    exitLoginAction: () => ({
+    logoutAction: () => ({
       uid: null,
       access_token: null,
       account: null,
@@ -34,7 +34,7 @@ export const {
   loginAction,
   loginSuccessAction,
   loginFailedAction,
-  exitLoginAction,
+  logoutAction,
 } = userSlice.actions;
 
 export const selectUser = (state: IRootState) => ({

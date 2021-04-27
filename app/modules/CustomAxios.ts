@@ -99,6 +99,18 @@ export default class CustomAxios {
     );
   }
 
+  private transformRequestData(data: any) {
+    let ret: string | FormData = '';
+    if (data instanceof FormData) {
+      ret = data;
+    } else {
+      for (let it in data) {
+        ret +=
+          encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&';
+      }
+    }
+    return ret;
+  }
   /**
    * 发送get请求
    * @param url
@@ -115,7 +127,8 @@ export default class CustomAxios {
         }
       },
       (error) => {
-        console.error(error);
+        messageBox.error({ message: String(error) });
+        console.red(error);
         return error;
       }
     );
@@ -130,23 +143,7 @@ export default class CustomAxios {
   public post(url: string, data: object, fn?: Function): Promise<any> {
     return this.axiosInstance
       .post(url, data, {
-        transformRequest: [
-          (data) => {
-            let ret: string | FormData = '';
-            if (data instanceof FormData) {
-              ret = data;
-            } else {
-              for (let it in data) {
-                ret +=
-                  encodeURIComponent(it) +
-                  '=' +
-                  encodeURIComponent(data[it]) +
-                  '&';
-              }
-            }
-            return ret;
-          },
-        ],
+        transformRequest: [this.transformRequestData],
         withCredentials: true,
       })
       .then(
@@ -158,8 +155,28 @@ export default class CustomAxios {
           }
         },
         (error) => {
-          messageBox.error({ message: error });
+          messageBox.error({ message: String(error) });
           console.red(error);
+          return error;
+        }
+      );
+  }
+
+  public put(url: string, data: SafeObject, fn?: Function): Promise<any> {
+    return this.axiosInstance
+      .put(url, data, {
+        transformRequest: [this.transformRequestData],
+      })
+      .then(
+        (response) => {
+          if (fn) {
+            return fn(response);
+          } else {
+            return response;
+          }
+        },
+        (error) => {
+          messageBox.error({ message: String(error) });
           return error;
         }
       );
