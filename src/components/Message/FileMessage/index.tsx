@@ -3,7 +3,7 @@ import { Typography, Progress, message } from 'antd';
 import { FileTextTwoTone, CloseCircleOutlined } from '@ant-design/icons';
 import { useReduxData } from '@src/hooks/useRedux';
 import { useSubject, ofAction } from '@src/hooks/useSubject';
-import Http, { FILE_HEADER } from '@src/modules/Http';
+import { CustomAxios, FILE_HEADER } from '@src/modules/RemoteGlobal';
 import { MessageCenter } from '@src/modules/RemoteGlobal';
 import { calcFileSize, resolveTimestamp } from '@src/utils';
 import {
@@ -28,7 +28,7 @@ export const FileMessage: React.FC<Partial<IMessage>> = React.memo(
 
     const uploadFetch = React.useMemo(
       () =>
-        new Http({
+        new CustomAxios({
           headers: { 'Content-Type': FILE_HEADER },
           baseURL: ossHost,
           timeout: 0,
@@ -79,7 +79,7 @@ export const FileMessage: React.FC<Partial<IMessage>> = React.memo(
                   content: downloadUrl,
                   attachment: { url: downloadUrl },
                 });
-                MessageCenter.sendMsg(msg);
+                MessageCenter.sendMsg(msg as IMessage);
               } else {
                 setIsUploadedSuccess(false);
                 message.error(res, 1.5, () => MessageCenter.deleteMsg(msgId));

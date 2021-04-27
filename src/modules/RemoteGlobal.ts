@@ -17,7 +17,20 @@ const MessageCenter: IMessageCenter = window.$client.remote.getGlobal(
   'MessageCenter'
 );
 
-export { UserManager, MessageManager, ConversationManager, MessageCenter };
+const CustomHttp = window.$client.remote.getGlobal('CustomHttp');
+const CustomAxios: ICustomAxios = CustomHttp.CustomAxios;
+const DEFAULT_HEADER: string = CustomHttp.DEFAULT_HEADER;
+const FILE_HEADER: string = CustomHttp.FILE_HEADER;
+
+export {
+  UserManager,
+  MessageManager,
+  ConversationManager,
+  MessageCenter,
+  CustomAxios,
+  DEFAULT_HEADER,
+  FILE_HEADER,
+};
 
 export enum EMsgType {
   TEXT = 'text',

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IRootState } from './index';
-import { ILoginRequest } from '../../services/user';
+import { ILoginRequest } from '@src/services';
 import { UserManager } from '@src/modules/RemoteGlobal';
 
 // @ts-ignore:Top-level 'await' expressions are only allowed when the 'module' option is set to 'esnext' or 'system', and the 'target' option is set to 'es2017' or higher.
@@ -20,6 +20,13 @@ const userSlice = createSlice({
       ...state,
       ...action.payload,
     }),
+    exitLoginAction: () => ({
+      uid: null,
+      access_token: null,
+      account: null,
+      avatarUrl: null,
+      nickname: null,
+    }),
   },
 });
 
@@ -27,6 +34,7 @@ export const {
   loginAction,
   loginSuccessAction,
   loginFailedAction,
+  exitLoginAction,
 } = userSlice.actions;
 
 export const selectUser = (state: IRootState) => ({

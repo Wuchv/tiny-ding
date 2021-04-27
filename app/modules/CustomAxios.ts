@@ -1,14 +1,16 @@
-import { openLoginWindow } from '@src/utils';
 import axios, {
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
   CancelTokenSource,
 } from 'axios';
-import { message } from 'antd';
 import { delay } from 'lodash';
-import { UserManager } from './RemoteGlobal';
-import { host, port } from '@src/constants';
+import { getUserManager } from '.';
+import { host, port } from '../constants';
+import { createWindow, WindowName } from '../browser-window';
+import { messageBox } from '../dialog';
+
+const FormData = require('form-data');
 
 export const DEFAULT_HEADER = 'application/x-www-form-urlencoded';
 export const FILE_HEADER = 'multipart/form-data';
@@ -21,7 +23,7 @@ const baseAxiosConfig: AxiosRequestConfig = {
   baseURL: `http://${host}:${port}`,
 };
 
-class Http {
+export default class CustomAxios {
   private axiosRequestConfig: AxiosRequestConfig;
   private axiosInstance: AxiosInstance;
   private source: CancelTokenSource;
@@ -58,7 +60,7 @@ class Http {
   //请求拦截器
   private setRequestInterceptor() {
     this.axiosInstance.interceptors.request.use(async (config) => {
-      const self: IUser = await UserManager.getOwnInfo();
+      const self: IUser = await getUserManager().getOwnInfo();
       if (self) {
         config.headers['Authorization'] = `Bearer ${self.access_token}`;
       }
@@ -78,7 +80,7 @@ class Http {
           switch (error.response.status) {
             case 401: //Unauthorized
               if (!location.hash.includes('login')) {
-                delay(openLoginWindow, 2000);
+                delay(() => createWindow(WindowName.LOGIN_REGISTER), 2000);
               }
               break;
             //处理返回码
@@ -87,9 +89,10 @@ class Http {
           }
         }
         //断网处理
-        if (!window.navigator.onLine) {
-          message.error('网络出现波动');
-        }
+        // if (!window.navigator.onLine) {
+        //   // message.error('网络出现波动');
+        //   console.red('网络出现波动');
+        // }
         //axios cancel 后取 error.message
         return Promise.reject(error.response?.data || error.message);
       }
@@ -155,13 +158,10 @@ class Http {
           }
         },
         (error) => {
-          message.error(error);
+          messageBox.error({ message: error });
+          console.red(error);
           return error;
         }
       );
   }
 }
-
-export const fetch = new Http();
-
-export default Http;

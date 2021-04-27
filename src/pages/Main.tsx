@@ -13,14 +13,14 @@ import './Main.less';
 import { openLoginWindow } from '@src/utils';
 
 export const Main: React.FC<unknown> = React.memo(() => {
-  const [, { uid, currentTo }] = useReduxData();
+  const [, { uid, currentTo, access_token }] = useReduxData();
   const [comMap, setComMap] = React.useState<any>({});
 
   React.useEffect(() => {
-    if (!uid) {
+    if (!uid || !access_token) {
       openLoginWindow();
     }
-  }, [uid]);
+  }, [uid, access_token]);
 
   React.useEffect(() => {
     setComMap({ ...comMap, [currentTo]: <ChatBox /> });

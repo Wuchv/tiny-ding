@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Layout, Typography, Menu, Dropdown, Button } from 'antd';
+import { Layout, Typography, Menu, Dropdown } from 'antd';
 import { MessageOutlined, TeamOutlined } from '@ant-design/icons';
 import { useReduxData } from '@src/hooks/useRedux';
 import { UserManager } from '@src/modules/RemoteGlobal';
-import { openLoginWindow } from '@src/utils';
+import { exitLoginAction } from '@src/redux/reducers/userReducer';
 
 import { Avatar } from '@src/components/Avatar';
 
@@ -14,13 +14,16 @@ interface IHeader {}
 
 export const Header: React.FC<IHeader> = React.memo(() => {
   const history = useHistory();
-  const {
-    uid,
-    nickname,
-    avatarUrl,
-    currentConversationTitle,
-    currentConversationAvatar,
-  } = useReduxData()[1];
+  const [
+    dispatch,
+    {
+      uid,
+      nickname,
+      avatarUrl,
+      currentConversationTitle,
+      currentConversationAvatar,
+    },
+  ] = useReduxData();
   const [
     isMessageIconClicked,
     setIsMessageIconClicked,
@@ -53,8 +56,10 @@ export const Header: React.FC<IHeader> = React.memo(() => {
 
   const exitLogin = React.useCallback(async () => {
     const userDoc = await UserManager.findOne(uid);
-    await userDoc.remove();
-    openLoginWindow();
+    if (userDoc) {
+      await userDoc.remove();
+    }
+    dispatch(exitLoginAction());
   }, []);
 
   const avatarMenu = React.useMemo(

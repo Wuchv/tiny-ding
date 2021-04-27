@@ -8,6 +8,7 @@ import {
   ConversationManager,
   MessageManager,
 } from './RxdbManager';
+import { CustomAxios } from './CustomAxios';
 
 interface client {
   ipcRenderer: IpcRenderer;
@@ -35,6 +36,8 @@ declare global {
     gray: Function;
     grey: Function;
   }
+
+  type ICustomAxios = CustomAxios;
 
   type IMessageCenter = MessageCenter;
 
