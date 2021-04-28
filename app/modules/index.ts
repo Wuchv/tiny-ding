@@ -9,8 +9,18 @@ const SingleInstance = (Manager: any) => {
   return () => instance || (instance = new Manager());
 };
 
-export const getUserManager = SingleInstance(UserManager);
-export const getMessageManager = SingleInstance(MessageManager);
-export const getConversationManager = SingleInstance(ConversationManager);
-export const getMessageCenter = SingleInstance(MessageCenter);
+type IGetManager<T> = () => T;
+
+export const getUserManager: IGetManager<UserManager> = SingleInstance(
+  UserManager
+);
+export const getMessageManager: IGetManager<MessageManager> = SingleInstance(
+  MessageManager
+);
+export const getConversationManager: IGetManager<ConversationManager> = SingleInstance(
+  ConversationManager
+);
+export const getMessageCenter: IGetManager<MessageCenter> = SingleInstance(
+  MessageCenter
+);
 export const CustomHttp = { CustomAxios, FILE_HEADER, DEFAULT_HEADER };

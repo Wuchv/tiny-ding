@@ -140,7 +140,11 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
 
   const changeIceStateListener = React.useCallback(
     (call: Peer.MediaConnection) => {
+      const _oniceconnectionstatechange = call.peerConnection.oniceconnectionstatechange.bind(
+        call.peerConnection
+      );
       call.peerConnection.oniceconnectionstatechange = () => {
+        _oniceconnectionstatechange();
         if (call.peerConnection.iceConnectionState === 'disconnected') {
           closeWithError('对方已挂断');
         }

@@ -4,7 +4,9 @@ import { RxDocument, RxChangeEvent } from 'rxdb';
 export interface DBManager {
   insert$: Observable<RxDB.IDocument>;
   update$: Observable<RxDB.IDocument>;
-  getAllDocuments(): Promise<RxDB.IDocument[]>;
+  getAllDocuments(
+    isToJSON?: boolean
+  ): Promise<RxDB.IDocument[] | RxDB.IDocument[] | RxDocument[]>;
   insert(doc: RxDB.IDocument): Promise<RxDocument<RxDB.IDocument, any>>;
   upsert(doc: RxDB.IDocument): Promise<RxDocument<RxDB.IDocument, any>>;
   bulkInsert(docs: RxDB.IDocument[]): Promise<any>;
@@ -27,6 +29,7 @@ export interface MessageManager extends DBManager {
     currentTo: string
   ): Observable<RxChangeEvent>;
   filterMsgByCid(fromId: string, toId: string): Promise<IMessage[]>;
+  loadMessage(uid: string, lastLogout: number): Promise<IMessage[]>;
 }
 
 export interface ConversationManager extends DBManager {

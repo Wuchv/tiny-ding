@@ -24,12 +24,18 @@ const minimizeWindow = (name?: WindowName) => {
   return result;
 };
 
+const loadMessage = () => {
+  const result = ipcRenderer.send('LOAD_MESSAGE');
+  return result;
+};
+
 window.$client = {
   ipcRenderer,
   openWindow,
   closeWindow,
   maximizeWindow,
   minimizeWindow,
+  loadMessage,
   remote,
 };
 

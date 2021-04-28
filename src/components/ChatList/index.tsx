@@ -16,7 +16,10 @@ import './style.less';
 interface IChatList {}
 
 export const ChatList: React.FC<IChatList> = React.memo(() => {
-  const [dispatch, { uid, currentTo, currentCid }] = useReduxData();
+  const [
+    dispatch,
+    { uid, currentTo, currentCid, access_token },
+  ] = useReduxData();
   const [chatList, setChatList] = React.useState<IConversation[]>([]);
 
   // 获取conversations
@@ -24,7 +27,10 @@ export const ChatList: React.FC<IChatList> = React.memo(() => {
     ConversationManager.getAllDocuments().then((res: IConversation[]) =>
       setChatList(res)
     );
-  }, []);
+
+    // 加载离线时接收的消息
+    window.$client.loadMessage();
+  }, [uid, access_token]);
 
   React.useEffect(() => {
     const insertConSub = ConversationManager.insert$.subscribe(
@@ -33,7 +39,6 @@ export const ChatList: React.FC<IChatList> = React.memo(() => {
       }
     );
 
-    //TODO：登录时未读消息增量式拉取
     // 订阅其它conversation的message insert，增加未读消息的数量
     const unreadDotSub = MessageManager.unreadDot$(uid, currentTo).subscribe(
       async (msg) => {

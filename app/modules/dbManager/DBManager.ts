@@ -37,8 +37,16 @@ class DBManager implements RxDB.IDBManager {
     );
   }
 
-  public async getAllDocuments(): Promise<RxDB.IDocument[]> {
-    return (await this.collection.dump()).docs;
+  public async getAllDocuments(
+    isToJSON: boolean = true
+  ): Promise<RxDB.IDocument[] | RxDocument[]> {
+    let result = [];
+    if (isToJSON) {
+      result = (await this.collection.dump()).docs;
+    } else {
+      result = await this.collection.find().exec();
+    }
+    return result;
   }
 
   public async insert(

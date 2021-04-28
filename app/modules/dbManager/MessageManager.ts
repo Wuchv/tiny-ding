@@ -1,8 +1,8 @@
 import { RxDocument, RxChangeEvent } from 'rxdb';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
-
 import DBManager from './DBManager';
+import { loadUnreadMessage } from '../../services';
 
 export default class MessageManager
   extends DBManager
@@ -13,12 +13,14 @@ export default class MessageManager
     // this.collection.remove();
   }
 
+  //订阅未读消息的增加
   public unreadDot$(uid: string, currentTo: string): Observable<IMessage> {
     return this.insert$.pipe(
       filter((msg: IMessage) => msg.fromId !== currentTo && msg.fromId !== uid)
     );
   }
 
+  // 订阅当前会话消息的接收
   public collectionFilterById$(
     uid: string,
     currentTo: string
@@ -34,6 +36,7 @@ export default class MessageManager
     );
   }
 
+  // 根据fromId和toId查询message
   public async filterMsgByCid(fromId: string, toId: string) {
     const docs = await this.collection
       .find({
@@ -58,5 +61,15 @@ export default class MessageManager
       }
       return msg;
     });
+  }
+
+  // 根据uid和最后登出时间增量式拉取message
+  public async loadMessage(uid: string): Promise<IMessage[]> {
+    const msgs: IMessage[] = await loadUnreadMessage({
+      uid,
+      timestamp: Date.now(),
+    });
+    await this.collection.bulkInsert(msgs as any);
+    return msgs;
   }
 }

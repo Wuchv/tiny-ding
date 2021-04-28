@@ -16,6 +16,7 @@ interface client {
   closeWindow: Function;
   maximizeWindow: Function;
   minimizeWindow: Function;
+  loadMessage: Function;
   remote: Remote;
 }
 
