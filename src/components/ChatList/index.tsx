@@ -24,9 +24,9 @@ export const ChatList: React.FC<IChatList> = React.memo(() => {
 
   // 获取conversations
   React.useEffect(() => {
-    ConversationManager.getAllDocuments().then((res: IConversation[]) =>
-      setChatList(res)
-    );
+    ConversationManager.getAllDocuments().then((res: IConversation[]) => {
+      setChatList(res);
+    });
 
     // 加载离线时接收的消息
     window.$client.loadMessage();
@@ -73,7 +73,7 @@ export const ChatList: React.FC<IChatList> = React.memo(() => {
       unreadDotSub.unsubscribe();
       unreadDotUpdateSub.unsubscribe();
     };
-  }, [uid, currentTo]);
+  }, [uid, currentTo, chatList]);
 
   // 切换conversation，拉取所有未读消息，清空未读消息数量
   const changeConversation = React.useCallback(
@@ -88,15 +88,17 @@ export const ChatList: React.FC<IChatList> = React.memo(() => {
       );
 
       // 清空未读消息红点
-      const conversationDoc: RxDocument<IConversation> = await ConversationManager.findOne(
-        conversation.cid
-      );
-      if (conversationDoc) {
-        conversationDoc.update({
-          $set: {
-            unread: 0,
-          },
-        });
+      if (conversation.unread > 0) {
+        const conversationDoc: RxDocument<IConversation> = await ConversationManager.findOne(
+          conversation.cid
+        );
+        if (conversationDoc) {
+          conversationDoc.update({
+            $set: {
+              unread: 0,
+            },
+          });
+        }
       }
     },
     []

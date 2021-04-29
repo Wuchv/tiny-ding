@@ -17,7 +17,7 @@ export const FriendList: React.FC<unknown> = React.memo(() => {
   const [userList, setUserList] = React.useState<IUser[]>([]);
 
   React.useEffect(() => {
-    // getAllUsers().then((res) => UserManager.bulkInsert(res));
+    getAllUsers().then((res) => UserManager.bulkInsert(res));
 
     UserManager.getOther().then((users) => {
       setUserList(users);
@@ -43,7 +43,7 @@ export const FriendList: React.FC<unknown> = React.memo(() => {
         unread: 0,
         avatarUrl: user.avatarUrl ? user.avatarUrl : '',
       };
-      await ConversationManager.insert(conversation);
+      await ConversationManager.upsert(conversation);
     }
     !!conversation &&
       dispatch(

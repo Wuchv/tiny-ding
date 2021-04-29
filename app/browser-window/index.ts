@@ -149,6 +149,9 @@ export const closeMainWindow = () => {
     const conversations = await getConversationManager().getAllDocuments(false);
     conversations.forEach((con: RxDocument<IConversation, any>) => {
       const doc: IConversation = con.toJSON();
+      if (!unreadMap.get(doc.cid)) {
+        return;
+      }
       const unreadNum = unreadMap.get(doc.cid).unread;
       if (unreadNum) {
         con.update({

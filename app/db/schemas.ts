@@ -116,7 +116,7 @@ export const conversationSchema: RxJsonSchema<IConversation> = {
       type: 'string',
     },
     avatarUrl: {
-      type: 'string',
+      type: ['string', 'null'],
     },
     unread: {
       type: 'number',
