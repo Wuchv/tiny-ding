@@ -1,10 +1,10 @@
 import * as React from 'react';
+import axios from 'axios';
 import { Typography, Progress, message } from 'antd';
 import { FileTextTwoTone, CloseCircleOutlined } from '@ant-design/icons';
 import { useReduxData } from '@src/hooks/useRedux';
 import { useSubject, ofAction } from '@src/hooks/useSubject';
-import { CustomAxios, FILE_HEADER } from '@src/modules/RemoteGlobal';
-import { MessageCenter } from '@src/modules/RemoteGlobal';
+import { MessageCenter, FILE_HEADER } from '@src/modules/RemoteGlobal';
 import { calcFileSize, resolveTimestamp } from '@src/utils';
 import {
   ossHost,
@@ -26,12 +26,15 @@ export const FileMessage: React.FC<Partial<IMessage>> = React.memo(
       true
     );
 
-    const uploadFetch = React.useMemo(
+    const axiosSource = React.useMemo(() => axios.CancelToken.source(), []);
+
+    const createUploadFetch = React.useCallback(
       () =>
-        new CustomAxios({
+        axios.create({
           headers: { 'Content-Type': FILE_HEADER },
           baseURL: ossHost,
           timeout: 0,
+          cancelToken: axiosSource.token,
           onUploadProgress: (progressEvent) => {
             let percent =
               ((progressEvent.loaded / progressEvent.total) * 100) | 0;
@@ -51,7 +54,7 @@ export const FileMessage: React.FC<Partial<IMessage>> = React.memo(
       const { Y, M, D } = resolveTimestamp(Date.now());
       extraData.append('OSSAccessKeyId', ossOptions.accessKeyId);
       extraData.append('policy', policyBase64);
-      extraData.append('signature', signature);
+      extraData.append('Signature', signature);
       extraData.append('key', `${Y}${M}${D}/${uid}:${currentTo}/${file.name}`);
       extraData.append('success_action_status', '200');
       extraData.append('file', file);
@@ -69,11 +72,12 @@ export const FileMessage: React.FC<Partial<IMessage>> = React.memo(
               const downloadUrl = `${ossHost}/${extraData.get('key')}`;
               let res = null;
               try {
-                res = await uploadFetch.post(null, extraData);
+                res = await createUploadFetch().post(null, extraData);
               } catch (e) {
-                message.error(e);
+                message.error(e.message || String(e));
               }
-              if (res?.etag) {
+
+              if (res?.headers?.etag) {
                 const msg = await MessageCenter.updateMsg({
                   msgId,
                   content: downloadUrl,
@@ -82,7 +86,10 @@ export const FileMessage: React.FC<Partial<IMessage>> = React.memo(
                 MessageCenter.sendMsg(msg as IMessage);
               } else {
                 setIsUploadedSuccess(false);
-                message.error(res, 1.5, () => MessageCenter.deleteMsg(msgId));
+                if (res) {
+                  await message.error(String(res), 1.5);
+                }
+                MessageCenter.deleteMsg(msgId);
               }
             }
           });
@@ -124,7 +131,7 @@ export const FileMessage: React.FC<Partial<IMessage>> = React.memo(
                 strokeColor={{ from: '#806d9e', to: '#35c7fd' }}
               />
               <CloseCircleOutlined
-                onClick={() => uploadFetch.cancel('已取消上传')}
+                onClick={() => axiosSource.cancel('已取消上传')}
               />
             </div>
           )}
