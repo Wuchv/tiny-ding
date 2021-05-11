@@ -27,9 +27,6 @@ export const ChatList: React.FC<IChatList> = React.memo(() => {
     ConversationManager.getAllDocuments().then((res: IConversation[]) => {
       setChatList(res);
     });
-
-    // 加载离线时接收的消息
-    window.$client.loadMessage();
   }, [uid, access_token]);
 
   React.useEffect(() => {
@@ -51,6 +48,14 @@ export const ChatList: React.FC<IChatList> = React.memo(() => {
             $inc: {
               unread: 1,
             },
+          });
+        } else {
+          ConversationManager.insert({
+            cid,
+            toId: msg.toId,
+            title: msg.sender,
+            unread: 0,
+            avatarUrl: msg.avatarUrl,
           });
         }
       }

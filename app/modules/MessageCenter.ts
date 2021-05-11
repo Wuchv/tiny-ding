@@ -3,10 +3,11 @@ import { fromEvent, Observable, interval, of } from 'rxjs';
 import { concat, filter, merge, take, takeUntil } from 'rxjs/operators';
 import { RxDocument } from 'rxdb';
 import { messageBox } from '../dialog';
-import { getUserManager, getMessageManager } from '.';
+import { getUserManager, getMessageManager, getConversationManager } from '.';
 import UserManager from './dbManager/UserManager';
 import MessageManager from './dbManager/MessageManager';
 import { host, port } from '../constants';
+import { offline } from '../services';
 
 enum EMessageEvent {
   SEND_MESSAGE = 'send_message_to_server',
@@ -177,11 +178,13 @@ export default class MessageCenter implements IMessageCenter {
 
     this.socket.on('connect', () => {
       console.red(`socket connected ${this.socket.id}`);
+      // socket连接时拉取离线期间的消息
+      loadUnreadMessage();
     });
 
     this.socket.on('disconnect', () => {
-      // this.socket.disconnect();
       console.red(`socket disconnected ${this.socket.id}`);
+      offline({ uid: own.uid, timestamp: Date.now() });
     });
 
     this.socket.on(EMessageEvent.THROW_ERROR, (e: Error) => {
@@ -193,4 +196,52 @@ export default class MessageCenter implements IMessageCenter {
       this.messageManager.insert(message);
     });
   }
+}
+
+async function loadUnreadMessage() {
+  const own = await getUserManager().getOwnInfo();
+  if (!own.access_token || !own.uid) {
+    return;
+  }
+  // 获取未读消息
+  const msgs = await getMessageManager().loadMessage(own.uid);
+
+  if (msgs && msgs.length === 0) return;
+
+  // 计算每个会话未读消息的数量
+  const unreadMap: Map<string, IConversation> = new Map();
+  msgs.forEach((msg) => {
+    const cid = `${own.uid}:${msg.fromId}`;
+    const con = unreadMap.get(cid);
+    if (con) {
+      unreadMap.set(cid, { ...con, unread: con.unread + 1 });
+    } else {
+      unreadMap.set(cid, {
+        cid,
+        toId: own.uid,
+        title: msg.sender,
+        unread: 1,
+        avatarUrl: msg.avatarUrl,
+      });
+    }
+  });
+  // 更新conversation
+  const conversations = await getConversationManager().getAllDocuments(false);
+  conversations.forEach((con: RxDocument<IConversation, any>) => {
+    const doc: IConversation = con.toJSON();
+    if (!unreadMap.get(doc.cid)) {
+      return;
+    }
+    const unreadNum = unreadMap.get(doc.cid).unread;
+    if (unreadNum) {
+      con.update({
+        $set: {
+          unread: unreadNum,
+        },
+      });
+      unreadMap.delete(doc.cid);
+    }
+  });
+  // 插入新的conversation
+  getConversationManager().bulkInsert([...unreadMap.values()]);
 }

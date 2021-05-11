@@ -63,11 +63,10 @@ export default class MessageManager
     });
   }
 
-  // 根据uid和最后登出时间增量式拉取message
+  // 根据uid和最后离线时间增量式拉取message
   public async loadMessage(uid: string): Promise<IMessage[]> {
     const msgs: IMessage[] = await loadUnreadMessage({
       uid,
-      timestamp: Date.now(),
     });
     await this.collection.bulkInsert(msgs as any);
     return msgs;

@@ -5,7 +5,6 @@ import { MessageOutlined, TeamOutlined } from '@ant-design/icons';
 import { useReduxData } from '@src/hooks/useRedux';
 import { UserManager } from '@src/modules/RemoteGlobal';
 import { logoutAction } from '@src/redux/reducers/userReducer';
-import { logout } from '@src/services';
 
 import { Avatar } from '@src/components/Avatar';
 
@@ -56,7 +55,6 @@ export const Header: React.FC<IHeader> = React.memo(() => {
   }, []);
 
   const exitLogin = React.useCallback(async () => {
-    await logout({ uid, timestamp: Date.now() });
     const userDoc = await UserManager.findOne(uid);
     if (userDoc) {
       await userDoc.remove();
