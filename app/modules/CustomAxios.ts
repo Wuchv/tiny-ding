@@ -79,7 +79,7 @@ export default class CustomAxios {
         if (error.response) {
           switch (error.response.status) {
             case 401: //Unauthorized
-              if (!location.hash.includes('login')) {
+              if (!window.location.hash.includes('login')) {
                 delay(() => createWindow(WindowName.LOGIN_REGISTER), 2000);
               }
               break;
@@ -127,7 +127,6 @@ export default class CustomAxios {
         }
       },
       (error) => {
-        messageBox.error({ message: String(error) });
         console.red(error);
         return error;
       }
@@ -155,7 +154,6 @@ export default class CustomAxios {
           }
         },
         (error) => {
-          messageBox.error({ message: String(error) });
           console.red(error);
           return error;
         }
@@ -176,7 +174,6 @@ export default class CustomAxios {
           }
         },
         (error) => {
-          messageBox.error({ message: String(error) });
           return error;
         }
       );

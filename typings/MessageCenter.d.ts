@@ -12,6 +12,7 @@ export interface MessageCenter {
   sendPrepareToReceiveStream$: Observable<number>;
   hangUp$: Observable<ISignal>;
 
+  initSocket(): void;
   noCall(delay: number): Observable<number>;
   sendMsg(msg: IMessage): void;
   sendSignal(signal: ISignal): void;

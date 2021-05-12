@@ -167,8 +167,14 @@ export default class MessageCenter implements IMessageCenter {
     doc.remove();
   }
 
-  private async initSocket() {
+  public disconnect() {
+    this.socket.disconnect();
+  }
+
+  public async initSocket() {
     const own = await this.userManager.getOwnInfo();
+    if (!own.uid) return;
+
     this.socket = io.connect(`ws://${host}:${port}/im`, {
       transports: ['websocket'],
       query: {
@@ -184,6 +190,7 @@ export default class MessageCenter implements IMessageCenter {
 
     this.socket.on('disconnect', () => {
       console.red(`socket disconnected ${this.socket.id}`);
+      // socket断连时修改offline时间戳
       offline({ uid: own.uid, timestamp: Date.now() });
     });
 

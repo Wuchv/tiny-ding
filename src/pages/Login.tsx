@@ -1,9 +1,12 @@
 import * as React from 'react';
-import { Input, Divider, Checkbox, Typography } from 'antd';
+import { Input, Divider, Checkbox, Typography, message } from 'antd';
 import { LoginOutlined, CloseOutlined } from '@ant-design/icons';
 import { openMainWindow } from '@src/utils';
 import { loginAction } from '@src/redux/reducers/userReducer';
 import { useReduxData } from '@src/hooks/useRedux';
+import { register } from '@src/services';
+
+import { Avatar } from '@src/components/Avatar';
 
 import './Login.less';
 
@@ -35,12 +38,21 @@ export const Login: React.FC<unknown> = React.memo(() => {
     }
   }, [uid, access_token]);
 
+  const userRegister = React.useCallback(async () => {
+    const res = await register({ account, password });
+    if (res.statusCode === 400) {
+      message.error('注册失败，账号已存在');
+    } else {
+      message.success('注册成功');
+    }
+  }, [account, password]);
+
   return (
     <div className="login-container">
       <div className="close" onClick={() => window.$client.closeWindow()}>
         <CloseOutlined />
       </div>
-      <div className="avatar"></div>
+      <Avatar size="large" text="D" />
       <div className="input-wrap">
         <Input
           placeholder="请输入手机号"
@@ -69,7 +81,9 @@ export const Login: React.FC<unknown> = React.memo(() => {
         <div className="operation-wrap">
           <Typography.Text type="secondary">忘记密码</Typography.Text>
           <span> | </span>
-          <Typography.Text type="secondary">新用户注册</Typography.Text>
+          <Typography.Text type="secondary" onClick={userRegister}>
+            新用户注册
+          </Typography.Text>
         </div>
       </footer>
     </div>

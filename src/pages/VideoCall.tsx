@@ -95,14 +95,18 @@ export const VideoCall: React.FC<unknown> = React.memo(() => {
                   toId,
                 },
               });
+              // 呼叫对方
               const call = peer.call(remotePeerId, stream);
+              // 监听回应
               call.on('stream', (remoteStream) => {
                 remoteVideo.srcObject = remoteStream;
               });
               changeIceStateListener(call);
             });
           } else {
+            // 监听呼叫
             peer.on('call', (call) => {
+              // 应答
               call.answer(stream);
               call.on('stream', (remoteStream) => {
                 remoteVideo.srcObject = remoteStream;
