@@ -91,6 +91,15 @@ export const closeMainWindow = () => {
 
 (async () => {
   await app.whenReady();
+
+  ipcMain.on(
+    'OPEN_SAVE_DIALOG',
+    async (event: IpcMainEvent, filename: string) => {
+      const storage = await messageBox.save({ defaultPath: filename });
+      event.reply('SAVE_PATH', storage);
+    }
+  );
+
   ipcMain.on('OPEN_WINDOW', (event: IpcMainEvent, { name, params }) => {
     createWindow(name, params);
     event.returnValue = 1;

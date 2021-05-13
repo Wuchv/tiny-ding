@@ -9,6 +9,12 @@ const openWindow = (name: WindowName, params: SafeObject = null) => {
   return result;
 };
 
+// 打开文件保存弹窗
+const openSaveDialog = (filename: string) => {
+  const result = ipcRenderer.send('OPEN_SAVE_DIALOG', filename);
+  return result;
+};
+
 const closeWindow = (name?: WindowName) => {
   const result = ipcRenderer.send('CLOSE_WINDOW', name);
   return result;
@@ -25,12 +31,13 @@ const minimizeWindow = (name?: WindowName) => {
 };
 
 window.$client = {
+  remote,
   ipcRenderer,
+  openSaveDialog,
   openWindow,
   closeWindow,
   maximizeWindow,
   minimizeWindow,
-  remote,
 };
 
 window.console = proxyConsole();

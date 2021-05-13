@@ -11,12 +11,13 @@ import {
 import { CustomAxios } from './CustomAxios';
 
 interface client {
+  remote: Remote;
   ipcRenderer: IpcRenderer;
+  openSaveDialog: Function;
   openWindow: Function;
   closeWindow: Function;
   maximizeWindow: Function;
   minimizeWindow: Function;
-  remote: Remote;
 }
 
 declare global {
@@ -70,7 +71,6 @@ declare global {
 
   type valueOf<T> = T[keyof T];
 
-  type PromiseReturnType<
-    T extends (...arg: any[]) => any
-  > = ReturnType<T> extends Promise<infer R> ? R : ReturnType<T>;
+  type PromiseReturnType<T extends (...arg: any[]) => any> =
+    ReturnType<T> extends Promise<infer R> ? R : ReturnType<T>;
 }
