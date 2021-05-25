@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Layout, Typography, Menu, Dropdown } from 'antd';
 import { MessageOutlined, TeamOutlined } from '@ant-design/icons';
 import { useReduxData } from '@src/hooks/useRedux';
-import { UserManager } from '@src/modules/RemoteGlobal';
+import { UserManager, MessageCenter } from '@src/modules/RemoteGlobal';
 import { logoutAction } from '@src/redux/reducers/userReducer';
 
 import { Avatar } from '@src/components/Avatar';
@@ -24,13 +24,10 @@ export const Header: React.FC<IHeader> = React.memo(() => {
       currentConversationAvatar,
     },
   ] = useReduxData();
-  const [
-    isMessageIconClicked,
-    setIsMessageIconClicked,
-  ] = React.useState<boolean>(true);
-  const [isTeamIconClicked, setIsTeamIconClicked] = React.useState<boolean>(
-    false
-  );
+  const [isMessageIconClicked, setIsMessageIconClicked] =
+    React.useState<boolean>(true);
+  const [isTeamIconClicked, setIsTeamIconClicked] =
+    React.useState<boolean>(false);
 
   React.useEffect(() => {
     // 监听路由变化，设置icon
@@ -59,6 +56,7 @@ export const Header: React.FC<IHeader> = React.memo(() => {
     if (userDoc) {
       await userDoc.remove();
     }
+    MessageCenter.disconnect();
     dispatch(logoutAction());
   }, []);
 

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Input, Button, message } from 'antd';
+import imgzip from 'imgzip';
 import { MessageCenter, EMsgType } from '@src/modules/RemoteGlobal';
 import FileUploader from '@src/modules/FileUploader';
 import { useReduxData } from '@src/hooks/useRedux';
@@ -20,6 +21,8 @@ export const InputField: React.FC<unknown> = React.memo(() => {
     e.stopPropagation();
     const files = e.dataTransfer.files;
     if (files.length > 0) {
+      // let compress = new imgzip({ quality: 0.5 });
+      // compress.photoCompress(files[0], () => {});
       const file: File = files[0];
       const [err, result] = await FileUploader.putObject(
         file,

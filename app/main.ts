@@ -44,7 +44,7 @@ const start = () => {
 
   app.on('ready', async () => {
     await init();
-    createWindow(WindowName.MAIN);
+    createWindow(WindowName.LOGIN_REGISTER);
   });
 
   app.on('window-all-closed', () => {

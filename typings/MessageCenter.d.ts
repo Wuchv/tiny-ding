@@ -16,6 +16,7 @@ export interface MessageCenter {
   noCall(delay: number): Observable<number>;
   sendMsg(msg: IMessage): void;
   sendSignal(signal: ISignal): void;
+  disconnect(): void;
   insertMsg(
     msg: Partial<IMessage>,
     file: Pick<File, 'name' | 'type'> & { data?: any },

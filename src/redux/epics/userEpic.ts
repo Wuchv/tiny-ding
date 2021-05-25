@@ -7,7 +7,7 @@ import {
   loginFailedAction,
 } from '../reducers/userReducer';
 import { IEpic } from '.';
-import { UserManager } from '@src/modules/RemoteGlobal';
+import { UserManager, MessageCenter } from '@src/modules/RemoteGlobal';
 
 export const loginEpic: IEpic = (action$, store$, { login }) =>
   action$.pipe(
@@ -16,8 +16,8 @@ export const loginEpic: IEpic = (action$, store$, { login }) =>
       from(login(action.payload)).pipe(
         map((res: PromiseReturnType<typeof login>) => {
           if (res.uid) {
-            // 将个人信息存入RxDB
-            UserManager.upsert(res);
+            // 将个人信息存入RxDB，初始化socket
+            UserManager.upsert(res).then(() => MessageCenter.initSocket());
             return loginSuccessAction(res);
           } else {
             return loginFailedAction();
